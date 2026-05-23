@@ -264,8 +264,8 @@ Travis Head,opener,Australia,51,1513,4,9.2,32.89,169.81,no,2cr
         onClick={onButtonClick}
         className={`glass-card border-2 border-dashed rounded-3xl p-8 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center min-h-[180px] ${
           dragActive
-            ? 'border-yellow-400 bg-slate-900/90 shadow-[0_0_15px_rgba(250,204,21,0.15)]'
-            : 'border-slate-800 hover:border-slate-700 bg-slate-950/40 hover:bg-slate-900/40'
+            ? 'border-[#38BDF8] bg-[#07111F]/80 shadow-[0_4px_20px_rgba(56,189,248,0.15)]'
+            : 'border-white/10 hover:border-white/20 bg-[#07111F]/30 hover:bg-[#07111F]/50'
         }`}
       >
         <input
@@ -276,19 +276,19 @@ Travis Head,opener,Australia,51,1513,4,9.2,32.89,169.81,no,2cr
           onChange={handleChange}
         />
         
-        <div className="w-12 h-12 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-xl mb-3 shadow-inner">
+        <div className="w-12 h-12 rounded-full bg-[#030810]/60 border border-white/5 flex items-center justify-center text-xl mb-3 shadow-inner">
           📁
         </div>
         
-        <p className="text-sm font-bold text-slate-200">
+        <p className="text-sm font-bold text-[#F8FAFC]">
           Drag & drop your Player CSV file here
         </p>
-        <p className="text-xs text-slate-500 mt-1.5">
+        <p className="text-xs text-[#94A3B8] mt-1.5 font-medium">
           or click to browse local files
         </p>
         
         {error && (
-          <div className="mt-4 text-xs font-semibold text-red-400 bg-red-950/40 px-3 py-1.5 rounded-lg border border-red-900/35">
+          <div className="mt-4 text-xs font-semibold text-red-400 bg-red-950/20 px-3 py-1.5 rounded-xl border border-red-500/20">
             {error}
           </div>
         )}
@@ -296,10 +296,10 @@ Travis Head,opener,Australia,51,1513,4,9.2,32.89,169.81,no,2cr
 
       {/* Action triggers */}
       <div className="flex justify-between items-center text-xs">
-        <span className="text-slate-500">Supports spinners, openers, finishers, all-rounders, etc.</span>
+        <span className="text-[#94A3B8]/60 font-semibold">Supports spinners, openers, finishers, all-rounders, etc.</span>
         <button
           onClick={downloadTemplate}
-          className="text-yellow-400 hover:text-yellow-300 font-bold flex items-center space-x-1 transition"
+          className="text-[#38BDF8] hover:text-[#38BDF8]/80 font-black flex items-center space-x-1 transition cursor-pointer"
         >
           <span>📥 Download Template CSV</span>
         </button>

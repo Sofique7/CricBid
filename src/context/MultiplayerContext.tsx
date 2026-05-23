@@ -2,8 +2,32 @@
 
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { Player, initialPlayers } from '../data/players';
+// Build a lookup map of player images
+const playerImageMap: Record<string, string> = {};
+initialPlayers.forEach(p => {
+  if (p.image) {
+    playerImageMap[p.id] = p.image;
+    playerImageMap[p.name.toLowerCase().trim()] = p.image;
+  }
+});
+
+const enrichPlayers = (playersList: Player[]): Player[] => {
+  return playersList.map(p => ({
+    ...p,
+    image: p.image || playerImageMap[p.id] || playerImageMap[p.name.toLowerCase().trim()] || ''
+  }));
+};
+
+const enrichTeams = (teamsList: Team[]): Team[] => {
+  return teamsList.map(t => ({
+    ...t,
+    players: enrichPlayers(t.players)
+  }));
+};
+
 import { Team, initialTeams } from '../data/teams';
 import { soundEffects } from '../utils/sound';
+import { voiceAuctioneer } from '../utils/voiceAuctioneer';
 import { getSocket } from '../utils/socketClient';
 
 interface ClientPlayer {
@@ -51,8 +75,8 @@ interface MultiplayerContextType {
   nextPlayer: () => void;
   resetAuction: () => void;
   toggleSound: () => void;
-  autoSimulateActivePlayer: () => void;
   leaveRoom: () => void;
+  executeVoiceCommand: (command: any) => void;
 }
 
 const MultiplayerContext = createContext<MultiplayerContextType | undefined>(undefined);
@@ -89,9 +113,21 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const unsoldHistory = players.filter(p => p.status === 'unsold');
 
   const auctionStatusRef = useRef(auctionStatus);
+  const teamsRef = useRef(teams);
+  const playersRef = useRef(players);
+  const lastSpokenPlayerIdRef = useRef<string | null>(null);
+
   useEffect(() => {
     auctionStatusRef.current = auctionStatus;
   }, [auctionStatus]);
+
+  useEffect(() => {
+    teamsRef.current = teams;
+  }, [teams]);
+
+  useEffect(() => {
+    playersRef.current = players;
+  }, [players]);
 
   // Sync sound settings with sound utility
   useEffect(() => {
@@ -105,8 +141,8 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     socket.on('room_created', (data) => {
       setRoomCode(data.code);
       setClients(data.clients);
-      setPlayers(data.players);
-      setTeams(data.teams);
+      setPlayers(enrichPlayers(data.players));
+      setTeams(enrichTeams(data.teams));
       setLogs(data.logs);
       setAuctionStatus(data.auctionStatus);
       setIsAuctionStarted(data.started);
@@ -117,8 +153,8 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     socket.on('room_joined', (data) => {
       setRoomCode(data.code);
       setClients(data.clients);
-      setPlayers(data.players);
-      setTeams(data.teams);
+      setPlayers(enrichPlayers(data.players));
+      setTeams(enrichTeams(data.teams));
       setLogs(data.logs);
       setAuctionStatus(data.auctionStatus);
       setIsAuctionStarted(data.started);
@@ -154,8 +190,8 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     });
 
     socket.on('state_update', (data) => {
-      setPlayers(data.players);
-      setTeams(data.teams);
+      setPlayers(enrichPlayers(data.players));
+      setTeams(enrichTeams(data.teams));
       setCurrentPlayerIndex(data.currentPlayerIndex);
       setCurrentBid(data.currentBid);
       setCurrentBidderId(data.currentBidderId);
@@ -166,7 +202,11 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
       
       const prevStatus = auctionStatusRef.current;
       setAuctionStatus(data.auctionStatus);
-      setLastWinner(data.lastWinner);
+      setLastWinner(data.lastWinner ? {
+        player: enrichPlayers([data.lastWinner.player])[0],
+        team: enrichTeams([data.lastWinner.team])[0],
+        price: data.lastWinner.price
+      } : null);
 
       // Trigger splash sounds on transition
       if (data.auctionStatus === 'sold_splash' && prevStatus !== 'sold_splash') {
@@ -174,6 +214,14 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         soundEffects.playGavelSound();
       } else if (data.auctionStatus === 'unsold_splash' && prevStatus !== 'unsold_splash') {
         soundEffects.playGavelSound();
+      }
+
+      // Voice next player announcement
+      const activePool = data.players.filter((pl: any) => pl.status === 'pool' || pl.status === 'active');
+      const p = activePool[0]; // Next player is at top of remaining pool
+      if (p && data.currentBid === 0 && data.auctionStatus === 'bidding' && lastSpokenPlayerIdRef.current !== p.id) {
+        lastSpokenPlayerIdRef.current = p.id;
+        voiceAuctioneer.speakNextPlayer(p.name, `${p.base_price} crore`);
       }
     });
 
@@ -183,6 +231,12 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setTimer(data.timer);
       setLogs(data.logs);
       soundEffects.playBidSound();
+
+      // Voice bid announcement
+      const bidTeam = data.currentBidderId ? teamsRef.current.find(t => t.id === data.currentBidderId) : null;
+      if (bidTeam) {
+        voiceAuctioneer.speakBidPlaced(bidTeam.shortName, `${data.currentBid} crore`, 3);
+      }
     });
 
     socket.on('timer_tick', (data) => {
@@ -197,22 +251,49 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
       if (data.timer <= 3 && data.timer > 0) {
         soundEffects.playBuzzerSound();
+
+        // Voice countdown ticks
+        if (data.timer === 3) {
+          voiceAuctioneer.speakCountdown("Going once...");
+        } else if (data.timer === 2) {
+          voiceAuctioneer.speakCountdown("Going twice...");
+        } else if (data.timer === 1) {
+          voiceAuctioneer.speakCountdown("Any further bids?");
+        }
       }
     });
 
     socket.on('timer_end', (data) => {
-      setPlayers(data.players);
-      setTeams(data.teams);
+      setPlayers(enrichPlayers(data.players));
+      setTeams(enrichTeams(data.teams));
       setAuctionStatus(data.auctionStatus);
-      setLastWinner(data.lastWinner);
+      setLastWinner(data.lastWinner ? {
+        player: enrichPlayers([data.lastWinner.player])[0],
+        team: enrichTeams([data.lastWinner.team])[0],
+        price: data.lastWinner.price
+      } : null);
       setLogs(data.logs);
       setIsPaused(true);
 
       if (data.auctionStatus === 'sold_splash') {
         soundEffects.playSoldSound();
         soundEffects.playGavelSound();
+
+        // Voice SOLD announcement
+        const activePool = playersRef.current.filter(pl => pl.status === 'pool' || pl.status === 'active');
+        const p = activePool[0];
+        if (p && data.lastWinner) {
+          voiceAuctioneer.speakSold(p.name, data.lastWinner.team.name, `${data.lastWinner.price} crore`);
+        }
       } else {
         soundEffects.playGavelSound();
+
+        // Voice UNSOLD announcement
+        const activePool = playersRef.current.filter(pl => pl.status === 'pool' || pl.status === 'active');
+        const p = activePool[0];
+        if (p) {
+          voiceAuctioneer.speakUnsold(p.name);
+        }
       }
     });
 
@@ -315,11 +396,6 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     });
   };
 
-  const autoSimulateActivePlayer = () => {
-    if (!roomCode || !isHost) return;
-    socket.emit('fast_solve', { roomCode });
-  };
-
   const toggleSound = () => {
     setSoundEnabled(prev => !prev);
   };
@@ -334,6 +410,41 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setAuctionStatus('idle');
     setIsAuctionStarted(false);
     socket.connect(); // reconnect socket for future sessions
+  };
+
+  const executeVoiceCommand = (cmd: any) => {
+    if (!roomCode || !isHost || !isAuctionStarted) return;
+
+    switch (cmd.type) {
+      case 'PAUSE':
+        pauseAuction();
+        break;
+      case 'RESUME':
+        resumeAuction();
+        break;
+      case 'UNSOLD':
+        skipPlayer();
+        break;
+      case 'NEXT_PLAYER':
+        nextPlayer();
+        break;
+      case 'NEXT_PLAYER_OVERRIDE':
+        socket.emit('next_player', {
+          roomCode,
+          overrideName: cmd.name,
+          overrideBasePrice: cmd.basePrice
+        });
+        break;
+      case 'SELL_PLAYER':
+        socket.emit('force_sell', {
+          roomCode,
+          teamId: cmd.team,
+          amount: cmd.price
+        });
+        break;
+      default:
+        break;
+    }
   };
 
   return (
@@ -370,8 +481,8 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
       nextPlayer,
       resetAuction,
       toggleSound,
-      autoSimulateActivePlayer,
-      leaveRoom
+      leaveRoom,
+      executeVoiceCommand
     }}>
       {children}
     </MultiplayerContext.Provider>

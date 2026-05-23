@@ -17,12 +17,12 @@ export const AIAdvisor: React.FC = () => {
   const recommendedPlayer = players.find(p => p.id === advice.recommendedId);
 
   return (
-    <div className="glass-card rounded-3xl p-6 border border-slate-800/80 shadow-xl h-full flex flex-col justify-between">
+    <div className="glass-card rounded-3xl p-6 border border-white/5 shadow-xl h-full flex flex-col justify-between">
       {/* Title */}
       <div>
         <div className="flex items-center space-x-2 mb-4">
           <span className="text-xl">🤖</span>
-          <h3 className="text-base font-black text-white uppercase tracking-wider">
+          <h3 className="text-base font-black text-[#F8FAFC] uppercase tracking-wider">
             AI Squad Advisor
           </h3>
         </div>
@@ -30,21 +30,21 @@ export const AIAdvisor: React.FC = () => {
         {/* Warnings and Checklist */}
         <div className="space-y-3 mb-6">
           {report.errors.map((err, i) => (
-            <div key={i} className="flex items-start space-x-2.5 p-3 rounded-xl bg-red-950/60 border border-red-800/40 text-red-400 text-xs font-semibold animate-pulse">
+            <div key={i} className="flex items-start space-x-2.5 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold animate-pulse">
               <span className="text-base">⚠️</span>
               <span>{err}</span>
             </div>
           ))}
 
           {report.warnings.map((warn, i) => (
-            <div key={i} className="flex items-start space-x-2.5 p-3 rounded-xl bg-yellow-950/50 border border-yellow-800/30 text-yellow-400 text-xs">
+            <div key={i} className="flex items-start space-x-2.5 p-3 rounded-xl bg-[#38BDF8]/10 border border-[#38BDF8]/20 text-[#38BDF8] text-xs font-medium">
               <span className="text-base">💡</span>
               <span>{warn}</span>
             </div>
           ))}
 
           {report.errors.length === 0 && report.warnings.length === 0 && (
-            <div className="flex items-start space-x-2.5 p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/30 text-emerald-400 text-xs font-semibold">
+            <div className="flex items-start space-x-2.5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
               <span className="text-base">✅</span>
               <span>Roster satisfies all minimum role and squad size regulations! Excellent draft balance.</span>
             </div>
@@ -53,53 +53,53 @@ export const AIAdvisor: React.FC = () => {
       </div>
 
       {/* Target Recommendation */}
-      <div className="pt-4 border-t border-slate-900">
-        <h4 className="text-[10px] uppercase tracking-widest text-slate-500 font-extrabold mb-3">
+      <div className="pt-4 border-t border-white/5">
+        <h4 className="text-[10px] uppercase tracking-widest text-[#94A3B8]/60 font-extrabold mb-3">
           AI Target Recommendation
         </h4>
         
         {recommendedPlayer ? (
           <div className="space-y-4">
-            <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-900 flex items-center justify-between">
+            <div className="p-3.5 rounded-xl bg-[#030810]/50 border border-white/5 flex items-center justify-between">
               <div>
-                <span className="text-[9px] uppercase font-bold text-yellow-400 block tracking-wider">
+                <span className="text-[9px] uppercase font-bold text-[#38BDF8] block tracking-wider">
                   Top Suggestion
                 </span>
-                <span className="text-sm font-extrabold text-white block">
+                <span className="text-sm font-extrabold text-[#F8FAFC] block">
                   {recommendedPlayer.name}
                 </span>
-                <span className="text-[10px] text-slate-400 block uppercase">
+                <span className="text-[10px] text-[#94A3B8]/60 block uppercase font-semibold">
                   {recommendedPlayer.role.replace('_', ' ')} (OVR {recommendedPlayer.rating})
                 </span>
               </div>
               <div className="text-right">
-                <span className="text-[9px] text-slate-500 block uppercase">Base Price</span>
-                <span className="text-xs font-black text-slate-300">
+                <span className="text-[9px] text-[#94A3B8]/60 block uppercase font-bold">Base Price</span>
+                <span className="text-xs font-black text-[#F8FAFC]">
                   {recommendedPlayer.base_price.toFixed(2)} Cr
                 </span>
               </div>
             </div>
 
-            <p className="text-xs text-slate-400 italic">
+            <p className="text-xs text-[#94A3B8] italic font-medium">
               &quot;{advice.reason}&quot;
             </p>
 
             {/* Alternatives */}
             {advice.alternatives.length > 0 && (
               <div>
-                <span className="block text-[9px] uppercase tracking-widest text-slate-500 font-bold mb-2">
+                <span className="block text-[9px] uppercase tracking-widest text-[#94A3B8]/60 font-extrabold mb-2">
                   Budget-Friendly Alternatives
                 </span>
                 <div className="space-y-2">
                   {advice.alternatives.map((alt) => (
-                    <div key={alt.id} className="flex justify-between items-center bg-slate-950/40 p-2.5 rounded-lg border border-slate-900 text-xs">
+                    <div key={alt.id} className="flex justify-between items-center bg-[#030810]/30 p-2.5 rounded-lg border border-white/5 text-xs">
                       <div>
-                        <span className="font-semibold text-slate-300">{alt.name}</span>
-                        <span className="text-[9px] text-slate-500 uppercase block">
+                        <span className="font-bold text-[#F8FAFC]">{alt.name}</span>
+                        <span className="text-[9px] text-[#94A3B8]/50 uppercase block font-semibold">
                           {alt.role.replace('_', ' ')} (OVR {alt.rating})
                         </span>
                       </div>
-                      <span className="font-extrabold text-slate-400">
+                      <span className="font-extrabold text-[#38BDF8]">
                         {alt.base_price.toFixed(2)} Cr
                       </span>
                     </div>
@@ -109,7 +109,7 @@ export const AIAdvisor: React.FC = () => {
             )}
           </div>
         ) : (
-          <p className="text-xs text-slate-500 text-center py-6">
+          <p className="text-xs text-[#94A3B8]/40 text-center py-6 font-semibold">
             All players drafted! Roster balance finalized.
           </p>
         )}

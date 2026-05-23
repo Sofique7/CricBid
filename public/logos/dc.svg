@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="dcBg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#008BE3"/>
+      <stop offset="100%" stop-color="#00538C"/>
+    </radialGradient>
+  </defs>
+  <!-- Shield shape -->
+  <path d="M100 10 L175 45 L175 120 Q175 170 100 192 Q25 170 25 120 L25 45 Z" fill="url(#dcBg)" stroke="#EF4123" stroke-width="6"/>
+  <!-- Inner border -->
+  <path d="M100 22 L163 53 L163 118 Q163 160 100 180 Q37 160 37 118 L37 53 Z" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <!-- DC Text -->
+  <text x="100" y="122" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="48" fill="#FFFFFF" letter-spacing="1">DC</text>
+  <!-- Capitol dome or roaring tigers silhouette in red/white -->
+  <path d="M85 70 Q100 45 115 70 Z" fill="#EF4123"/>
+  <path d="M92 70 Q100 55 108 70 Z" fill="#FFFFFF"/>
+  <rect x="98" y="40" width="4" height="12" fill="#EF4123"/>
+  <!-- Stars -->
+  <text x="65" y="152" text-anchor="middle" font-size="12" fill="#EF4123">★</text>
+  <text x="135" y="152" text-anchor="middle" font-size="12" fill="#EF4123">★</text>
+  <!-- Bottom banner text -->
+  <text x="100" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFFFFF" font-weight="700" letter-spacing="2">DELHI CAPITALS</text>
+</svg>

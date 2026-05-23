@@ -19,54 +19,10 @@ function getNextBidAmount(currentBid, basePrice) {
   return parseFloat((currentBid + 1.00).toFixed(2));
 }
 
-// Analyze squad composition
-function analyzeSquad(squad, currentPurse) {
-  const errors = [];
-  const warnings = [];
-  const roleCounts = {
-    opener: 0,
-    middle_order: 0,
-    finisher: 0,
-    all_rounder: 0,
-    spinner: 0,
-    death_bowler: 0,
-    powerplay_bowler: 0
-  };
-
-  squad.forEach(p => {
-    if (roleCounts[p.role] !== undefined) {
-      roleCounts[p.role]++;
-    }
-  });
-
+// Analyze squad composition (used for bid validation)
+function analyzeSquad(squad) {
   const overseasCount = squad.filter(p => p.overseas).length;
-
-  if (squad.length > 25) {
-    errors.push(`Squad size (${squad.length}) exceeds maximum limit of 25 players.`);
-  }
-  if (overseasCount > 8) {
-    errors.push(`Overseas players (${overseasCount}) exceed maximum limit of 8.`);
-  }
-  if (currentPurse < 0) {
-    errors.push(`Purse limit exceeded: negative balance (${currentPurse.toFixed(2)} Cr).`);
-  }
-
-  if (squad.length < 12) {
-    warnings.push(`Squad size (${squad.length}) is below the minimum required 12 players.`);
-  }
-
-  const hasKeeper = squad.some(p => p.is_wicketkeeper);
-  if (!hasKeeper && squad.length > 0) {
-    warnings.push('No Wicketkeeper in squad. You need a designated keeper in the Playing XI.');
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors,
-    warnings,
-    roleCounts,
-    overseasCount
-  };
+  return { overseasCount };
 }
 
 // Global Rooms memory
@@ -103,69 +59,7 @@ function findRoomBySocket(socketId) {
   return null;
 }
 
-// AI Opponent Bidding Roll Logic
-function simulateAIBids(room) {
-  const activePool = room.players.filter(p => p.status === 'pool' || p.status === 'active');
-  const p = activePool[room.currentPlayerIndex];
-  if (!p) return;
 
-  const nextBid = getNextBidAmount(room.currentBid, p.base_price);
-
-  // Compute claimed team IDs
-  const claimedTeamIds = Array.from(room.clients.values()).map(c => c.teamId).filter(Boolean);
-  const aiTeams = room.teams.filter(t => !claimedTeamIds.includes(t.id));
-  const interestedTeams = [];
-
-  aiTeams.forEach(t => {
-    const squadRep = analyzeSquad(t.players, t.purse);
-    const isOverseasLimit = p.overseas && squadRep.overseasCount >= 8;
-    const isSquadLimit = t.players.length >= 25;
-    
-    // Minimum budget protection check:
-    const slotsToMin = Math.max(0, 12 - t.players.length);
-    const minRequiredReserve = slotsToMin * 0.20;
-    const hasBudget = t.purse - nextBid >= minRequiredReserve && t.purse >= nextBid;
-
-    if (isOverseasLimit || isSquadLimit || !hasBudget) return;
-
-    // AI Valuation logic
-    let ratingMultiplier = 1.0 + (p.rating - 50) / 7.5; 
-    let purseFactor = Math.min(1.0, t.purse / 100.0);
-    if (t.purse < 15.0) {
-      purseFactor = 0.5 + (t.purse / 30.0);
-    }
-    
-    let needBoost = 1.0;
-    const roleCount = squadRep.roleCounts[p.role] || 0;
-    if (roleCount === 0) {
-      needBoost = 1.4;
-    } else if (roleCount >= 4) {
-      needBoost = 0.5;
-    }
-
-    let vMax = p.base_price * ratingMultiplier * purseFactor * needBoost;
-    vMax = parseFloat(Math.max(p.base_price, vMax).toFixed(2));
-
-    if (nextBid <= vMax && room.currentBidderId !== t.id) {
-      interestedTeams.push({ team: t, valuation: vMax });
-    }
-  });
-
-  if (interestedTeams.length === 0) return null;
-
-  interestedTeams.sort((a, b) => b.valuation - a.valuation);
-  const chosen = interestedTeams[0].team;
-
-  room.currentBid = nextBid;
-  room.currentBidderId = chosen.id;
-  room.logs.unshift(`${chosen.shortName} bids ${nextBid.toFixed(2)} Cr`);
-  
-  if (room.timer < 8) {
-    room.timer = 8;
-  }
-
-  return chosen.id;
-}
 
 // Timer Countdown & End Handling
 function handleTimerEnd(room, io) {
@@ -238,25 +132,12 @@ function startRoomTimer(room, io) {
 
     if (room.timer > 0) {
       room.timer--;
-      
-      // AI Bidding tick: 45% chance on each second if there are AI teams
-      const claimedTeamIds = Array.from(room.clients.values()).map(c => c.teamId).filter(Boolean);
-      const hasAITeams = room.teams.some(t => !claimedTeamIds.includes(t.id));
-      let aiBidMade = false;
-
-      if (hasAITeams && Math.random() < 0.45) {
-        const bidderId = simulateAIBids(room);
-        if (bidderId) {
-          aiBidMade = true;
-        }
-      }
-      
       io.to(room.code).emit('timer_tick', {
         timer: room.timer,
         currentBid: room.currentBid,
         currentBidderId: room.currentBidderId,
         logs: room.logs,
-        aiBidMade
+        aiBidMade: false
       });
     } else {
       handleTimerEnd(room, io);
@@ -405,8 +286,7 @@ app.prepare().then(() => {
       const room = rooms[roomCode];
       if (!room || room.hostId !== socket.id) return;
 
-      const unclaimedTeamCount = room.teams.length - Array.from(room.clients.values()).filter(c => c.teamId).length;
-      console.log(`Starting auction in room: ${roomCode}. AI will manage ${unclaimedTeamCount} teams.`);
+      console.log(`Starting auction in room: ${roomCode}.`);
 
       room.started = true;
       room.auctionStatus = 'bidding';
@@ -429,7 +309,7 @@ app.prepare().then(() => {
     });
 
     // Place Bid
-    socket.on('place_bid', ({ roomCode, teamId }) => {
+        socket.on('place_bid', ({ roomCode, teamId }) => {
       const room = rooms[roomCode];
       if (!room || room.isPaused || room.auctionStatus !== 'bidding') return;
 
@@ -439,39 +319,42 @@ app.prepare().then(() => {
 
       const nextBid = getNextBidAmount(room.currentBid, p.base_price);
       const team = room.teams.find(t => t.id === teamId);
-      if (!team) return;
+      if (!team) {
+        socket.emit('bid_error', 'Invalid team.');
+        return;
+      }
+
+      const client = room.clients.get(socket.id);
+      if (!client || client.teamId !== teamId) {
+        socket.emit('bid_error', 'You must claim the team before bidding.');
+        return;
+      }
 
       // Verify constraints
-      const squadRep = analyzeSquad(team.players, team.purse);
+      const squadRep = analyzeSquad(team.players);
       const isOverseasLimit = p.overseas && squadRep.overseasCount >= 8;
       const isSquadLimit = team.players.length >= 25;
-
       if (isSquadLimit) {
-        socket.emit('bid_error', 'Cannot bid. Squad limit of 25 reached.');
+        socket.emit('bid_error', 'Squad limit of 25 reached.');
         return;
       }
       if (isOverseasLimit) {
-        socket.emit('bid_error', 'Cannot bid. Overseas limit of 8 reached.');
+        socket.emit('bid_error', 'Overseas limit of 8 reached.');
         return;
       }
       if (team.purse < nextBid) {
-        socket.emit('bid_error', 'Cannot bid. Insufficient purse.');
+        socket.emit('bid_error', 'Insufficient purse.');
         return;
       }
-
-      if (room.currentBidderId === teamId) return; // Already holding high bid
 
       // Update room state
       room.currentBid = nextBid;
       room.currentBidderId = teamId;
-      
-      const client = room.clients.get(socket.id);
-      const bidderName = client ? client.name : team.shortName;
+
+      const bidderName = client.name;
       room.logs.unshift(`${bidderName} (${team.shortName}) bids ${nextBid.toFixed(2)} Cr`);
 
-      if (room.timer < 8) {
-        room.timer = 8;
-      }
+      if (room.timer < 8) room.timer = 8;
 
       io.to(roomCode).emit('bid_placed', {
         currentBid: room.currentBid,
@@ -530,9 +413,36 @@ app.prepare().then(() => {
     });
 
     // Next Player
-    socket.on('next_player', ({ roomCode }) => {
+    socket.on('next_player', ({ roomCode, overrideName, overrideBasePrice }) => {
       const room = rooms[roomCode];
       if (!room || room.hostId !== socket.id) return;
+
+      // Handle custom voice overrides for injecting/reordering players
+      if (overrideName) {
+        const cleanName = overrideName.toLowerCase().trim();
+        // Look up player case-insensitively in remaining pool or unsold
+        const targetIndex = room.players.findIndex(p => 
+          (p.status === 'pool' || p.status === 'unsold' || p.status === 'active') &&
+          p.name.toLowerCase().includes(cleanName)
+        );
+
+        if (targetIndex !== -1) {
+          const targetPlayer = room.players[targetIndex];
+          // Reactivate player and optional base price override
+          targetPlayer.status = 'pool';
+          if (overrideBasePrice !== undefined && !isNaN(overrideBasePrice)) {
+            targetPlayer.base_price = overrideBasePrice;
+          }
+
+          // Move player to the top of the remaining pool
+          room.players.splice(targetIndex, 1);
+          let insertIndex = room.players.findIndex(p => p.status === 'pool');
+          if (insertIndex === -1) insertIndex = 0;
+          room.players.splice(insertIndex, 0, targetPlayer);
+          
+          room.logs.unshift(`Voice Override: Bringing up ${targetPlayer.name} next!`);
+        }
+      }
 
       const remainingPool = room.players.filter(p => p.status === 'pool' || p.status === 'active');
       
@@ -550,7 +460,7 @@ app.prepare().then(() => {
       room.isPaused = false;
       room.lastWinner = null;
 
-      const nextP = remainingPool[0]; // the previous active player was marked sold/unsold, so it's not in 'pool'/'active' anymore or index shifts
+      const nextP = remainingPool[0];
       if (nextP) {
         room.logs.unshift(`Player under the hammer: ${nextP.name} (Base Price: ${nextP.base_price} Cr)`);
         room.players = room.players.map(pl => pl.id === nextP.id ? { ...pl, status: 'active' } : pl);
@@ -560,94 +470,27 @@ app.prepare().then(() => {
       io.to(roomCode).emit('state_update', getRoomState(room));
     });
 
-    // Fast Solve Bidding War
-    socket.on('fast_solve', ({ roomCode }) => {
+    // Force Sell Player (Voice commanded immediate sale)
+    socket.on('force_sell', ({ roomCode, teamId, amount }) => {
       const room = rooms[roomCode];
-      if (!room || room.hostId !== socket.id || room.isPaused || room.auctionStatus !== 'bidding') return;
+      if (!room || room.hostId !== socket.id) return;
 
       const activePool = room.players.filter(p => p.status === 'pool' || p.status === 'active');
-      const activeP = activePool[room.currentPlayerIndex];
-      if (!activeP) return;
+      const p = activePool[room.currentPlayerIndex];
+      if (!p) return;
 
-      let localBid = room.currentBid;
-      let localBidderId = room.currentBidderId;
-      let activeBidding = true;
-      let loopProtect = 0;
+      // Deduct/verify purse and squad parameters
+      const team = room.teams.find(t => t.id === teamId);
+      if (!team) return;
 
-      while (activeBidding && loopProtect < 100) {
-        loopProtect++;
-        const nextBid = getNextBidAmount(localBid, activeP.base_price);
-        const bidders = [];
+      // Update room state for sale
+      room.currentBid = amount;
+      room.currentBidderId = teamId;
 
-        room.teams.forEach(t => {
-          if (t.id === localBidderId) return;
+      room.logs.unshift(`Voice Action: Manual force sale initiated by Host.`);
 
-          const squadRep = analyzeSquad(t.players, t.purse);
-          const isOverseasLimit = activeP.overseas && squadRep.overseasCount >= 8;
-          const isSquadLimit = t.players.length >= 25;
-          const slotsToMin = Math.max(0, 12 - t.players.length);
-          const minRequiredReserve = slotsToMin * 0.20;
-          const hasBudget = t.purse - nextBid >= minRequiredReserve && t.purse >= nextBid;
-
-          if (isOverseasLimit || isSquadLimit || !hasBudget) return;
-
-          let ratingMultiplier = 1.0 + (activeP.rating - 50) / 7.5;
-          let purseFactor = Math.min(1.0, t.purse / 100.0);
-          if (t.purse < 15.0) purseFactor = 0.5 + (t.purse / 30.0);
-          
-          let needBoost = 1.0;
-          if (squadRep.roleCounts[activeP.role] === 0) needBoost = 1.4;
-
-          let vMax = activeP.base_price * ratingMultiplier * purseFactor * needBoost;
-          vMax = parseFloat(Math.max(activeP.base_price, vMax).toFixed(2));
-
-          if (nextBid <= vMax) {
-            bidders.push(t.id);
-          }
-        });
-
-        if (bidders.length > 0) {
-          const idx = Math.floor(Math.random() * bidders.length);
-          localBidderId = bidders[idx];
-          localBid = nextBid;
-        } else {
-          activeBidding = false;
-        }
-      }
-
-      if (localBidderId) {
-        const winningTeam = room.teams.find(t => t.id === localBidderId);
-        if (winningTeam) {
-          room.lastWinner = { player: activeP, team: winningTeam, price: localBid };
-          room.auctionStatus = 'sold_splash';
-          room.isPaused = true;
-          room.currentBid = localBid;
-          room.currentBidderId = localBidderId;
-
-          room.players = room.players.map(pl => pl.id === activeP.id ? { ...pl, status: 'sold', sold_to: winningTeam.id, sold_price: localBid } : pl);
-
-          room.teams = room.teams.map(t => {
-            if (t.id === winningTeam.id) {
-              return {
-                ...t,
-                purse: parseFloat((t.purse - localBid).toFixed(2)),
-                players: [...t.players, { ...activeP, status: 'sold', sold_to: winningTeam.id, sold_price: localBid }]
-              };
-            }
-            return t;
-          });
-
-          room.logs.unshift(`SOLD! (Auto) ${activeP.name} bought by ${winningTeam.name} for ${localBid.toFixed(2)} Cr!`);
-        }
-      } else {
-        room.auctionStatus = 'unsold_splash';
-        room.isPaused = true;
-
-        room.players = room.players.map(pl => pl.id === activeP.id ? { ...pl, status: 'unsold' } : pl);
-        room.logs.unshift(`PASSED: ${activeP.name} is unsold.`);
-      }
-
-      io.to(room.code).emit('state_update', getRoomState(room));
+      // Trigger automatic sale processing and broadcast
+      handleTimerEnd(room, io);
     });
 
     // Reset Room Auction

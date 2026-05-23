@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="kkrBg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#5B3996"/>
+      <stop offset="100%" stop-color="#2D1154"/>
+    </radialGradient>
+  </defs>
+  <!-- Shield shape -->
+  <path d="M100 10 L175 45 L175 120 Q175 170 100 192 Q25 170 25 120 L25 45 Z" fill="url(#kkrBg)" stroke="#F1C40F" stroke-width="6"/>
+  <!-- Inner border -->
+  <path d="M100 22 L163 53 L163 118 Q163 160 100 180 Q37 160 37 118 L37 53 Z" fill="none" stroke="#F1C40F" stroke-width="3"/>
+  <!-- KKR Text -->
+  <text x="100" y="122" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="44" fill="#F1C40F" letter-spacing="2">KKR</text>
+  <!-- Knight helmet emblem -->
+  <path d="M85 70 L115 70 L110 50 L100 42 L90 50 Z" fill="#F1C40F"/>
+  <!-- Plume on helmet -->
+  <path d="M100 42 C100 30 115 25 125 30 C120 40 105 40 100 42" fill="#E74C3C"/>
+  <!-- Eyes slit -->
+  <line x1="92" y1="58" x2="108" y2="58" stroke="#2D1154" stroke-width="2"/>
+  <!-- Bottom banner text -->
+  <text x="100" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#F1C40F" font-weight="700" letter-spacing="2">KNIGHT RIDERS</text>
+</svg>

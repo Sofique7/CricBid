@@ -33,7 +33,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 139.77,
     "batting_average": 40.52,
-    "image": "",
+    "image": "/assets/player-avatars/David_Warner.png",
     "status": "pool"
   },
   {
@@ -48,7 +48,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 135.79,
     "batting_average": 35.1,
-    "image": "",
+    "image": "/assets/player-avatars/Faf_Du_Plessis.png",
     "status": "pool"
   },
   {
@@ -63,7 +63,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 148.96,
     "batting_average": 39.72,
-    "image": "",
+    "image": "/assets/player-avatars/Chris_Gayle.png",
     "status": "pool"
   },
   {
@@ -78,7 +78,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 134.39,
     "batting_average": 40.19,
-    "image": "",
+    "image": "/assets/player-avatars/Virat_Kohli.png",
     "status": "pool"
   },
   {
@@ -93,7 +93,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 138.66,
     "batting_average": 45.47,
-    "image": "",
+    "image": "/assets/player-avatars/Kl_Rahul.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -109,7 +109,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 133.01,
     "batting_average": 30.04,
-    "image": "",
+    "image": "/assets/player-avatars/Rohit_Sharma.png",
     "status": "pool"
   },
   {
@@ -124,7 +124,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 149.82,
     "batting_average": 39.41,
-    "image": "",
+    "image": "/assets/player-avatars/Jos_Buttler.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -140,7 +140,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 127.14,
     "batting_average": 35.26,
-    "image": "",
+    "image": "/assets/player-avatars/Shikar_Dhawan.png",
     "status": "pool"
   },
   {
@@ -155,7 +155,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 141.11,
     "batting_average": 40.16,
-    "image": "",
+    "image": "/assets/player-avatars/Shubman_Gill.png",
     "status": "pool"
   },
   {
@@ -170,7 +170,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 141.17,
     "batting_average": 31.98,
-    "image": "",
+    "image": "/assets/player-avatars/Sanju_Samson.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -186,7 +186,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 148.54,
     "batting_average": 48.9,
-    "image": "",
+    "image": "/assets/player-avatars/Sai_Sudharsan.png",
     "status": "pool"
   },
   {
@@ -201,7 +201,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 136.76,
     "batting_average": 32.52,
-    "image": "",
+    "image": "/assets/player-avatars/Suresh_Raina.png",
     "status": "pool"
   },
   {
@@ -216,7 +216,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 148.67,
     "batting_average": 33.74,
-    "image": "",
+    "image": "/assets/player-avatars/Surya_Kumar_Yadav.png",
     "status": "pool"
   },
   {
@@ -231,7 +231,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 151.69,
     "batting_average": 39.71,
-    "image": "",
+    "image": "/assets/player-avatars/Ab_De_Villiers.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -247,7 +247,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 165.72,
     "batting_average": 42.4,
-    "image": "",
+    "image": "/assets/player-avatars/Heinrich_Klaasen.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -263,7 +263,7 @@ export const initialPlayers: Player[] = [
     "rating": 99,
     "strike_rate": 137.46,
     "batting_average": 38.3,
-    "image": "",
+    "image": "/assets/player-avatars/Ms_Dhoni.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -281,7 +281,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 23.34,
     "wickets": 231,
     "economy": 8.06,
-    "image": "",
+    "image": "/assets/player-avatars/Yuzvendra_Chahal.png",
     "status": "pool"
   },
   {
@@ -298,7 +298,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 23.98,
     "wickets": 166,
     "economy": 7.36,
-    "image": "",
+    "image": "/assets/player-avatars/Amit_Mishra.png",
     "status": "pool"
   },
   {
@@ -315,7 +315,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 20.77,
     "wickets": 82,
     "economy": 7.76,
-    "image": "",
+    "image": "/assets/player-avatars/Imran_Tahir.png",
     "status": "pool"
   },
   {
@@ -332,7 +332,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 23.74,
     "wickets": 187,
     "economy": 7.34,
-    "image": "",
+    "image": "/assets/player-avatars/Jasprit_Bumrah.png",
     "status": "pool"
   },
   {
@@ -349,7 +349,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 19.8,
     "wickets": 170,
     "economy": 7.14,
-    "image": "",
+    "image": "/assets/player-avatars/Lasith_Malinga.png",
     "status": "pool"
   },
   {
@@ -366,7 +366,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 22.81,
     "wickets": 140,
     "economy": 8.7,
-    "image": "",
+    "image": "/assets/player-avatars/Kagiso_Rabada.png",
     "status": "pool"
   },
   {
@@ -383,7 +383,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 26.15,
     "wickets": 222,
     "economy": 7.69,
-    "image": "",
+    "image": "/assets/player-avatars/Bhuvneswar_Kumar.png",
     "status": "pool"
   },
   {
@@ -400,7 +400,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 16.27,
     "wickets": 11,
     "economy": 8.95,
-    "image": "",
+    "image": "/assets/player-avatars/Mark_Wood.png",
     "status": "pool"
   },
   {
@@ -417,7 +417,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 137.92,
     "wickets": 92,
     "economy": 7.93,
-    "image": "",
+    "image": "/assets/player-avatars/Shane_Watson.png",
     "status": "pool"
   },
   {
@@ -432,7 +432,7 @@ export const initialPlayers: Player[] = [
     "rating": 98,
     "strike_rate": 135.7,
     "batting_average": 34.98,
-    "image": "",
+    "image": "/assets/player-avatars/Shreyas_Iyer.png",
     "status": "pool"
   },
   {
@@ -447,7 +447,7 @@ export const initialPlayers: Player[] = [
     "rating": 98,
     "strike_rate": 147.03,
     "batting_average": 33.68,
-    "image": "",
+    "image": "/assets/player-avatars/Rishabh_Pant.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -465,7 +465,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 24.64,
     "wickets": 110,
     "economy": 7.71,
-    "image": "",
+    "image": "/assets/player-avatars/Varun_Chakaravarty.png",
     "status": "pool"
   },
   {
@@ -482,7 +482,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 22.96,
     "wickets": 85,
     "economy": 7.22,
-    "image": "",
+    "image": "/assets/player-avatars/Pragyan_Ojha.png",
     "status": "pool"
   },
   {
@@ -499,7 +499,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 26.92,
     "wickets": 63,
     "economy": 6.68,
-    "image": "",
+    "image": "/assets/player-avatars/Muttiah_Muralitharan.png",
     "status": "pool"
   },
   {
@@ -516,7 +516,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 28.44,
     "wickets": 151,
     "economy": 8.16,
-    "image": "",
+    "image": "/assets/player-avatars/Sandeep_Sharma.png",
     "status": "pool"
   },
   {
@@ -533,7 +533,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 27.14,
     "wickets": 145,
     "economy": 8.49,
-    "image": "",
+    "image": "/assets/player-avatars/Trent_Boult.png",
     "status": "pool"
   },
   {
@@ -548,7 +548,7 @@ export const initialPlayers: Player[] = [
     "rating": 96,
     "strike_rate": 125.27,
     "batting_average": 29.97,
-    "image": "",
+    "image": "/assets/player-avatars/Ajinkya_Rahane.png",
     "status": "pool"
   },
   {
@@ -563,7 +563,7 @@ export const initialPlayers: Player[] = [
     "rating": 96,
     "strike_rate": 139.44,
     "batting_average": 35.82,
-    "image": "",
+    "image": "/assets/player-avatars/David_Miller.png",
     "status": "pool"
   },
   {
@@ -580,7 +580,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 27.27,
     "wickets": 102,
     "economy": 7.59,
-    "image": "",
+    "image": "/assets/player-avatars/Zaheer_Khan.png",
     "status": "pool"
   },
   {
@@ -595,7 +595,7 @@ export const initialPlayers: Player[] = [
     "rating": 95,
     "strike_rate": 135.33,
     "batting_average": 38.67,
-    "image": "",
+    "image": "/assets/player-avatars/Ruturaj_Gaikwad.png",
     "status": "pool"
   },
   {
@@ -610,7 +610,7 @@ export const initialPlayers: Player[] = [
     "rating": 95,
     "strike_rate": 164.71,
     "batting_average": 31.96,
-    "image": "",
+    "image": "/assets/player-avatars/Nicholas_Pooran.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -628,7 +628,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 25.39,
     "wickets": 57,
     "economy": 7.27,
-    "image": "",
+    "image": "/assets/player-avatars/Shane_Warne.png",
     "status": "pool"
   },
   {
@@ -645,7 +645,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 24.1,
     "wickets": 87,
     "economy": 8.05,
-    "image": "",
+    "image": "/assets/player-avatars/Ashish_Nehra.png",
     "status": "pool"
   },
   {
@@ -662,7 +662,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 25.98,
     "wickets": 90,
     "economy": 7.9,
-    "image": "",
+    "image": "/assets/player-avatars/Rp_Singh.png",
     "status": "pool"
   },
   {
@@ -679,7 +679,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 27.13,
     "wickets": 77,
     "economy": 7.69,
-    "image": "",
+    "image": "/assets/player-avatars/Morne_Morkel.png",
     "status": "pool"
   },
   {
@@ -696,7 +696,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 22.59,
     "wickets": 69,
     "economy": 8.47,
-    "image": "",
+    "image": "/assets/player-avatars/Josh_Hazlewood.png",
     "status": "pool"
   },
   {
@@ -713,7 +713,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 23.27,
     "wickets": 45,
     "economy": 7.55,
-    "image": "",
+    "image": "/assets/player-avatars/Ryan_Harris.png",
     "status": "pool"
   },
   {
@@ -728,7 +728,7 @@ export const initialPlayers: Player[] = [
     "rating": 94,
     "strike_rate": 153.79,
     "batting_average": 34.27,
-    "image": "",
+    "image": "/assets/player-avatars/Yashasvi_Jaiswal.png",
     "status": "pool"
   },
   {
@@ -743,7 +743,7 @@ export const initialPlayers: Player[] = [
     "rating": 94,
     "strike_rate": 130.35,
     "batting_average": 27.51,
-    "image": "",
+    "image": "/assets/player-avatars/Robin_Uthappa.png",
     "status": "pool"
   },
   {
@@ -758,7 +758,7 @@ export const initialPlayers: Player[] = [
     "rating": 94,
     "strike_rate": 132.74,
     "batting_average": 39.95,
-    "image": "",
+    "image": "/assets/player-avatars/Shaun_Marsh.png",
     "status": "pool"
   },
   {
@@ -775,7 +775,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 26.22,
     "wickets": 134,
     "economy": 8.77,
-    "image": "",
+    "image": "/assets/player-avatars/Mohit_Sharma.png",
     "status": "pool"
   },
   {
@@ -792,7 +792,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 21.59,
     "wickets": 39,
     "economy": 8.45,
-    "image": "",
+    "image": "/assets/player-avatars/Lungi_Ngidi.png",
     "status": "pool"
   },
   {
@@ -809,7 +809,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 29.98,
     "wickets": 144,
     "economy": 8.49,
-    "image": "",
+    "image": "/assets/player-avatars/Umesh_Yadav.png",
     "status": "pool"
   },
   {
@@ -826,7 +826,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 26.51,
     "wickets": 77,
     "economy": 8.13,
-    "image": "",
+    "image": "/assets/player-avatars/Jofra_Archer.png",
     "status": "pool"
   },
   {
@@ -841,7 +841,7 @@ export const initialPlayers: Player[] = [
     "rating": 93,
     "strike_rate": 123.88,
     "batting_average": 31.24,
-    "image": "",
+    "image": "/assets/player-avatars/Gautam_Gambhir.png",
     "status": "pool"
   },
   {
@@ -856,7 +856,7 @@ export const initialPlayers: Player[] = [
     "rating": 93,
     "strike_rate": 174.48,
     "batting_average": 34,
-    "image": "",
+    "image": "/assets/player-avatars/Phil_Salt.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -872,7 +872,7 @@ export const initialPlayers: Player[] = [
     "rating": 93,
     "strike_rate": 139.72,
     "batting_average": 43.2,
-    "image": "",
+    "image": "/assets/player-avatars/Devon_Conway.png",
     "status": "pool"
   },
   {
@@ -887,7 +887,7 @@ export const initialPlayers: Player[] = [
     "rating": 93,
     "strike_rate": 170.18,
     "batting_average": 29.41,
-    "image": "",
+    "image": "/assets/player-avatars/Abishek_Sharma.png",
     "status": "pool"
   },
   {
@@ -902,7 +902,7 @@ export const initialPlayers: Player[] = [
     "rating": 93,
     "strike_rate": 135.37,
     "batting_average": 26.32,
-    "image": "",
+    "image": "/assets/player-avatars/Dinesh_Karthik.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -918,7 +918,7 @@ export const initialPlayers: Player[] = [
     "rating": 93,
     "strike_rate": 178.43,
     "batting_average": 33.58,
-    "image": "",
+    "image": "/assets/player-avatars/Tim_David.png",
     "status": "pool"
   },
   {
@@ -935,7 +935,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 28.47,
     "wickets": 109,
     "economy": 8.27,
-    "image": "",
+    "image": "/assets/player-avatars/Kuldeep_Yadav.png",
     "status": "pool"
   },
   {
@@ -952,7 +952,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 21.03,
     "wickets": 31,
     "economy": 8.38,
-    "image": "",
+    "image": "/assets/player-avatars/Adam_Zampa.png",
     "status": "pool"
   },
   {
@@ -969,7 +969,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 24.51,
     "wickets": 61,
     "economy": 8.17,
-    "image": "",
+    "image": "/assets/player-avatars/Noor_Ahmad.png",
     "status": "pool"
   },
   {
@@ -986,7 +986,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 23.31,
     "wickets": 42,
     "economy": 8.59,
-    "image": "",
+    "image": "/assets/player-avatars/Andrew_Tye.png",
     "status": "pool"
   },
   {
@@ -1003,7 +1003,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 36.12,
     "wickets": 90,
     "economy": 7.73,
-    "image": "",
+    "image": "/assets/player-avatars/Praveen_Kumar.png",
     "status": "pool"
   },
   {
@@ -1020,7 +1020,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 25.39,
     "wickets": 71,
     "economy": 8.49,
-    "image": "",
+    "image": "/assets/player-avatars/Mitchell_Mcclenaghan.png",
     "status": "pool"
   },
   {
@@ -1035,7 +1035,7 @@ export const initialPlayers: Player[] = [
     "rating": 92,
     "strike_rate": 134.94,
     "batting_average": 31.28,
-    "image": "",
+    "image": "/assets/player-avatars/Quinton_De_Kock.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -1051,7 +1051,7 @@ export const initialPlayers: Player[] = [
     "rating": 92,
     "strike_rate": 169.81,
     "batting_average": 32.89,
-    "image": "",
+    "image": "/assets/player-avatars/Travis_Head.png",
     "status": "pool"
   },
   {
@@ -1066,7 +1066,7 @@ export const initialPlayers: Player[] = [
     "rating": 92,
     "strike_rate": 142.31,
     "batting_average": 30.07,
-    "image": "",
+    "image": "/assets/player-avatars/Ishan_Kishan.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -1082,7 +1082,7 @@ export const initialPlayers: Player[] = [
     "rating": 92,
     "strike_rate": 145.26,
     "batting_average": 36.37,
-    "image": "",
+    "image": "/assets/player-avatars/Tilak_Varma.png",
     "status": "pool"
   },
   {
@@ -1097,7 +1097,7 @@ export const initialPlayers: Player[] = [
     "rating": 92,
     "strike_rate": 141.77,
     "batting_average": 44.3,
-    "image": "",
+    "image": "/assets/player-avatars/Hashim_Amla.png",
     "status": "pool"
   },
   {
@@ -1114,7 +1114,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 29.28,
     "wickets": 75,
     "economy": 7.78,
-    "image": "",
+    "image": "/assets/player-avatars/Rahul_Chahar.png",
     "status": "pool"
   },
   {
@@ -1131,7 +1131,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 28.45,
     "wickets": 65,
     "economy": 8.13,
-    "image": "",
+    "image": "/assets/player-avatars/Mustafizur_Rahman.png",
     "status": "pool"
   },
   {
@@ -1148,7 +1148,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 24.88,
     "wickets": 66,
     "economy": 8.54,
-    "image": "",
+    "image": "/assets/player-avatars/Jason_Holder.png",
     "status": "pool"
   },
   {
@@ -1165,7 +1165,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 22.99,
     "wickets": 74,
     "economy": 8.79,
-    "image": "",
+    "image": "/assets/player-avatars/Mitchell_Starc.png",
     "status": "pool"
   },
   {
@@ -1182,7 +1182,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 30.06,
     "wickets": 126,
     "economy": 8.72,
-    "image": "",
+    "image": "/assets/player-avatars/Mohammad_Siraj.png",
     "status": "pool"
   },
   {
@@ -1199,7 +1199,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 28.25,
     "wickets": 105,
     "economy": 8.39,
-    "image": "",
+    "image": "/assets/player-avatars/Vinay_Kumar.png",
     "status": "pool"
   },
   {
@@ -1216,7 +1216,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 17.5,
     "wickets": 206,
     "economy": 6.77,
-    "image": "",
+    "image": "/assets/player-avatars/Sunil_Narine.png",
     "status": "pool"
   },
   {
@@ -1231,7 +1231,7 @@ export const initialPlayers: Player[] = [
     "rating": 91,
     "strike_rate": 127.47,
     "batting_average": 29.44,
-    "image": "",
+    "image": "/assets/player-avatars/Ambati_Rayudu.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -1247,7 +1247,7 @@ export const initialPlayers: Player[] = [
     "rating": 91,
     "strike_rate": 161.61,
     "batting_average": 36.2,
-    "image": "",
+    "image": "/assets/player-avatars/Shashank_Singh.png",
     "status": "pool"
   },
   {
@@ -1264,7 +1264,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 27.56,
     "wickets": 111,
     "economy": 9.11,
-    "image": "",
+    "image": "/assets/player-avatars/Arshadeep_Singh.png",
     "status": "pool"
   },
   {
@@ -1281,7 +1281,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 28.22,
     "wickets": 88,
     "economy": 8.9,
-    "image": "",
+    "image": "/assets/player-avatars/Prasidh_Krishna.png",
     "status": "pool"
   },
   {
@@ -1298,7 +1298,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 29.99,
     "wickets": 94,
     "economy": 8.27,
-    "image": "",
+    "image": "/assets/player-avatars/Deepak_Chahar.png",
     "status": "pool"
   },
   {
@@ -1315,7 +1315,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 27.19,
     "wickets": 91,
     "economy": 8.96,
-    "image": "",
+    "image": "/assets/player-avatars/Khaleel_Ahmed.png",
     "status": "pool"
   },
   {
@@ -1332,7 +1332,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 21.93,
     "wickets": 30,
     "economy": 8.97,
-    "image": "",
+    "image": "/assets/player-avatars/Chris_Woakes.png",
     "status": "pool"
   },
   {
@@ -1349,7 +1349,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 26.77,
     "wickets": 35,
     "economy": 7.78,
-    "image": "",
+    "image": "/assets/player-avatars/Wayne_Parnell.png",
     "status": "pool"
   },
   {
@@ -1364,7 +1364,7 @@ export const initialPlayers: Player[] = [
     "rating": 90,
     "strike_rate": 155.44,
     "batting_average": 27.56,
-    "image": "",
+    "image": "/assets/player-avatars/Virander_Sehwag.png",
     "status": "pool"
   },
   {
@@ -1379,7 +1379,7 @@ export const initialPlayers: Player[] = [
     "rating": 90,
     "strike_rate": 146.7,
     "batting_average": 34.88,
-    "image": "",
+    "image": "/assets/player-avatars/Jonny_Bairstow.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -1395,7 +1395,7 @@ export const initialPlayers: Player[] = [
     "rating": 90,
     "strike_rate": 121.67,
     "batting_average": 29.53,
-    "image": "",
+    "image": "/assets/player-avatars/Manish_Pandey.png",
     "status": "pool"
   },
   {
@@ -1412,7 +1412,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 26.16,
     "wickets": 49,
     "economy": 8.11,
-    "image": "",
+    "image": "/assets/player-avatars/Shreyas_Gopal.png",
     "status": "pool"
   },
   {
@@ -1429,7 +1429,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 28.77,
     "wickets": 86,
     "economy": 8.31,
-    "image": "",
+    "image": "/assets/player-avatars/Dhawal_Kulkarni.png",
     "status": "pool"
   },
   {
@@ -1446,7 +1446,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 28.51,
     "wickets": 178,
     "economy": 7.68,
-    "image": "",
+    "image": "/assets/player-avatars/Ravindra_Jadeja.png",
     "status": "pool"
   },
   {
@@ -1461,7 +1461,7 @@ export const initialPlayers: Player[] = [
     "rating": 89,
     "strike_rate": 128.09,
     "batting_average": 34.51,
-    "image": "",
+    "image": "/assets/player-avatars/Steve_Smith.png",
     "status": "pool"
   },
   {
@@ -1476,7 +1476,7 @@ export const initialPlayers: Player[] = [
     "rating": 89,
     "strike_rate": 122.64,
     "batting_average": 38.76,
-    "image": "",
+    "image": "/assets/player-avatars/Michael_Hussey.png",
     "status": "pool"
   },
   {
@@ -1491,7 +1491,7 @@ export const initialPlayers: Player[] = [
     "rating": 89,
     "strike_rate": 161.79,
     "batting_average": 31.48,
-    "image": "",
+    "image": "/assets/player-avatars/Rajat_Patidar.png",
     "status": "pool"
   },
   {
@@ -1506,7 +1506,7 @@ export const initialPlayers: Player[] = [
     "rating": 89,
     "strike_rate": 146.13,
     "batting_average": 34.85,
-    "image": "",
+    "image": "/assets/player-avatars/Rinku_Singh.png",
     "status": "pool"
   },
   {
@@ -1523,7 +1523,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 26.69,
     "wickets": 83,
     "economy": 8.38,
-    "image": "",
+    "image": "/assets/player-avatars/Karan_Sharma.png",
     "status": "pool"
   },
   {
@@ -1540,7 +1540,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 35.18,
     "wickets": 96,
     "economy": 8.38,
-    "image": "",
+    "image": "/assets/player-avatars/Ishant_Sharma.png",
     "status": "pool"
   },
   {
@@ -1557,7 +1557,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 30.04,
     "wickets": 69,
     "economy": 8.2,
-    "image": "",
+    "image": "/assets/player-avatars/Ashok_Dinda.png",
     "status": "pool"
   },
   {
@@ -1572,7 +1572,7 @@ export const initialPlayers: Player[] = [
     "rating": 88,
     "strike_rate": 125.62,
     "batting_average": 35.47,
-    "image": "",
+    "image": "/assets/player-avatars/Kane_Williamson.png",
     "status": "pool"
   },
   {
@@ -1587,7 +1587,7 @@ export const initialPlayers: Player[] = [
     "rating": 88,
     "strike_rate": 137.72,
     "batting_average": 27.73,
-    "image": "",
+    "image": "/assets/player-avatars/Nitish_Rana.png",
     "status": "pool"
   },
   {
@@ -1604,7 +1604,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 28.2,
     "wickets": 123,
     "economy": 9.51,
-    "image": "",
+    "image": "/assets/player-avatars/Andre_Russell.png",
     "status": "pool"
   },
   {
@@ -1619,7 +1619,7 @@ export const initialPlayers: Player[] = [
     "rating": 87,
     "strike_rate": 140.63,
     "batting_average": 34.08,
-    "image": "",
+    "image": "/assets/player-avatars/Chris_Lynn.png",
     "status": "pool"
   },
   {
@@ -1636,7 +1636,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 33.53,
     "wickets": 36,
     "economy": 8.27,
-    "image": "",
+    "image": "/assets/player-avatars/Maheesh_Teekshana.png",
     "status": "pool"
   },
   {
@@ -1653,7 +1653,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 29.68,
     "wickets": 117,
     "economy": 9.57,
-    "image": "",
+    "image": "/assets/player-avatars/Shardul_Thakur.png",
     "status": "pool"
   },
   {
@@ -1670,7 +1670,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 14.09,
     "wickets": 174,
     "economy": 7.21,
-    "image": "",
+    "image": "/assets/player-avatars/Rashid_Khan.png",
     "status": "pool"
   },
   {
@@ -1685,7 +1685,7 @@ export const initialPlayers: Player[] = [
     "rating": 86,
     "strike_rate": 131.75,
     "batting_average": 27.69,
-    "image": "",
+    "image": "/assets/player-avatars/Brendon_mccullum.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -1701,7 +1701,7 @@ export const initialPlayers: Player[] = [
     "rating": 86,
     "strike_rate": 152.36,
     "batting_average": 31.43,
-    "image": "",
+    "image": "/assets/player-avatars/Dhruv_Jurel.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -1719,7 +1719,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 43.8,
     "wickets": 25,
     "economy": 7.51,
-    "image": "",
+    "image": "/assets/player-avatars/Brett_Lee.png",
     "status": "pool"
   },
   {
@@ -1736,7 +1736,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 32.97,
     "wickets": 72,
     "economy": 9.21,
-    "image": "",
+    "image": "/assets/player-avatars/Natarajan.png",
     "status": "pool"
   },
   {
@@ -1753,7 +1753,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 22.61,
     "wickets": 183,
     "economy": 8.39,
-    "image": "",
+    "image": "/assets/player-avatars/Dwyane_Bravo.png",
     "status": "pool"
   },
   {
@@ -1770,7 +1770,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 22.07,
     "wickets": 95,
     "economy": 8.01,
-    "image": "",
+    "image": "/assets/player-avatars/Chris_Morris.png",
     "status": "pool"
   },
   {
@@ -1785,7 +1785,7 @@ export const initialPlayers: Player[] = [
     "rating": 85,
     "strike_rate": 135.2,
     "batting_average": 28.39,
-    "image": "",
+    "image": "/assets/player-avatars/Dwayne_Smith.png",
     "status": "pool"
   },
   {
@@ -1802,7 +1802,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 31.4,
     "wickets": 30,
     "economy": 8.71,
-    "image": "",
+    "image": "/assets/player-avatars/Shivam_Mavi.png",
     "status": "pool"
   },
   {
@@ -1819,7 +1819,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 37.06,
     "wickets": 47,
     "economy": 8.67,
-    "image": "",
+    "image": "/assets/player-avatars/Tim_Southee.png",
     "status": "pool"
   },
   {
@@ -1836,7 +1836,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 29.05,
     "wickets": 19,
     "economy": 9.05,
-    "image": "",
+    "image": "/assets/player-avatars/Jason_Behrendorff.png",
     "status": "pool"
   },
   {
@@ -1853,7 +1853,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 21.35,
     "wickets": 138,
     "economy": 7.4,
-    "image": "",
+    "image": "/assets/player-avatars/Axar_Patel.png",
     "status": "pool"
   },
   {
@@ -1868,7 +1868,7 @@ export const initialPlayers: Player[] = [
     "rating": 84,
     "strike_rate": 135.52,
     "batting_average": 30.38,
-    "image": "",
+    "image": "/assets/player-avatars/Aiden_Markram.png",
     "status": "pool"
   },
   {
@@ -1883,7 +1883,7 @@ export const initialPlayers: Player[] = [
     "rating": 84,
     "strike_rate": 138.39,
     "batting_average": 27.22,
-    "image": "",
+    "image": "/assets/player-avatars/Adam_Gilchrist.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -1899,7 +1899,7 @@ export const initialPlayers: Player[] = [
     "rating": 84,
     "strike_rate": 137.85,
     "batting_average": 26.33,
-    "image": "",
+    "image": "/assets/player-avatars/Rahul_Tripati.png",
     "status": "pool"
   },
   {
@@ -1914,7 +1914,7 @@ export const initialPlayers: Player[] = [
     "rating": 84,
     "strike_rate": 149.28,
     "batting_average": 27.37,
-    "image": "",
+    "image": "/assets/player-avatars/Shimron_Hetmyer.png",
     "status": "pool"
   },
   {
@@ -1931,7 +1931,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 26.62,
     "wickets": 29,
     "economy": 9.4,
-    "image": "",
+    "image": "/assets/player-avatars/Umran_Malik.png",
     "status": "pool"
   },
   {
@@ -1948,7 +1948,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 28.67,
     "wickets": 69,
     "economy": 8.79,
-    "image": "",
+    "image": "/assets/player-avatars/Kieron_Pollard.png",
     "status": "pool"
   },
   {
@@ -1963,7 +1963,7 @@ export const initialPlayers: Player[] = [
     "rating": 83,
     "strike_rate": 132.97,
     "batting_average": 27.05,
-    "image": "",
+    "image": "/assets/player-avatars/Devdutt_Padikkal.png",
     "status": "pool"
   },
   {
@@ -1980,7 +1980,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 30.92,
     "wickets": 37,
     "economy": 8.52,
-    "image": "",
+    "image": "/assets/player-avatars/Mitchell_Marsh.png",
     "status": "pool"
   },
   {
@@ -1995,7 +1995,7 @@ export const initialPlayers: Player[] = [
     "rating": 83,
     "strike_rate": 129.72,
     "batting_average": 24.77,
-    "image": "",
+    "image": "/assets/player-avatars/Yuvaraj_Singh.png",
     "status": "pool"
   },
   {
@@ -2010,7 +2010,7 @@ export const initialPlayers: Player[] = [
     "rating": 83,
     "strike_rate": 143.17,
     "batting_average": 26.06,
-    "image": "",
+    "image": "/assets/player-avatars/Riyan_Parag.png",
     "status": "pool"
   },
   {
@@ -2027,7 +2027,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 30.95,
     "wickets": 37,
     "economy": 9.16,
-    "image": "",
+    "image": "/assets/player-avatars/Mayank_Markande.png",
     "status": "pool"
   },
   {
@@ -2044,7 +2044,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 29.13,
     "wickets": 42,
     "economy": 7.4,
-    "image": "",
+    "image": "/assets/player-avatars/Yusuf_Pathan.png",
     "status": "pool"
   },
   {
@@ -2061,7 +2061,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 22.49,
     "wickets": 103,
     "economy": 7.6,
-    "image": "",
+    "image": "/assets/player-avatars/Krunal_Pandya.png",
     "status": "pool"
   },
   {
@@ -2078,7 +2078,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 15.15,
     "wickets": 150,
     "economy": 7.08,
-    "image": "",
+    "image": "/assets/player-avatars/Harbajan_Singh.png",
     "status": "pool"
   },
   {
@@ -2095,7 +2095,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 24.35,
     "wickets": 85,
     "economy": 8.21,
-    "image": "",
+    "image": "/assets/player-avatars/Albie_Morkel.png",
     "status": "pool"
   },
   {
@@ -2112,7 +2112,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 39.5,
     "wickets": 23,
     "economy": 9.41,
-    "image": "",
+    "image": "/assets/player-avatars/Cameron_Green.png",
     "status": "pool"
   },
   {
@@ -2127,7 +2127,7 @@ export const initialPlayers: Player[] = [
     "rating": 82,
     "strike_rate": 121.87,
     "batting_average": 25.93,
-    "image": "",
+    "image": "/assets/player-avatars/Murali_Vijay.png",
     "status": "pool"
   },
   {
@@ -2142,7 +2142,7 @@ export const initialPlayers: Player[] = [
     "rating": 82,
     "strike_rate": 147.47,
     "batting_average": 23.95,
-    "image": "",
+    "image": "/assets/player-avatars/Prithivi_Shaw.png",
     "status": "pool"
   },
   {
@@ -2159,7 +2159,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 27.82,
     "wickets": 82,
     "economy": 9.36,
-    "image": "",
+    "image": "/assets/player-avatars/Hardik_Pandya.png",
     "status": "pool"
   },
   {
@@ -2176,7 +2176,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 28.55,
     "wickets": 65,
     "economy": 7.9,
-    "image": "",
+    "image": "/assets/player-avatars/Jacques_Kallis.png",
     "status": "pool"
   },
   {
@@ -2193,7 +2193,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 20.03,
     "wickets": 87,
     "economy": 8.75,
-    "image": "",
+    "image": "/assets/player-avatars/Pat_Cummins.png",
     "status": "pool"
   },
   {
@@ -2208,7 +2208,7 @@ export const initialPlayers: Player[] = [
     "rating": 81,
     "strike_rate": 165.39,
     "batting_average": 25.8,
-    "image": "",
+    "image": "/assets/player-avatars/Donovan_Ferreira.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -2226,7 +2226,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 13.02,
     "wickets": 187,
     "economy": 7.2,
-    "image": "",
+    "image": "/assets/player-avatars/Ravichandran_Ashwin.png",
     "status": "pool"
   },
   {
@@ -2243,7 +2243,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 19.83,
     "wickets": 63,
     "economy": 7.44,
-    "image": "",
+    "image": "/assets/player-avatars/Shakib_Al_Hassan.png",
     "status": "pool"
   },
   {
@@ -2260,7 +2260,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 22.02,
     "wickets": 41,
     "economy": 7.23,
-    "image": "",
+    "image": "/assets/player-avatars/Moeen_Ali.png",
     "status": "pool"
   },
   {
@@ -2277,7 +2277,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 23.89,
     "wickets": 41,
     "economy": 8.3,
-    "image": "",
+    "image": "/assets/player-avatars/Glenn_Maxwell.png",
     "status": "pool"
   },
   {
@@ -2292,7 +2292,7 @@ export const initialPlayers: Player[] = [
     "rating": 80,
     "strike_rate": 128.2,
     "batting_average": 25.19,
-    "image": "",
+    "image": "/assets/player-avatars/Aaron_Finch.png",
     "status": "pool"
   },
   {
@@ -2307,7 +2307,7 @@ export const initialPlayers: Player[] = [
     "rating": 80,
     "strike_rate": 120.78,
     "batting_average": 22.6,
-    "image": "",
+    "image": "/assets/player-avatars/Parthiv_Patel.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -2323,7 +2323,7 @@ export const initialPlayers: Player[] = [
     "rating": 80,
     "strike_rate": 118.89,
     "batting_average": 30.66,
-    "image": "",
+    "image": "/assets/player-avatars/Subramaniam_Badrinath.png",
     "status": "pool"
   },
   {
@@ -2340,7 +2340,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 21.49,
     "wickets": 80,
     "economy": 7.78,
-    "image": "",
+    "image": "/assets/player-avatars/Irfan_Pathan.png",
     "status": "pool"
   },
   {
@@ -2355,7 +2355,7 @@ export const initialPlayers: Player[] = [
     "rating": 79,
     "strike_rate": 120.1,
     "batting_average": 28.73,
-    "image": "",
+    "image": "/assets/player-avatars/Saurabh_Tiwary.png",
     "status": "pool"
   },
   {
@@ -2370,7 +2370,7 @@ export const initialPlayers: Player[] = [
     "rating": 79,
     "strike_rate": 152.9,
     "batting_average": 22.52,
-    "image": "",
+    "image": "/assets/player-avatars/Jitesh_Sharma.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -2388,7 +2388,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 43.96,
     "wickets": 23,
     "economy": 8.97,
-    "image": "",
+    "image": "/assets/player-avatars/Navdeep_Saini.png",
     "status": "pool"
   },
   {
@@ -2405,7 +2405,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 21.08,
     "wickets": 59,
     "economy": 8.69,
-    "image": "",
+    "image": "/assets/player-avatars/James_Faulkner.png",
     "status": "pool"
   },
   {
@@ -2422,7 +2422,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 24.93,
     "wickets": 59,
     "economy": 9.74,
-    "image": "",
+    "image": "/assets/player-avatars/Sam_Curran.png",
     "status": "pool"
   },
   {
@@ -2437,7 +2437,7 @@ export const initialPlayers: Player[] = [
     "rating": 78,
     "strike_rate": 137.11,
     "batting_average": 27.25,
-    "image": "",
+    "image": "/assets/player-avatars/Evin_Lewis.png",
     "status": "pool"
   },
   {
@@ -2452,7 +2452,7 @@ export const initialPlayers: Player[] = [
     "rating": 78,
     "strike_rate": 131.29,
     "batting_average": 23.45,
-    "image": "",
+    "image": "/assets/player-avatars/Karun_Nair.png",
     "status": "pool"
   },
   {
@@ -2467,7 +2467,7 @@ export const initialPlayers: Player[] = [
     "rating": 78,
     "strike_rate": 138.76,
     "batting_average": 25.22,
-    "image": "",
+    "image": "/assets/player-avatars/Ayush_Badoni.png",
     "status": "pool"
   },
   {
@@ -2484,7 +2484,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 11.14,
     "wickets": 192,
     "economy": 7.96,
-    "image": "",
+    "image": "/assets/player-avatars/Piyush_Chawala.png",
     "status": "pool"
   },
   {
@@ -2501,7 +2501,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 24.61,
     "wickets": 28,
     "economy": 8.64,
-    "image": "",
+    "image": "/assets/player-avatars/Ben_Stokes.png",
     "status": "pool"
   },
   {
@@ -2518,7 +2518,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 28.74,
     "wickets": 46,
     "economy": 9.93,
-    "image": "",
+    "image": "/assets/player-avatars/Marcus_Stonis.png",
     "status": "pool"
   },
   {
@@ -2533,7 +2533,7 @@ export const initialPlayers: Player[] = [
     "rating": 77,
     "strike_rate": 129.02,
     "batting_average": 29.91,
-    "image": "",
+    "image": "/assets/player-avatars/Jason_Roy.png",
     "status": "pool"
   },
   {
@@ -2548,7 +2548,7 @@ export const initialPlayers: Player[] = [
     "rating": 77,
     "strike_rate": 156.94,
     "batting_average": 23.89,
-    "image": "",
+    "image": "/assets/player-avatars/Shubham_Dubey.png",
     "status": "pool"
   },
   {
@@ -2565,7 +2565,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 19.18,
     "wickets": 31,
     "economy": 8.73,
-    "image": "",
+    "image": "/assets/player-avatars/Thisara_Perera.png",
     "status": "pool"
   },
   {
@@ -2580,7 +2580,7 @@ export const initialPlayers: Player[] = [
     "rating": 76,
     "strike_rate": 136.57,
     "batting_average": 22.83,
-    "image": "",
+    "image": "/assets/player-avatars/Rahul_Tewatia.png",
     "status": "pool"
   },
   {
@@ -2597,7 +2597,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 13.72,
     "wickets": 21,
     "economy": 8.24,
-    "image": "",
+    "image": "/assets/player-avatars/Krrishnappa_Gowtam.png",
     "status": "pool"
   },
   {
@@ -2614,7 +2614,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 17,
     "wickets": 30,
     "economy": 7.51,
-    "image": "",
+    "image": "/assets/player-avatars/Mitchell_Santner.png",
     "status": "pool"
   },
   {
@@ -2631,7 +2631,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 25.38,
     "wickets": 13,
     "economy": 9.02,
-    "image": "",
+    "image": "/assets/player-avatars/Liam_Livingstone.png",
     "status": "pool"
   },
   {
@@ -2648,7 +2648,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 21.64,
     "wickets": 10,
     "economy": 9.16,
-    "image": "",
+    "image": "/assets/player-avatars/Ben_Cutting.png",
     "status": "pool"
   },
   {
@@ -2665,7 +2665,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 13.44,
     "wickets": 15,
     "economy": 7.44,
-    "image": "",
+    "image": "/assets/player-avatars/Mohammad_Nabi.png",
     "status": "pool"
   },
   {
@@ -2680,7 +2680,7 @@ export const initialPlayers: Player[] = [
     "rating": 75,
     "strike_rate": 122.6,
     "batting_average": 22.66,
-    "image": "",
+    "image": "/assets/player-avatars/Eion_Morgan.png",
     "status": "pool"
   },
   {
@@ -2695,7 +2695,7 @@ export const initialPlayers: Player[] = [
     "rating": 75,
     "strike_rate": 125.11,
     "batting_average": 22.03,
-    "image": "",
+    "image": "/assets/player-avatars/Mandeep_Singh.png",
     "status": "pool"
   },
   {
@@ -2710,7 +2710,7 @@ export const initialPlayers: Player[] = [
     "rating": 75,
     "strike_rate": 147.91,
     "batting_average": 20.39,
-    "image": "",
+    "image": "/assets/player-avatars/Shahrukh_Khan.png",
     "status": "pool"
   },
   {
@@ -2725,7 +2725,7 @@ export const initialPlayers: Player[] = [
     "rating": 74,
     "strike_rate": 147.49,
     "batting_average": 18.64,
-    "image": "",
+    "image": "/assets/player-avatars/Abdul_Samad.png",
     "status": "pool"
   },
   {
@@ -2740,7 +2740,7 @@ export const initialPlayers: Player[] = [
     "rating": 74,
     "strike_rate": 142.55,
     "batting_average": 21.92,
-    "image": "",
+    "image": "/assets/player-avatars/Rovman_Powell.png",
     "status": "pool"
   },
   {
@@ -2757,7 +2757,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 31.07,
     "wickets": 6,
     "economy": 10.62,
-    "image": "",
+    "image": "/assets/player-avatars/Shivam_Dube.png",
     "status": "pool"
   },
   {
@@ -2774,7 +2774,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 27.1,
     "wickets": 9,
     "economy": 10.12,
-    "image": "",
+    "image": "/assets/player-avatars/Will_Jacks.png",
     "status": "pool"
   },
   {
@@ -2789,7 +2789,7 @@ export const initialPlayers: Player[] = [
     "rating": 73,
     "strike_rate": 136.38,
     "batting_average": 21.31,
-    "image": "",
+    "image": "/assets/player-avatars/Sarfaraz_Khan.png",
     "status": "pool"
   },
   {
@@ -2804,7 +2804,7 @@ export const initialPlayers: Player[] = [
     "rating": 73,
     "strike_rate": 123.14,
     "batting_average": 22.37,
-    "image": "",
+    "image": "/assets/player-avatars/Kedar_Jadhav.png",
     "status": "pool"
   },
   {
@@ -2819,7 +2819,7 @@ export const initialPlayers: Player[] = [
     "rating": 73,
     "strike_rate": 127.19,
     "batting_average": 24.45,
-    "image": "",
+    "image": "/assets/player-avatars/Corey_Anderson.png",
     "status": "pool"
   },
   {
@@ -2834,7 +2834,7 @@ export const initialPlayers: Player[] = [
     "rating": 72,
     "strike_rate": 127.65,
     "batting_average": 17.6,
-    "image": "",
+    "image": "/assets/player-avatars/Deepak_Hooda.png",
     "status": "pool"
   },
   {
@@ -2851,7 +2851,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 31.64,
     "wickets": 3,
     "economy": 10.59,
-    "image": "",
+    "image": "/assets/player-avatars/Venkatesh_Iyer.png",
     "status": "pool"
   },
   {
@@ -2868,7 +2868,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 24.36,
     "wickets": 17,
     "economy": 11.68,
-    "image": "",
+    "image": "/assets/player-avatars/Romario_Shepherd.png",
     "status": "pool"
   },
   {
@@ -2883,7 +2883,7 @@ export const initialPlayers: Player[] = [
     "rating": 71,
     "strike_rate": 145.86,
     "batting_average": 18.69,
-    "image": "",
+    "image": "/assets/player-avatars/Ramandeep_Singh.png",
     "status": "pool"
   },
   {
@@ -2900,7 +2900,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 27.69,
     "wickets": 12,
     "economy": 10.85,
-    "image": "",
+    "image": "/assets/player-avatars/Nitish_Kumar_Reddy.png",
     "status": "pool"
   },
   {
@@ -2917,7 +2917,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 26,
     "wickets": 3,
     "economy": 10.07,
-    "image": "",
+    "image": "/assets/player-avatars/Sikandar_Raza.png",
     "status": "pool"
   },
   {
@@ -2932,7 +2932,7 @@ export const initialPlayers: Player[] = [
     "rating": 70,
     "strike_rate": 163.07,
     "batting_average": 13.92,
-    "image": "",
+    "image": "/assets/player-avatars/Carlos_Brathwaite.png",
     "status": "pool"
   },
   {
@@ -2949,7 +2949,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 20.79,
     "wickets": 27,
     "economy": 9.79,
-    "image": "",
+    "image": "/assets/player-avatars/Shabaz_Ahamad.png",
     "status": "pool"
   },
   {
@@ -2966,7 +2966,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 5.4,
     "wickets": 46,
     "economy": 8.41,
-    "image": "",
+    "image": "/assets/player-avatars/Wanindhu_Hasranga.png",
     "status": "pool"
   },
   {
@@ -2981,7 +2981,7 @@ export const initialPlayers: Player[] = [
     "rating": 69,
     "strike_rate": 110.36,
     "batting_average": 22.27,
-    "image": "",
+    "image": "/assets/player-avatars/Tilakaratne_Dilshan.png",
     "status": "pool"
   },
   {
@@ -2998,7 +2998,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 12.8,
     "wickets": 43,
     "economy": 9.66,
-    "image": "",
+    "image": "/assets/player-avatars/Marco_Jansen.png",
     "status": "pool"
   },
   {
@@ -3013,7 +3013,7 @@ export const initialPlayers: Player[] = [
     "rating": 65,
     "strike_rate": 115.56,
     "batting_average": 13,
-    "image": "",
+    "image": "/assets/player-avatars/Dasun_Shanaka.png",
     "status": "pool"
   },
   {
@@ -3028,7 +3028,7 @@ export const initialPlayers: Player[] = [
     "rating": 65,
     "strike_rate": 103.39,
     "batting_average": 13.07,
-    "image": "",
+    "image": "/assets/player-avatars/Matthew_Wade.png",
     "is_wicketkeeper": true,
     "status": "pool"
   },
@@ -3046,7 +3046,7 @@ export const initialPlayers: Player[] = [
     "batting_average": 20.69,
     "wickets": 40,
     "economy": 77.73,
-    "image": "",
+    "image": "/assets/player-avatars/Washington_Sundar.png",
     "status": "pool"
   }
 ];

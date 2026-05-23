@@ -5,8 +5,8 @@ import { MultiplayerProvider } from "../context/MultiplayerContext";
 import { Navbar } from "../components/Navbar";
 
 export const metadata: Metadata = {
-  title: "AI-Powered IPL Live Auction Simulator",
-  description: "Live bidding simulation room. Select your franchise, bid against AI opponents, upload custom CSV databases, and build your dream Playing XI using AI squad balancing insights.",
+  title: "Cric Bid - Premium Live Auction Simulator",
+  description: "Experience the ultimate cricket draft arena. Claim your franchise, bid in real-time, and draft your elite Playing XI on the Cric Bid studio broadcast platform.",
 };
 
 export default function RootLayout({
@@ -16,11 +16,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen flex flex-col">
+      <body className="min-h-screen flex flex-col bg-[#07111F] text-[#F8FAFC] relative antialiased">
+        <div className="studio-bg">
+          <div className="stadium-texture"></div>
+        </div>
         <AuctionProvider>
           <MultiplayerProvider>
             <Navbar />
-            <main className="flex-grow p-4 md:p-8 max-w-7xl w-full mx-auto">
+            <main className="flex-grow p-4 md:p-8 max-w-7xl w-full mx-auto relative z-10">
               {children}
             </main>
           </MultiplayerProvider>

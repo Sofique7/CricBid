@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMultiplayer } from '../../context/MultiplayerContext';
-import { CSVUploader } from '../../components/CSVUploader';
 import { Player } from '../../data/players';
 import { getSocket } from '../../utils/socketClient';
 
@@ -29,8 +28,6 @@ export default function LobbyPage() {
   const [activeTab, setActiveTab] = useState<'create' | 'join'>('create');
   const [localName, setLocalName] = useState('');
   const [localCode, setLocalCode] = useState('');
-  const [customPlayers, setCustomPlayers] = useState<Player[] | undefined>(undefined);
-  const [csvMsg, setCsvMsg] = useState<string | null>(null);
 
   // Redirect to room if started
   useEffect(() => {
@@ -42,7 +39,7 @@ export default function LobbyPage() {
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!localName.trim()) return;
-    createRoom(localName.trim(), customPlayers);
+    createRoom(localName.trim());
   };
 
   const handleJoin = (e: React.FormEvent) => {
@@ -51,46 +48,42 @@ export default function LobbyPage() {
     joinRoom(localCode.trim(), localName.trim());
   };
 
-  const handleCSVSuccess = (players: Player[]) => {
-    setCustomPlayers(players);
-    setCsvMsg(`Successfully loaded ${players.length} custom players! They will be used when you create the room.`);
-    setTimeout(() => setCsvMsg(null), 5000);
-  };
+
 
   // Render Lobby Setup Screen (Before entering room)
   if (!roomCode) {
     return (
       <div className="max-w-2xl mx-auto py-6 space-y-8">
         <div className="text-center space-y-3">
-          <span className="text-xs uppercase tracking-widest font-black text-yellow-400 bg-yellow-950/60 border border-yellow-800/80 px-3.5 py-1.5 rounded-full inline-block">
+          <span className="text-xs uppercase tracking-widest font-extrabold text-[#38BDF8] bg-[#38BDF8]/10 border border-[#38BDF8]/20 px-3.5 py-1.5 rounded-full inline-block">
             ⚡ Play with Friends
           </span>
-          <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase leading-none bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase leading-none bg-gradient-to-r from-[#F8FAFC] via-[#94A3B8] to-[#F8FAFC] bg-clip-text text-transparent">
             Multiplayer Room Lobby
           </h1>
-          <p className="text-xs md:text-sm text-slate-400 max-w-lg mx-auto">
+          <p className="text-xs md:text-sm text-[#94A3B8] max-w-lg mx-auto font-medium">
             Host a room to invite your friends using a room code, or enter an active room code to join their auction live.
           </p>
         </div>
 
         {/* Tabs switcher */}
-        <div className="flex border-b border-slate-900 justify-center space-x-8">
+        <div className="flex border-b border-white/5 justify-center space-x-8">
           <button
             onClick={() => setActiveTab('create')}
-            className={`pb-3 text-sm font-black uppercase tracking-wider border-b-2 transition-all duration-300 ${
+            className={`pb-3 text-sm font-black uppercase tracking-wider border-b-2 transition-all duration-300 cursor-pointer ${
               activeTab === 'create'
-                ? 'border-yellow-400 text-yellow-400'
-                : 'border-transparent text-slate-500 hover:text-slate-300'
+                ? 'border-[#38BDF8] text-[#38BDF8]'
+                : 'border-transparent text-[#94A3B8]/60 hover:text-[#F8FAFC]'
             }`}
           >
             Create Room
           </button>
           <button
             onClick={() => setActiveTab('join')}
-            className={`pb-3 text-sm font-black uppercase tracking-wider border-b-2 transition-all duration-300 ${
+            className={`pb-3 text-sm font-black uppercase tracking-wider border-b-2 transition-all duration-300 cursor-pointer ${
               activeTab === 'join'
-                ? 'border-yellow-400 text-yellow-400'
-                : 'border-transparent text-slate-500 hover:text-slate-300'
+                ? 'border-[#38BDF8] text-[#38BDF8]'
+                : 'border-transparent text-[#94A3B8]/60 hover:text-[#F8FAFC]'
             }`}
           >
             Join Room
@@ -98,16 +91,16 @@ export default function LobbyPage() {
         </div>
 
         {error && (
-          <div className="text-xs font-semibold text-red-400 bg-red-950/40 border border-red-900/40 p-3 rounded-xl text-center">
+          <div className="text-xs font-semibold text-red-400 bg-red-950/20 border border-red-500/20 p-3 rounded-xl text-center">
             {error}
           </div>
         )}
 
-        <div className="glass-card rounded-3xl p-6 border border-slate-800/80 shadow-2xl relative">
+        <div className="glass-card rounded-3xl p-6 border border-white/5 shadow-2xl relative bg-[#07111F]/40 backdrop-blur-md">
           {activeTab === 'create' ? (
             <form onSubmit={handleCreate} className="space-y-6">
               <div className="space-y-2">
-                <label className="block text-xs uppercase tracking-wider font-extrabold text-slate-400">
+                <label className="block text-xs uppercase tracking-wider font-extrabold text-[#94A3B8]/60">
                   Your Nickname / Host Name
                 </label>
                 <input
@@ -117,30 +110,13 @@ export default function LobbyPage() {
                   onChange={(e) => setLocalName(e.target.value)}
                   maxLength={15}
                   required
-                  className="w-full bg-slate-950/60 border border-slate-800 focus:border-yellow-500 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none transition-colors"
+                  className="w-full bg-[#030810]/60 border border-white/5 focus:border-[#38BDF8] rounded-xl px-4 py-3 text-sm text-[#F8FAFC] placeholder-[#94A3B8]/30 focus:outline-none transition-colors"
                 />
-              </div>
-
-              {/* Optional Roster database upload */}
-              <div className="border-t border-slate-900 pt-6 space-y-3">
-                <h3 className="text-xs font-black text-slate-200 uppercase tracking-wider flex items-center space-x-1.5">
-                  <span>📂</span>
-                  <span>Upload Custom CSV roster (Optional)</span>
-                </h3>
-                <p className="text-[11px] text-slate-400">
-                  Seeds a custom player list for the draft pool. Leaves standard pool if skipped.
-                </p>
-                <CSVUploader onUploadSuccess={handleCSVSuccess} />
-                {csvMsg && (
-                  <div className="text-xs font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-900/40 p-2 rounded-xl text-center">
-                    {csvMsg}
-                  </div>
-                )}
               </div>
 
               <button
                 type="submit"
-                className="w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest text-slate-950 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 shadow-lg shadow-yellow-500/10 transition active:scale-98"
+                className="w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest text-[#07111F] bg-gradient-to-r from-[#38BDF8] to-[#0284C7] hover:shadow-[0_4px_25px_rgba(56,189,248,0.3)] transition active:scale-98 cursor-pointer"
               >
                 Create Room & Get Code
               </button>
@@ -149,7 +125,7 @@ export default function LobbyPage() {
             <form onSubmit={handleJoin} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="block text-xs uppercase tracking-wider font-extrabold text-slate-400">
+                  <label className="block text-xs uppercase tracking-wider font-extrabold text-[#94A3B8]/60">
                     Your Nickname
                   </label>
                   <input
@@ -159,11 +135,11 @@ export default function LobbyPage() {
                     onChange={(e) => setLocalName(e.target.value)}
                     maxLength={15}
                     required
-                    className="w-full bg-slate-950/60 border border-slate-800 focus:border-yellow-500 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none transition-colors"
+                    className="w-full bg-[#030810]/60 border border-white/5 focus:border-[#38BDF8] rounded-xl px-4 py-3 text-sm text-[#F8FAFC] placeholder-[#94A3B8]/30 focus:outline-none transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-xs uppercase tracking-wider font-extrabold text-slate-400">
+                  <label className="block text-xs uppercase tracking-wider font-extrabold text-[#94A3B8]/60">
                     6-Digit Room Code
                   </label>
                   <input
@@ -173,14 +149,14 @@ export default function LobbyPage() {
                     onChange={(e) => setLocalCode(e.target.value)}
                     maxLength={6}
                     required
-                    className="w-full bg-slate-950/60 border border-slate-800 focus:border-yellow-500 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none transition-colors tracking-widest font-black text-center"
+                    className="w-full bg-[#030810]/60 border border-white/5 focus:border-[#38BDF8] rounded-xl px-4 py-3 text-sm text-[#F8FAFC] placeholder-[#94A3B8]/30 focus:outline-none transition-colors tracking-widest font-black text-center"
                   />
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest text-slate-950 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 shadow-lg shadow-yellow-500/10 transition active:scale-98"
+                className="w-full py-4 rounded-xl text-xs font-black uppercase tracking-widest text-[#07111F] bg-gradient-to-r from-[#38BDF8] to-[#0284C7] hover:shadow-[0_4px_25px_rgba(56,189,248,0.3)] transition active:scale-98 cursor-pointer"
               >
                 Join Friends' Room
               </button>
@@ -193,24 +169,24 @@ export default function LobbyPage() {
 
   // Render Lobby Waiting Room Screen (Inside active room)
   return (
-    <div className="py-6 space-y-8 max-w-5xl mx-auto">
+    <div className="py-6 space-y-8 max-w-5xl mx-auto animate-fade-in">
       {/* Top Status Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-900 pb-5 gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/5 pb-5 gap-4">
         <div>
-          <span className="text-[10px] uppercase font-bold text-yellow-400 tracking-widest px-2.5 py-1 bg-yellow-950/60 border border-yellow-800/80 rounded-md inline-block mb-1.5 animate-pulse">
+          <span className="text-[10px] uppercase font-bold text-[#38BDF8] tracking-widest px-2.5 py-1 bg-[#38BDF8]/10 border border-[#38BDF8]/20 rounded-md inline-block mb-1.5 animate-pulse">
             Waiting Room Lobby
           </span>
-          <h1 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">
-            Room Code: <span className="text-yellow-400 font-mono tracking-widest select-all">{roomCode}</span>
+          <h1 className="text-2xl md:text-3xl font-black text-[#F8FAFC] uppercase tracking-tight">
+            Room Code: <span className="text-[#38BDF8] font-mono tracking-widest select-all">{roomCode}</span>
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-[#94A3B8]/60 mt-1 font-semibold">
             Share this 6-digit room code with your friends so they can join.
           </p>
         </div>
 
         <button
           onClick={leaveRoom}
-          className="px-5 py-2.5 rounded-xl border border-red-900/40 text-red-400 hover:text-white hover:bg-red-950/30 text-xs font-extrabold uppercase tracking-wider transition"
+          className="px-5 py-2.5 rounded-xl border border-red-500/20 text-red-400 hover:text-[#F8FAFC] hover:bg-red-500/10 text-xs font-extrabold uppercase tracking-wider transition cursor-pointer"
         >
           Exit Room
         </button>
@@ -219,42 +195,53 @@ export default function LobbyPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
         {/* LEFT PANEL: Connected Players List (Col Span 4) */}
         <div className="lg:col-span-4 flex flex-col">
-          <h2 className="text-xs uppercase tracking-widest font-black text-slate-500 mb-3 flex items-center justify-between">
+          <h2 className="text-xs uppercase tracking-widest font-black text-[#94A3B8]/60 mb-3 flex items-center justify-between">
             <span>Connected Players ({clients.length})</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
           </h2>
           
-          <div className="glass-card rounded-2xl border border-slate-800/80 p-4 space-y-3 flex-grow overflow-y-auto max-h-[350px]">
+          <div className="glass-card rounded-2xl border border-white/5 p-4 space-y-3 flex-grow overflow-y-auto max-h-[350px] bg-[#07111F]/30">
             {clients.map((c) => {
               const clientTeam = teams.find(t => t.id === c.teamId);
               return (
                 <div
                   key={c.id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-slate-950/50 border border-slate-900"
+                  className="flex items-center justify-between p-3 rounded-xl bg-[#030810]/40 border border-white/5"
                 >
                   <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-xs font-black text-slate-400">
+                    <div className="w-8 h-8 rounded-lg bg-[#030810]/80 border border-white/5 flex items-center justify-center text-xs font-black text-[#94A3B8]/60">
                       {c.name.slice(0, 2).toUpperCase()}
                     </div>
                     <div>
-                      <span className="text-xs font-extrabold text-white block">
+                      <span className="text-xs font-extrabold text-[#F8FAFC] block">
                         {c.name} {c.id === socket.id && ' (You)'}
                       </span>
-                      <span className="text-[10px] text-slate-500 block uppercase font-medium">
+                      <span className="text-[10px] text-[#94A3B8]/50 block uppercase font-semibold">
                         {c.isHost ? '👑 Host / Auctioneer' : 'Player'}
                       </span>
                     </div>
                   </div>
 
                   {clientTeam ? (
-                    <span
-                      className="text-[9px] font-black px-2 py-1 rounded uppercase shadow-sm"
-                      style={{ backgroundColor: `${clientTeam.color}20`, border: `1px solid ${clientTeam.color}50`, color: clientTeam.color }}
-                    >
-                      {clientTeam.shortName}
-                    </span>
+                    <div className="flex items-center space-x-1.5">
+                      {clientTeam.logoUrl && (
+                        <img
+                          src={clientTeam.logoUrl}
+                          alt={clientTeam.shortName}
+                          className="w-6 h-6 object-contain drop-shadow"
+                          referrerPolicy="no-referrer"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      )}
+                      <span
+                        className="text-[9px] font-black px-2 py-1 rounded uppercase shadow-sm"
+                        style={{ backgroundColor: `${clientTeam.color}20`, border: `1px solid ${clientTeam.color}50`, color: clientTeam.color }}
+                      >
+                        {clientTeam.shortName}
+                      </span>
+                    </div>
                   ) : (
-                    <span className="text-[9px] font-bold text-slate-600 uppercase">Spectating</span>
+                    <span className="text-[9px] font-bold text-[#94A3B8]/40 uppercase tracking-wider">Spectating</span>
                   )}
                 </div>
               );
@@ -265,16 +252,16 @@ export default function LobbyPage() {
         {/* RIGHT PANEL: Team Claiming Board (Col Span 8) */}
         <div className="lg:col-span-8 flex flex-col space-y-4">
           <div>
-            <h2 className="text-xs uppercase tracking-widest font-black text-slate-500 mb-1">
-              Select Your IPL Franchise
+            <h2 className="text-xs uppercase tracking-widest font-black text-[#94A3B8]/60 mb-1">
+              Select Your Franchise
             </h2>
-            <p className="text-[11px] text-slate-400">
-              Pick a franchise to manage during the draft. Unclaimed franchises will be automated by AI during bidding wars.
+            <p className="text-[11px] text-[#94A3B8] font-semibold">
+              Pick a franchise to manage during the draft. Unclaimed franchises will remain inactive.
             </p>
           </div>
 
           {error && (
-            <div className="text-xs font-semibold text-red-400 bg-red-950/40 border border-red-900/40 p-2.5 rounded-xl text-center">
+            <div className="text-xs font-semibold text-red-400 bg-red-950/20 border border-red-500/20 p-2.5 rounded-xl text-center">
               {error}
             </div>
           )}
@@ -291,52 +278,69 @@ export default function LobbyPage() {
                   onClick={() => !isClaimedByOther && selectUserTeam(isMine ? '' : t.id)}
                   className={`glass-card p-4 rounded-xl border relative overflow-hidden group select-none flex flex-col justify-between transition-all duration-300 ${
                     isMine
-                      ? 'ring-2 ring-opacity-50 scale-102 bg-slate-900/90'
+                      ? 'ring-1 scale-102 bg-[#07111F]/80 backdrop-blur-md'
                       : isClaimedByOther
-                      ? 'bg-slate-950/10 border-slate-950/50 opacity-40 cursor-not-allowed'
-                      : 'bg-slate-950/40 hover:bg-slate-900/40 hover:-translate-y-0.5 cursor-pointer'
+                      ? 'bg-white/2 border-white/5 opacity-30 cursor-not-allowed'
+                      : 'bg-white/4 hover:bg-white/8 hover:-translate-y-0.5 cursor-pointer'
                   }`}
                   style={{
-                    boxShadow: isMine ? `0 0 15px ${t.color}35` : undefined,
+                    boxShadow: isMine ? `0 4px 15px ${t.color}25` : undefined,
                     borderWidth: '1px',
-                    borderColor: isMine ? t.color : 'rgba(255, 255, 255, 0.05)'
+                    borderColor: isMine ? t.color : 'rgba(255, 255, 255, 0.08)'
                   }}
                 >
                   <div
-                    className="absolute top-0 inset-x-0 h-0.5"
+                    className="absolute top-0 inset-x-0 h-[2px]"
                     style={{ backgroundColor: t.color }}
                   ></div>
 
                   <div className="flex items-center space-x-2.5 mb-2">
                     <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black shadow-inner relative"
+                      className="w-12 h-12 rounded-xl flex items-center justify-center shadow-inner relative flex-shrink-0"
                       style={{
                         backgroundColor: `${t.color}15`,
                         border: `1px solid ${t.color}30`,
-                        color: t.color
                       }}
                     >
-                      {t.shortName}
+                      {t.logoUrl ? (
+                        <img
+                          src={t.logoUrl}
+                          alt={t.shortName}
+                          className="w-10 h-10 object-contain drop-shadow"
+                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            const el = e.target as HTMLImageElement;
+                            el.style.display = 'none';
+                            if (el.nextSibling) (el.nextSibling as HTMLElement).style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <span
+                        className="text-xs font-black hidden items-center justify-center w-full h-full"
+                        style={{ color: t.color }}
+                      >
+                        {t.shortName}
+                      </span>
                     </div>
                     <div>
-                      <h3 className="text-xs font-black text-white group-hover:text-yellow-400 transition-colors uppercase leading-none truncate max-w-[120px]">
+                      <h3 className="text-xs font-black text-[#F8FAFC] group-hover:text-[#38BDF8] transition-colors uppercase leading-none truncate max-w-[120px]">
                         {t.name}
                       </h3>
-                      <span className="text-[9px] text-slate-500 uppercase tracking-wider block mt-1">
+                      <span className="text-[9px] text-[#94A3B8]/60 uppercase tracking-wider block mt-1 font-semibold">
                         120.0 Cr Purse
                       </span>
                     </div>
                   </div>
 
-                  <div className="border-t border-slate-900 pt-2 text-[9px] uppercase tracking-wider text-slate-500">
+                  <div className="border-t border-white/5 pt-2 text-[9px] uppercase tracking-wider text-[#94A3B8]/60">
                     {isMine ? (
-                      <span className="text-yellow-400 font-extrabold">✓ Claimed By You</span>
+                      <span className="text-[#38BDF8] font-black">✓ Claimed By You</span>
                     ) : isClaimedByOther ? (
                       <span className="text-red-400 font-semibold truncate block">
                         👤 Taken: {claimedBy?.name}
                       </span>
                     ) : (
-                      <span className="text-slate-600 font-medium">Available</span>
+                      <span className="text-[#94A3B8]/40 font-bold">Available</span>
                     )}
                   </div>
                 </div>
@@ -345,16 +349,16 @@ export default function LobbyPage() {
           </div>
 
           {/* Start Button Area */}
-          <div className="border-t border-slate-900 pt-5 text-center">
+          <div className="border-t border-white/5 pt-5 text-center">
             {isHost ? (
               <div className="space-y-2.5 max-w-sm mx-auto">
                 <button
                   onClick={startAuction}
                   disabled={!userTeamId}
-                  className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 shadow-lg ${
+                  className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 shadow-lg cursor-pointer ${
                     userTeamId
-                      ? 'bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 text-slate-950 hover:shadow-yellow-500/10 active:scale-98 animate-pulse'
-                      : 'bg-slate-900 border border-slate-800 text-slate-500 cursor-not-allowed'
+                      ? 'bg-gradient-to-r from-[#38BDF8] to-[#0284C7] hover:shadow-[0_4px_25px_rgba(56,189,248,0.3)] text-[#07111F] animate-pulse'
+                      : 'bg-white/5 border border-white/5 text-[#94A3B8]/40 cursor-not-allowed'
                   }`}
                 >
                   Start Multiplayer Auction →
@@ -366,8 +370,8 @@ export default function LobbyPage() {
                 )}
               </div>
             ) : (
-              <div className="p-4 rounded-xl bg-slate-950/40 border border-slate-900 max-w-md mx-auto text-xs text-slate-500 uppercase tracking-wider font-extrabold flex items-center justify-center space-x-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-500 animate-ping"></span>
+              <div className="p-4 rounded-xl bg-[#030810]/40 border border-white/5 max-w-md mx-auto text-xs text-[#94A3B8]/60 uppercase tracking-wider font-extrabold flex items-center justify-center space-x-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#94A3B8]/40 animate-ping"></span>
                 <span>Waiting for Host ({clients.find(c => c.isHost)?.name || 'Auctioneer'}) to start...</span>
               </div>
             )}

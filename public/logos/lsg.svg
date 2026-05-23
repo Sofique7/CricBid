@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="lsgBg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#15335B"/>
+      <stop offset="100%" stop-color="#081528"/>
+    </radialGradient>
+  </defs>
+  <!-- Shield shape -->
+  <path d="M100 10 L175 45 L175 120 Q175 170 100 192 Q25 170 25 120 L25 45 Z" fill="url(#lsgBg)" stroke="#13A499" stroke-width="6"/>
+  <!-- Inner border -->
+  <path d="M100 22 L163 53 L163 118 Q163 160 100 180 Q37 160 37 118 L37 53 Z" fill="none" stroke="#E5B80B" stroke-width="2"/>
+  <!-- LSG Text -->
+  <text x="100" y="125" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="44" fill="#FFFFFF" letter-spacing="1">LSG</text>
+  <!-- Flying wings emblem at the top -->
+  <!-- Left wing -->
+  <path d="M90 60 Q70 45 50 60 Q75 68 90 60" fill="#13A499"/>
+  <!-- Right wing -->
+  <path d="M110 60 Q130 45 150 60 Q125 68 110 60" fill="#13A499"/>
+  <!-- Cricket ball in between wings -->
+  <circle cx="100" cy="58" r="8" fill="#E74C3C"/>
+  <circle cx="100" cy="58" r="6" fill="none" stroke="#FFFFFF" stroke-width="1"/>
+  <!-- Bottom banner text -->
+  <text x="100" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#13A499" font-weight="700" letter-spacing="2">LUCKNOW SUPER GIANTS</text>
+</svg>

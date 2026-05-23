@@ -33,9 +33,9 @@ export const PlayingXIDisplay: React.FC<PlayingXIDisplayProps> = ({ squad }) => 
   const renderPlayerBadge = (player: Player | undefined, slotLabel: string) => {
     if (!player) {
       return (
-        <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-950/40 border border-dashed border-slate-800 w-20 h-20">
-          <span className="text-[14px] text-slate-700">➕</span>
-          <span className="text-[8px] uppercase tracking-wider text-slate-500 font-bold mt-1">
+        <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-[#030810]/30 border border-dashed border-white/5 w-20 h-20 transition-all duration-300 hover:scale-105 hover:border-[#38BDF8]/30 hover:bg-[#030810]/50 group cursor-pointer shadow-inner">
+          <span className="text-xs text-[#38BDF8]/40 group-hover:text-[#38BDF8]/80 group-hover:rotate-90 transition-all duration-300">✦</span>
+          <span className="text-[8px] uppercase tracking-wider text-[#94A3B8]/30 group-hover:text-[#F8FAFC]/60 transition-colors font-bold mt-1 text-center leading-tight px-1">
             {slotLabel}
           </span>
         </div>
@@ -43,45 +43,45 @@ export const PlayingXIDisplay: React.FC<PlayingXIDisplayProps> = ({ squad }) => 
     }
 
     const roleBorders: Record<string, string> = {
-      opener: 'border-red-500 shadow-red-500/10',
-      middle_order: 'border-yellow-500 shadow-yellow-500/10',
-      finisher: 'border-purple-500 shadow-purple-500/10',
-      spinner: 'border-emerald-500 shadow-emerald-500/10',
-      death_bowler: 'border-blue-500 shadow-blue-500/10',
-      powerplay_bowler: 'border-cyan-500 shadow-cyan-500/10',
-      all_rounder: 'border-pink-500 shadow-pink-500/10'
+      opener: 'border-[#38BDF8] shadow-[#38BDF8]/5',
+      middle_order: 'border-white/20 shadow-white/5',
+      finisher: 'border-purple-500/40 shadow-purple-500/5',
+      spinner: 'border-emerald-500/40 shadow-emerald-500/5',
+      death_bowler: 'border-blue-500/40 shadow-blue-500/5',
+      powerplay_bowler: 'border-cyan-500/40 shadow-cyan-500/5',
+      all_rounder: 'border-pink-500/40 shadow-pink-500/5'
     };
 
-    const borderStyle = roleBorders[player.role] || 'border-slate-600';
+    const borderStyle = roleBorders[player.role] || 'border-white/10';
 
     return (
       <div 
-        className={`flex flex-col items-center justify-center p-1.5 rounded-2xl bg-slate-950/90 border-2 ${borderStyle} w-20 h-20 shadow-lg relative group transition hover:scale-105`}
+        className={`flex flex-col items-center justify-center p-1.5 rounded-2xl bg-[#030810]/95 border-2 ${borderStyle} w-20 h-20 shadow-lg relative group transition-all duration-300 hover:scale-105 hover:shadow-[#38BDF8]/10`}
         title={`${player.name} (${player.role.replace('_', ' ')}) - Rating: ${player.rating}`}
       >
         {/* Overseas icon */}
         {player.overseas && (
-          <span className="absolute top-0.5 right-1.5 text-[8px] text-yellow-400">✈</span>
+          <span className="absolute top-1.5 right-2 text-[8px] text-[#38BDF8] drop-shadow-[0_0_2px_rgba(56,189,248,0.4)]">✈</span>
         )}
 
         {/* Rating overlay */}
-        <span className="absolute top-0.5 left-1.5 text-[7px] font-black text-slate-400">
+        <span className="absolute top-1.5 left-2 text-[8px] font-black text-[#38BDF8] tracking-tighter">
           {player.rating}
         </span>
 
         {/* Small Jersey Icon */}
-        <div className="w-8 h-8 flex items-center justify-center text-xs">
+        <div className="w-7 h-7 flex items-center justify-center text-xs bg-white/5 rounded-full border border-white/5 group-hover:bg-[#38BDF8]/10 group-hover:border-[#38BDF8]/20 transition-all duration-300">
           👕
         </div>
 
         {/* Player Name */}
-        <span className="text-[9px] font-extrabold text-slate-100 mt-1 truncate w-full text-center">
+        <span className="text-[9px] font-black text-[#F8FAFC] mt-1 truncate w-full text-center tracking-tight px-0.5">
           {player.name.split(' ').pop()}
         </span>
 
         {/* Role label */}
-        <span className="text-[7px] text-slate-400 uppercase tracking-widest truncate w-full text-center">
-          {player.is_wicketkeeper ? 'WK-Keeper' : player.role.replace('_', ' ')}
+        <span className="text-[7px] text-[#94A3B8]/70 uppercase tracking-widest truncate w-full text-center mt-0.5 leading-none">
+          {player.is_wicketkeeper ? 'Keeper' : player.role.replace('_', ' ')}
         </span>
       </div>
     );
@@ -90,14 +90,20 @@ export const PlayingXIDisplay: React.FC<PlayingXIDisplayProps> = ({ squad }) => 
   return (
     <div className="space-y-4">
       {/* Pitch Layout Plate */}
-      <div className="glass-card rounded-3xl border border-slate-800 p-4 overflow-hidden relative shadow-inner">
+      <div className="glass-card rounded-3xl border border-white/5 p-4 overflow-hidden relative shadow-2xl bg-gradient-to-b from-[#0a1610]/40 to-[#030810]/50">
         {/* Background grass pattern */}
         <div className="absolute inset-0 pitch-bg opacity-30 pointer-events-none"></div>
-        <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 h-0.5 bg-white/10 border-t border-dashed pointer-events-none"></div>
         
-        {/* Cricket Crease Boundaries */}
-        <div className="absolute inset-x-12 top-6 h-8 border border-white/15 border-t-0 pointer-events-none rounded-b-xl"></div>
-        <div className="absolute inset-x-12 bottom-6 h-8 border border-white/15 border-b-0 pointer-events-none rounded-t-xl"></div>
+        {/* Pitch Lines (Authentic Crease Layout) */}
+        <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 h-0.5 bg-white/5 border-t border-dashed pointer-events-none"></div>
+        
+        {/* Cricket Crease Boundaries (Top & Bottom pitch areas) */}
+        <div className="absolute inset-x-12 top-6 h-10 border-x border-b border-white/15 pointer-events-none rounded-b-lg"></div>
+        <div className="absolute inset-x-12 bottom-6 h-10 border-x border-t border-white/15 pointer-events-none rounded-t-lg"></div>
+        
+        {/* Pitch crease marks */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-10 w-12 h-0.5 bg-white/25 rounded pointer-events-none"></div>
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-10 w-12 h-0.5 bg-white/25 rounded pointer-events-none"></div>
 
         {/* Visual stadium content */}
         <div className="relative z-10 flex flex-col justify-between h-[420px] max-w-sm mx-auto">
@@ -137,12 +143,12 @@ export const PlayingXIDisplay: React.FC<PlayingXIDisplayProps> = ({ squad }) => 
 
       {/* Warnings & Guidelines block */}
       {warnings.length > 0 && (
-        <div className="p-3 bg-yellow-950/40 border border-yellow-800/20 text-yellow-400 rounded-xl text-[11px] space-y-1">
-          <span className="font-bold uppercase block tracking-wider text-[9px] mb-1">
+        <div className="p-3.5 bg-[#38BDF8]/10 border border-[#38BDF8]/20 text-[#38BDF8] rounded-2xl text-[11px] space-y-1">
+          <span className="font-extrabold uppercase block tracking-wider text-[9px] mb-1">
             Playing XI Assembly Flags:
           </span>
           {warnings.map((warn, i) => (
-            <div key={i} className="flex items-start space-x-1.5">
+            <div key={i} className="flex items-start space-x-1.5 font-medium">
               <span>•</span>
               <span>{warn}</span>
             </div>

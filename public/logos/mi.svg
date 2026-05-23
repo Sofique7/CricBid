@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="miBg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#0060C0"/>
+      <stop offset="100%" stop-color="#004BA0"/>
+    </radialGradient>
+  </defs>
+  <path d="M100 10 L175 45 L175 120 Q175 170 100 192 Q25 170 25 120 L25 45 Z" fill="url(#miBg)" stroke="#D1AB3A" stroke-width="6"/>
+  <path d="M100 22 L163 53 L163 118 Q163 160 100 180 Q37 160 37 118 L37 53 Z" fill="none" stroke="#D1AB3A" stroke-width="3"/>
+  <!-- M emblem -->
+  <text x="100" y="125" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="72" fill="#D1AB3A" letter-spacing="-2">M</text>
+  <!-- Waves at bottom -->
+  <path d="M45 148 Q65 138 85 148 Q105 158 125 148 Q145 138 160 148" fill="none" stroke="#D1AB3A" stroke-width="3" stroke-linecap="round"/>
+  <text x="100" y="170" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#D1AB3A" font-weight="700" letter-spacing="3">MUMBAI INDIANS</text>
+</svg>

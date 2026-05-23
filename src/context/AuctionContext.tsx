@@ -5,8 +5,10 @@ import { Player, initialPlayers } from '../data/players';
 import { Team, initialTeams } from '../data/teams';
 import { solvePlayingXI, analyzeSquad } from '../utils/aiEngine';
 import { soundEffects } from '../utils/sound';
+import { voiceAuctioneer } from '../utils/voiceAuctioneer';
 
 interface AuctionContextType {
+  // Game states
   players: Player[];
   teams: Team[];
   currentPlayerIndex: number;
@@ -23,7 +25,8 @@ interface AuctionContextType {
   unsoldHistory: Player[];
   auctionStatus: 'idle' | 'bidding' | 'sold_splash' | 'unsold_splash' | 'completed';
   lastWinner: { player: Player; team: Team; price: number } | null;
-  
+
+  // Actions
   selectUserTeam: (teamId: string) => void;
   startAuction: () => void;
   pauseAuction: () => void;
@@ -35,6 +38,7 @@ interface AuctionContextType {
   importCSVPlayers: (customPlayers: Player[]) => void;
   toggleSound: () => void;
   autoSimulateActivePlayer: () => void;
+  executeVoiceCommand: (command: any) => void;
 }
 
 const AuctionContext = createContext<AuctionContextType | undefined>(undefined);
@@ -102,7 +106,17 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setPlayers(parsed.players || initialPlayers);
+        
+        // Merge latest image URLs from initialPlayers to prevent cache staleness
+        const mergedPlayers = (parsed.players || initialPlayers).map((p: Player) => {
+          const freshPlayer = initialPlayers.find(ip => ip.id === p.id);
+          if (freshPlayer && freshPlayer.image) {
+            return { ...p, image: freshPlayer.image };
+          }
+          return p;
+        });
+
+        setPlayers(mergedPlayers);
         setTeams(parsed.teams || initialTeams);
         setCurrentPlayerIndex(parsed.currentPlayerIndex || 0);
         setCurrentBid(parsed.currentBid || 0);
@@ -159,6 +173,15 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   useEffect(() => {
     if (isAuctionStarted && !isPaused && auctionStatus === 'bidding' && timer <= 3 && timer > 0) {
       soundEffects.playBuzzerSound();
+
+      // AI voice countdown announcements
+      if (timer === 3) {
+        voiceAuctioneer.speakCountdown("Going once...");
+      } else if (timer === 2) {
+        voiceAuctioneer.speakCountdown("Going twice...");
+      } else if (timer === 1) {
+        voiceAuctioneer.speakCountdown("Any further bids?");
+      }
     }
   }, [timer, isPaused, isAuctionStarted, auctionStatus]);
 
@@ -172,12 +195,6 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       if (state.timer > 0) {
         setTimer(prev => prev - 1);
-        
-        // AI Opponent Bidding Roll
-        // On every second, 45% chance an AI team makes a bid if interested
-        if (Math.random() < 0.45) {
-          simulateAIBids();
-        }
       } else {
         // Timer reached 0! Handle sold or unsold
         handleTimerEnd();
@@ -226,6 +243,7 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }));
 
         setLogs(prev => [`SOLD! ${p.name} bought by ${winningTeam.name} for ${state.currentBid.toFixed(2)} Cr!`, ...prev]);
+        voiceAuctioneer.speakSold(p.name, winningTeam.name, `${state.currentBid} crore`);
       }
     } else {
       // UNSOLD
@@ -242,85 +260,15 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }));
 
       setLogs(prev => [`PASSED: ${p.name} goes unsold.`, ...prev]);
+      voiceAuctioneer.speakUnsold(p.name);
     }
   };
 
-  // Simulate Bids from the 9 AI teams
+  // Simulate Bids from the 9 AI teams (Disabled)
   const simulateAIBids = () => {
-    const state = stateRef.current;
-    const activePool = state.players.filter(p => p.status === 'pool' || p.status === 'active');
-    const p = activePool[state.currentPlayerIndex];
-    if (!p) return;
-
-    const nextBid = getNextBidAmount(state.currentBid, p.base_price);
-
-    // List of candidates to place a bid (opponent teams only, with enough purse)
-    const opponentTeams = state.teams.filter(t => t.id !== state.userTeamId);
-    const interestedTeams: { team: Team; valuation: number }[] = [];
-
-    opponentTeams.forEach(t => {
-      // Rules limits check
-      const squadRep = analyzeSquad(t.players, t.purse);
-      const isOverseasLimit = p.overseas && squadRep.overseasCount >= 8;
-      const isSquadLimit = t.players.length >= 25;
-      
-      // Minimum budget protection check:
-      // Keep at least 0.20 Cr for each remaining slot to reach the minimum squad of 12
-      const slotsToMin = Math.max(0, 12 - t.players.length);
-      const minRequiredReserve = slotsToMin * 0.20;
-      const hasBudget = t.purse - nextBid >= minRequiredReserve && t.purse >= nextBid;
-
-      if (isOverseasLimit || isSquadLimit || !hasBudget) return;
-
-      // AI Valuation logic
-      // Base valuation formula: base_price * multiplier
-      // Rating scaling: rating 99 = 6.5x base price. rating 80 = 3.5x base price.
-      let ratingMultiplier = 1.0 + (p.rating - 50) / 7.5; 
-      
-      // Adjust multiplier based on team purse:
-      // If team has low purse, scale valuation down
-      let purseFactor = Math.min(1.0, t.purse / 100.0);
-      if (t.purse < 15.0) {
-        purseFactor = 0.5 + (t.purse / 30.0); // throttling bidding range
-      }
-      
-      // Role needs check:
-      let needBoost = 1.0;
-      const roleCount = squadRep.roleCounts[p.role] || 0;
-      if (roleCount === 0) {
-        needBoost = 1.4; // High interest
-      } else if (roleCount >= 4) {
-        needBoost = 0.5; // low interest
-      }
-
-      // Final maximum valuation
-      let vMax = p.base_price * ratingMultiplier * purseFactor * needBoost;
-      vMax = parseFloat(Math.max(p.base_price, vMax).toFixed(2));
-
-      // If next bid is within their valuation, they are interested
-      if (nextBid <= vMax && state.currentBidderId !== t.id) {
-        interestedTeams.push({ team: t, valuation: vMax });
-      }
-    });
-
-    if (interestedTeams.length === 0) return;
-
-    // Pick one team based on highest valuation or randomly
-    // Let's sort by valuation descending and add minor randomness
-    interestedTeams.sort((a, b) => b.valuation - a.valuation);
-    const chosen = interestedTeams[0].team;
-
-    // Place bid
-    soundEffects.playBidSound();
-    setCurrentBid(nextBid);
-    setCurrentBidderId(chosen.id);
-    setLogs(prev => [`${chosen.shortName} bids ${nextBid.toFixed(2)} Cr`, ...prev]);
-    
-    // Reset timer to 8 if it fell below 8 (provides breathing room for bidding wars)
-    if (state.timer < 8) {
-      setTimer(8);
-    }
+    return;
   };
+
 
   // User Actions
   const selectUserTeam = (teamId: string) => {
@@ -344,6 +292,9 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       
       // Set status active
       setPlayers(prev => prev.map(pl => pl.id === p.id ? { ...pl, status: 'active' } : pl));
+
+      // AI voice announcement
+      voiceAuctioneer.speakNextPlayer(p.name, `${p.base_price} crore`);
     }
   };
 
@@ -402,6 +353,9 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (timer < 8) {
       setTimer(8);
     }
+
+    // AI voice announcement
+    voiceAuctioneer.speakBidPlaced(userTeam.shortName, `${nextBid} crore`, 3);
   };
 
   const skipPlayer = () => {
@@ -445,6 +399,9 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (nextP) {
       setLogs([`Player under the hammer: ${nextP.name} (Base Price: ${nextP.base_price} Cr)`]);
       setPlayers(prev => prev.map(pl => pl.id === nextP.id ? { ...pl, status: 'active' } : pl));
+
+      // AI voice announcement
+      voiceAuctioneer.speakNextPlayer(nextP.name, `${nextP.base_price} crore`);
     }
   };
 
@@ -485,100 +442,156 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     soundEffects.setEnabled(nextVal);
   };
 
-  // Speed up and auto-simulate bidding for the active player without user intervention
   const autoSimulateActivePlayer = () => {
-    if (isPaused || auctionStatus !== 'bidding') return;
-    
-    // Force immediately solve active bidding through a fast-forward algorithm
-    const activeP = currentPlayer;
-    if (!activeP) return;
+    const activePool = players.filter(p => p.status === 'pool' || p.status === 'active');
+    const p = activePool[currentPlayerIndex];
+    if (!p || auctionStatus !== 'bidding') return;
 
-    let localBid = currentBid;
-    let localBidderId = currentBidderId;
+    const eligibleTeams = teams.filter(t => {
+      const slotsLeft = 25 - t.players.length;
+      const isOverseasLimit = p.overseas && t.players.filter(pl => pl.overseas).length >= 8;
+      return slotsLeft > 0 && !isOverseasLimit && t.purse >= p.base_price;
+    });
 
-    // Run bidding war logic up to 50 cycles or until no more bids
-    let activeBidding = true;
-    let loopProtect = 0;
-
-    const opponentTeams = teams; // All teams can participate in fast-forward simulation
-
-    while (activeBidding && loopProtect < 100) {
-      loopProtect++;
-      const nextBid = getNextBidAmount(localBid, activeP.base_price);
-      const bidders: string[] = [];
-
-      opponentTeams.forEach(t => {
-        // Skip current high bidder
-        if (t.id === localBidderId) return;
-
-        const squadRep = analyzeSquad(t.players, t.purse);
-        const isOverseasLimit = activeP.overseas && squadRep.overseasCount >= 8;
-        const isSquadLimit = t.players.length >= 25;
-        const slotsToMin = Math.max(0, 12 - t.players.length);
-        const minRequiredReserve = slotsToMin * 0.20;
-        const hasBudget = t.purse - nextBid >= minRequiredReserve && t.purse >= nextBid;
-
-        if (isOverseasLimit || isSquadLimit || !hasBudget) return;
-
-        // Simple valuation logic
-        let ratingMultiplier = 1.0 + (activeP.rating - 50) / 7.5;
-        let purseFactor = Math.min(1.0, t.purse / 100.0);
-        if (t.purse < 15.0) purseFactor = 0.5 + (t.purse / 30.0);
-        
-        let needBoost = 1.0;
-        if (squadRep.roleCounts[activeP.role] === 0) needBoost = 1.4;
-
-        let vMax = activeP.base_price * ratingMultiplier * purseFactor * needBoost;
-        vMax = parseFloat(Math.max(activeP.base_price, vMax).toFixed(2));
-
-        if (nextBid <= vMax) {
-          bidders.push(t.id);
-        }
-      });
-
-      if (bidders.length > 0) {
-        // Pick random bidder
-        const idx = Math.floor(Math.random() * bidders.length);
-        localBidderId = bidders[idx];
-        localBid = nextBid;
-      } else {
-        activeBidding = false;
-      }
-    }
-
-    // Trigger sold or unsold immediately based on local simulated results
-    if (localBidderId) {
-      const winningTeam = teams.find(t => t.id === localBidderId);
-      if (winningTeam) {
-        soundEffects.playSoldSound();
-        soundEffects.playGavelSound();
-        
-        setLastWinner({ player: activeP, team: winningTeam, price: localBid });
-        setAuctionStatus('sold_splash');
-        setIsPaused(true);
-
-        setPlayers(prev => prev.map(pl => pl.id === activeP.id ? { ...pl, status: 'sold', sold_to: winningTeam.id, sold_price: localBid } : pl));
-
-        setTeams(prev => prev.map(t => {
-          if (t.id === winningTeam.id) {
-            return {
-              ...t,
-              purse: parseFloat((t.purse - localBid).toFixed(2)),
-              players: [...t.players, { ...activeP, status: 'sold', sold_to: winningTeam.id, sold_price: localBid }]
-            };
-          }
-          return t;
-        }));
-
-        setLogs(prev => [`SOLD! (Auto) ${activeP.name} bought by ${winningTeam.name} for ${localBid.toFixed(2)} Cr!`, ...prev]);
-      }
-    } else {
+    if (eligibleTeams.length === 0 || Math.random() < 0.15) {
       soundEffects.playGavelSound();
       setAuctionStatus('unsold_splash');
       setIsPaused(true);
+      setPlayers(prev => prev.map(pl => pl.id === p.id ? { ...pl, status: 'unsold' } : pl));
+      setLogs(prev => [`PASSED: ${p.name} goes unsold via Fast Solve.`, ...prev]);
+    } else {
+      const winningTeam = eligibleTeams[Math.floor(Math.random() * eligibleTeams.length)];
+      
+      let simulatedPrice = p.base_price;
+      const numBids = Math.floor(Math.random() * 12);
+      for (let i = 0; i < numBids; i++) {
+        const next = getNextBidAmount(simulatedPrice, p.base_price);
+        if (next <= winningTeam.purse) {
+          simulatedPrice = next;
+        } else {
+          break;
+        }
+      }
+      simulatedPrice = parseFloat(simulatedPrice.toFixed(2));
 
-      setPlayers(prev => prev.map(pl => pl.id === activeP.id ? { ...pl, status: 'unsold' } : pl));
-      setLogs(prev => [`PASSED: ${activeP.name} is unsold.`, ...prev]);
+      soundEffects.playSoldSound();
+      soundEffects.playGavelSound();
+      
+      setLastWinner({ player: p, team: winningTeam, price: simulatedPrice });
+      setAuctionStatus('sold_splash');
+      setIsPaused(true);
+
+      setPlayers(prev => prev.map(pl => {
+        if (pl.id === p.id) {
+          return { ...pl, status: 'sold', sold_to: winningTeam.id, sold_price: simulatedPrice };
+        }
+        return pl;
+      }));
+
+      setTeams(prev => prev.map(t => {
+        if (t.id === winningTeam.id) {
+          const updatedPlayer: Player = { ...p, status: 'sold', sold_to: winningTeam.id, sold_price: simulatedPrice };
+          return {
+            ...t,
+            purse: parseFloat((t.purse - simulatedPrice).toFixed(2)),
+            players: [...t.players, updatedPlayer]
+          };
+        }
+        return t;
+      }));
+
+      const bidderName = winningTeam.id === userTeamId ? 'Your Team' : winningTeam.name;
+      setLogs(prev => [`SOLD! ${p.name} bought by ${bidderName} for ${simulatedPrice.toFixed(2)} Cr via Fast Solve!`, ...prev]);
+
+      // AI voice announcement
+      voiceAuctioneer.speakSold(p.name, winningTeam.name, `${simulatedPrice} crore`);
+    }
+  };
+
+  const executeVoiceCommand = (cmd: any) => {
+    if (!isAuctionStarted) return;
+    
+    switch (cmd.type) {
+      case 'PAUSE':
+        pauseAuction();
+        break;
+      case 'RESUME':
+        resumeAuction();
+        break;
+      case 'UNSOLD':
+        skipPlayer();
+        break;
+      case 'NEXT_PLAYER':
+        nextPlayer();
+        break;
+      case 'NEXT_PLAYER_OVERRIDE':
+        if (cmd.name) {
+          const cleanName = cmd.name.toLowerCase().trim();
+          const targetIndex = players.findIndex(p => 
+            (p.status === 'pool' || p.status === 'unsold' || p.status === 'active') &&
+            p.name.toLowerCase().includes(cleanName)
+          );
+
+          if (targetIndex !== -1) {
+            setPlayers(prev => {
+              const list = [...prev];
+              const targetPlayer = { ...list[targetIndex] };
+              targetPlayer.status = 'pool';
+              if (cmd.basePrice !== undefined && !isNaN(cmd.basePrice)) {
+                targetPlayer.base_price = cmd.basePrice;
+              }
+              list.splice(targetIndex, 1);
+              let insertIndex = list.findIndex(pl => pl.status === 'pool');
+              if (insertIndex === -1) insertIndex = 0;
+              list.splice(insertIndex, 0, targetPlayer);
+              return list;
+            });
+            
+            setLogs(prev => [`Voice command override: Load ${cmd.name} next!`, ...prev]);
+            setTimeout(() => {
+              nextPlayer();
+            }, 150);
+          }
+        }
+        break;
+      case 'SELL_PLAYER':
+        if (cmd.team && cmd.price) {
+          const p = currentPlayer;
+          if (!p) return;
+          const winningTeam = teams.find(t => t.id === cmd.team);
+          if (winningTeam) {
+            soundEffects.playSoldSound();
+            soundEffects.playGavelSound();
+            
+            setLastWinner({ player: p, team: winningTeam, price: cmd.price });
+            setAuctionStatus('sold_splash');
+            setIsPaused(true);
+
+            setPlayers(prev => prev.map(pl => {
+              if (pl.id === p.id) {
+                return { ...pl, status: 'sold', sold_to: winningTeam.id, sold_price: cmd.price };
+              }
+              return pl;
+            }));
+
+            setTeams(prev => prev.map(t => {
+              if (t.id === winningTeam.id) {
+                return {
+                  ...t,
+                  purse: parseFloat((t.purse - cmd.price).toFixed(2)),
+                  players: [...t.players, { ...p, status: 'sold', sold_to: winningTeam.id, sold_price: cmd.price }]
+                };
+              }
+              return t;
+            }));
+
+            setLogs(prev => [`SOLD! ${p.name} sold to ${winningTeam.name} for ${cmd.price.toFixed(2)} Cr via Voice!`, ...prev]);
+            voiceAuctioneer.speakSold(p.name, winningTeam.name, `${cmd.price} crore`);
+          }
+        }
+        break;
+      default:
+        break;
     }
   };
 
@@ -610,7 +623,8 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       resetAuction,
       importCSVPlayers,
       toggleSound,
-      autoSimulateActivePlayer
+      autoSimulateActivePlayer,
+      executeVoiceCommand
     }}>
       {children}
     </AuctionContext.Provider>

@@ -21,7 +21,6 @@ export const Navbar: React.FC = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'AI Arena', path: '/auction-room', disabled: !localAuction.userTeamId },
     { name: 'Multiplayer Lobby', path: '/lobby' },
     { name: 'Multiplayer Arena', path: '/multiplayer-room', disabled: !multiplayer.roomCode || !multiplayer.isAuctionStarted },
     { name: 'Team Dashboard', path: '/dashboard', disabled: !userTeamId },
@@ -29,16 +28,13 @@ export const Navbar: React.FC = () => {
   ];
 
   return (
-    <nav className="glass-card border-b border-slate-800/80 sticky top-0 z-50 px-4 md:px-8 py-3">
+    <nav className="glass-card border-b border-white/5 bg-[#07111F]/80 backdrop-blur-md sticky top-0 z-50 px-4 md:px-8 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="text-xl font-extrabold tracking-wider bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
-            IPL AUCTION SIM
-          </span>
-          <span className="text-xs uppercase bg-red-600 text-white font-bold px-1.5 py-0.5 rounded animate-pulse">
-            LIVE
-          </span>
+        <Link href="/" className="flex items-center space-x-3">
+          <img src="/cric_bid_logo.png" alt="Cric Bid Logo" className="h-8 w-8 object-contain" />
+          <span className="text-xl font-extrabold text-[#38BDF8] tracking-wider font-display">CRIC BID</span>
+          <span className="text-[10px] tracking-widest uppercase bg-[#38BDF8]/10 text-[#38BDF8] border border-[#38BDF8]/20 font-extrabold px-2 py-0.5 rounded ml-2">STUDIO</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -49,7 +45,7 @@ export const Navbar: React.FC = () => {
               return (
                 <span
                   key={link.path}
-                  className="text-slate-600 text-sm font-semibold cursor-not-allowed select-none"
+                  className="text-white/20 text-sm font-semibold cursor-not-allowed select-none"
                   title="Select a team on the Home Page first"
                 >
                   {link.name}
@@ -62,8 +58,8 @@ export const Navbar: React.FC = () => {
                 href={link.path}
                 className={`text-sm font-semibold transition-colors duration-200 ${
                   isActive
-                    ? 'text-yellow-400 border-b-2 border-yellow-400 pb-1'
-                    : 'text-slate-300 hover:text-white pb-1'
+                    ? 'text-[#38BDF8] border-b-2 border-[#38BDF8] pb-1'
+                    : 'text-[#94A3B8] hover:text-[#F8FAFC] pb-1'
                 }`}
               >
                 {link.name}
@@ -75,17 +71,17 @@ export const Navbar: React.FC = () => {
         {/* Team Status & Action Controls */}
         <div className="hidden md:flex items-center space-x-4">
           {userTeam && (
-            <div className="flex items-center space-x-3 bg-slate-900/90 px-3.5 py-1.5 rounded-full border border-slate-800">
+            <div className="flex items-center space-x-3 bg-white/5 px-4 py-1.5 rounded-full border border-white/5">
               <span
                 className="w-2.5 h-2.5 rounded-full animate-pulse"
                 style={{ backgroundColor: userTeam.color }}
               ></span>
-              <span className="text-xs font-bold text-slate-300">{userTeam.shortName} Purse:</span>
-              <span className="text-sm font-extrabold text-yellow-400">
+              <span className="text-xs font-bold text-[#94A3B8]">{userTeam.shortName} Purse:</span>
+              <span className="text-sm font-extrabold text-[#38BDF8]">
                 {userTeam.purse.toFixed(2)} Cr
               </span>
-              <span className="text-slate-500">|</span>
-              <span className="text-xs font-semibold text-slate-400">
+              <span className="text-[#94A3B8]">|</span>
+              <span className="text-xs font-semibold text-[#94A3B8]">
                 {userTeam.players.length}/25 Squad
               </span>
             </div>
@@ -94,7 +90,7 @@ export const Navbar: React.FC = () => {
           {/* Sound Toggle */}
           <button
             onClick={toggleSound}
-            className="p-2 rounded-lg bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition"
+            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-[#94A3B8] hover:text-[#F8FAFC] transition"
             title={soundEnabled ? 'Mute sound effects' : 'Unmute sound effects'}
           >
             {soundEnabled ? (
@@ -117,7 +113,7 @@ export const Navbar: React.FC = () => {
                   window.location.href = '/';
                 }
               }}
-              className="text-xs bg-red-950/80 hover:bg-red-900/90 text-red-400 font-bold px-3 py-2 rounded-lg border border-red-800/60 transition"
+              className="text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold px-3 py-2 rounded-lg border border-red-500/20 transition"
             >
               Reset Sim
             </button>
@@ -128,7 +124,7 @@ export const Navbar: React.FC = () => {
         <div className="md:hidden flex items-center space-x-3">
           <button
             onClick={toggleSound}
-            className="p-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300"
+            className="p-1.5 rounded bg-[#030810]/60 border border-white/5 text-[#94A3B8]"
           >
             {soundEnabled ? (
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4.5 w-4.5" viewBox="0 0 20 20" fill="currentColor">
@@ -143,7 +139,7 @@ export const Navbar: React.FC = () => {
           
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="text-slate-300 hover:text-white focus:outline-none"
+            className="text-[#94A3B8] hover:text-[#F8FAFC] focus:outline-none"
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               {isOpen ? (
@@ -158,7 +154,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Navigation Dropdown */}
       {isOpen && (
-        <div className="md:hidden mt-4 pt-2 pb-1 border-t border-slate-800 flex flex-col space-y-3">
+        <div className="md:hidden mt-4 pt-2 pb-1 border-t border-white/5 flex flex-col space-y-3">
           {navLinks.map((link) => {
             const isActive = pathname === link.path;
             if (link.disabled) return null;
@@ -169,8 +165,8 @@ export const Navbar: React.FC = () => {
                 onClick={() => setIsOpen(false)}
                 className={`text-sm font-semibold transition px-2 py-1 rounded ${
                   isActive
-                    ? 'text-yellow-400 bg-slate-900'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-900/60'
+                    ? 'text-[#38BDF8] bg-white/5'
+                    : 'text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-white/5'
                 }`}
               >
                 {link.name}
@@ -179,9 +175,9 @@ export const Navbar: React.FC = () => {
           })}
 
           {userTeam && (
-            <div className="bg-slate-950/80 px-3 py-2 rounded-lg border border-slate-900 flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-400">{userTeam.name}</span>
-              <span className="text-sm font-extrabold text-yellow-400">{userTeam.purse.toFixed(2)} Cr</span>
+            <div className="bg-white/5 px-3 py-2 rounded-lg border border-white/5 flex items-center justify-between">
+              <span className="text-xs font-bold text-[#94A3B8]">{userTeam.name}</span>
+              <span className="text-sm font-extrabold text-[#38BDF8]">{userTeam.purse.toFixed(2)} Cr</span>
             </div>
           )}
 
@@ -193,7 +189,7 @@ export const Navbar: React.FC = () => {
                   window.location.href = '/';
                 }
               }}
-              className="w-full text-center text-xs bg-red-950/90 text-red-400 font-bold py-2 rounded border border-red-900/50"
+              className="w-full text-center text-xs bg-red-500/10 text-red-400 font-bold py-2 rounded border border-red-500/20"
             >
               Reset Simulation
             </button>

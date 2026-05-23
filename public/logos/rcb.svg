@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="rcbBg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#FF3B3F"/>
+      <stop offset="100%" stop-color="#A80004"/>
+    </radialGradient>
+  </defs>
+  <!-- Shield shape -->
+  <path d="M100 10 L175 45 L175 120 Q175 170 100 192 Q25 170 25 120 L25 45 Z" fill="url(#rcbBg)" stroke="#BCA570" stroke-width="6"/>
+  <!-- Inner border -->
+  <path d="M100 22 L163 53 L163 118 Q163 160 100 180 Q37 160 37 118 L37 53 Z" fill="none" stroke="#BCA570" stroke-width="3"/>
+  <!-- RCB Text -->
+  <text x="100" y="122" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="44" fill="#BCA570" letter-spacing="1">RCB</text>
+  <!-- Rampant Lion / Crown emblem -->
+  <!-- A crown at the top -->
+  <polygon points="70,68 80,52 90,64 100,44 110,64 120,52 130,68" fill="#BCA570"/>
+  <!-- Bottom banner text -->
+  <text x="100" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#BCA570" font-weight="700" letter-spacing="2">ROYAL CHALLENGERS</text>
+</svg>

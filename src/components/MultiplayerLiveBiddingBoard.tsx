@@ -1,10 +1,12 @@
 'use client';
-
+ 
 import React from 'react';
 import { useMultiplayer } from '../context/MultiplayerContext';
 import { getNextBidAmount } from '../context/AuctionContext';
 import { PlayerCard } from './PlayerCard';
-
+import { BiddingEffectsOverlay } from './BiddingEffectsOverlay';
+import { VoiceControlPanel } from './VoiceControlPanel';
+ 
 export const MultiplayerLiveBiddingBoard: React.FC = () => {
   const {
     currentPlayer,
@@ -25,15 +27,18 @@ export const MultiplayerLiveBiddingBoard: React.FC = () => {
     nextPlayer,
     pauseAuction,
     resumeAuction,
-    autoSimulateActivePlayer,
-    playerName
+    playerName,
+    executeVoiceCommand
   } = useMultiplayer();
+
+  // Compute only teams that have been claimed by a player
+  const claimedTeams = teams.filter(t => clients.some(c => c.teamId === t.id));
 
   if (!currentPlayer) {
     return (
-      <div className="glass-card rounded-3xl p-12 text-center border border-slate-800">
-        <h3 className="text-xl font-bold text-slate-400 mb-2">No Player Under the Hammer</h3>
-        <p className="text-sm text-slate-500">The draft pool is currently empty or the auction is complete.</p>
+      <div className="glass-card rounded-3xl p-12 text-center border border-white/5 bg-[#07111F]/60">
+        <h3 className="text-xl font-bold text-[#F8FAFC] mb-2">No Player Under the Hammer</h3>
+        <p className="text-sm text-[#94A3B8]">The draft pool is currently empty or the auction is complete.</p>
       </div>
     );
   }
@@ -57,33 +62,34 @@ export const MultiplayerLiveBiddingBoard: React.FC = () => {
   const strokeDashoffset = circumference - (timer / 10) * circumference;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
+    <div className="flex flex-col space-y-6">
+      {/* Premium AI Host voice assistant panel */}
+      <VoiceControlPanel onVoiceCommand={executeVoiceCommand} isHost={isHost} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
       {/* LEFT: Player Card (Col Span 4) */}
       <div className="lg:col-span-4 flex flex-col justify-between">
         <div className="mb-4">
-          <h4 className="text-xs uppercase tracking-widest font-extrabold text-slate-500 mb-2.5">
+          <h4 className="text-xs uppercase tracking-widest font-extrabold text-[#94A3B8]/60 mb-2.5">
             Active Player
           </h4>
           <PlayerCard 
             player={currentPlayer} 
-            showBidOverlay={auctionStatus === 'bidding' && currentBid > 0}
-            bidAmount={currentBid}
-            bidderName={currentBidder?.shortName}
-            bidderColor={currentBidder?.color}
+            showBidOverlay={false}
           />
         </div>
       </div>
 
       {/* CENTER: Bidding Dashboard & Controls (Col Span 5) */}
       <div className="lg:col-span-5 flex flex-col justify-between space-y-6">
-        <div className="glass-card rounded-3xl p-6 border border-slate-800/80 shadow-xl flex-grow flex flex-col justify-between relative overflow-hidden">
+        <div className="glass-card rounded-3xl p-6 border border-white/5 shadow-xl flex-grow flex flex-col justify-between relative overflow-hidden">
           {/* Header */}
-          <div className="flex justify-between items-center border-b border-slate-900 pb-4 mb-4">
+          <div className="flex justify-between items-center border-b border-white/5 pb-4 mb-4">
             <div>
-              <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+              <span className="text-[10px] uppercase font-bold text-[#94A3B8]/60 tracking-wider">
                 Status
               </span>
-              <span className={`block text-xs font-black uppercase tracking-wider ${isPaused ? 'text-red-500' : 'text-emerald-400 animate-pulse'}`}>
+              <span className={`block text-xs font-black uppercase tracking-wider ${isPaused ? 'text-red-400' : 'text-emerald-300 animate-pulse'}`}>
                 {isPaused ? 'Paused' : 'LIVE BIDDING'}
               </span>
             </div>
@@ -95,7 +101,7 @@ export const MultiplayerLiveBiddingBoard: React.FC = () => {
                   cx="32"
                   cy="32"
                   r={radius}
-                  stroke="#1e293b"
+                  stroke="rgba(255, 255, 255, 0.05)"
                   strokeWidth="4"
                   fill="transparent"
                 />
@@ -121,43 +127,53 @@ export const MultiplayerLiveBiddingBoard: React.FC = () => {
           <div className="text-center py-6 flex-grow flex flex-col justify-center">
             {currentBid === 0 ? (
               <div className="space-y-2">
-                <span className="text-xs uppercase tracking-widest text-slate-500 block">BASE DRAFT PRICE</span>
-                <div className="text-4xl md:text-5xl font-black text-slate-200 drop-shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                <span className="text-xs uppercase tracking-widest text-[#94A3B8]/60 block">BASE DRAFT PRICE</span>
+                <div className="text-4xl md:text-5xl font-black text-[#F8FAFC] drop-shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                   {currentPlayer.base_price.toFixed(2)} Cr
                 </div>
-                <p className="text-[11px] text-slate-400 max-w-[80%] mx-auto">
+                <p className="text-[11px] text-[#94A3B8] max-w-[80%] mx-auto">
                   Awaiting the opening bid to kick off the countdown.
                 </p>
               </div>
             ) : (
               <div className="space-y-1">
-                <span className="text-xs uppercase tracking-widest text-slate-400 block font-bold">CURRENT HIGHEST BID</span>
-                <div className="text-5xl md:text-6xl font-black text-yellow-400 drop-shadow-[0_0_20px_rgba(250,204,21,0.25)] animate-pulse">
+                <span className="text-xs uppercase tracking-widest text-[#94A3B8]/60 block font-bold">CURRENT HIGHEST BID</span>
+                <div className="text-5xl md:text-6xl font-black text-[#38BDF8] drop-shadow-[0_0_20px_rgba(56,189,248,0.25)] animate-pulse">
                   {currentBid.toFixed(2)} Cr
                 </div>
                 <div className="mt-2.5 flex items-center justify-center space-x-2">
-                  <span
-                    className="w-2.5 h-2.5 rounded-full inline-block"
-                    style={{ backgroundColor: currentBidder?.color }}
-                  ></span>
-                  <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                    {currentBidder?.name} ({currentBidder?.shortName})
-                  </span>
-                </div>
+                   {currentBidder?.logoUrl ? (
+                     <img
+                       src={currentBidder.logoUrl}
+                       alt={currentBidder.shortName}
+                       className="w-6 h-6 object-contain drop-shadow"
+                       referrerPolicy="no-referrer"
+                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                     />
+                   ) : (
+                     <span
+                       className="w-2.5 h-2.5 rounded-full inline-block"
+                       style={{ backgroundColor: currentBidder?.color }}
+                     ></span>
+                   )}
+                   <span className="text-xs font-bold text-[#F8FAFC] uppercase tracking-wider">
+                     {currentBidder?.name} ({currentBidder?.shortName})
+                   </span>
+                 </div>
               </div>
             )}
           </div>
 
           {/* Action buttons */}
-          <div className="space-y-3 pt-4 border-t border-slate-900">
+          <div className="space-y-3 pt-4 border-t border-white/5">
             {/* Bid button */}
             <button
               onClick={placeUserBid}
               disabled={!canUserBid}
               className={`w-full py-4 rounded-2xl text-base font-black uppercase tracking-wider transition-all duration-200 shadow-lg ${
                 canUserBid
-                  ? 'bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 hover:from-yellow-300 hover:via-orange-400 hover:to-red-400 text-slate-950 hover:shadow-yellow-500/20 active:scale-98'
-                  : 'bg-slate-900 border border-slate-800 text-slate-600 cursor-not-allowed'
+                  ? 'bg-gradient-to-r from-[#38BDF8] to-[#0284C7] text-[#07111F] hover:shadow-[0_4px_20px_rgba(56,189,248,0.3)] active:scale-98 cursor-pointer'
+                  : 'bg-white/5 border border-white/5 text-[#94A3B8]/40 cursor-not-allowed'
               }`}
             >
               {!userTeamId
@@ -177,29 +193,22 @@ export const MultiplayerLiveBiddingBoard: React.FC = () => {
 
             {/* Quick Actions Panel - Host Only */}
             {isHost ? (
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={isPaused ? resumeAuction : pauseAuction}
-                  className="py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-bold hover:bg-slate-800 transition"
+                  className="py-2.5 rounded-xl bg-white/5 border border-white/5 text-[#94A3B8] hover:text-[#F8FAFC] text-xs font-bold hover:bg-white/10 transition cursor-pointer"
                 >
                   {isPaused ? '▶ Resume' : '⏸ Pause'}
                 </button>
                 <button
                   onClick={skipPlayer}
-                  className="py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-bold hover:bg-slate-800 transition"
+                  className="py-2.5 rounded-xl bg-white/5 border border-white/5 text-[#94A3B8] hover:text-[#F8FAFC] text-xs font-bold hover:bg-white/10 transition cursor-pointer"
                 >
                   ✖ Pass Player
                 </button>
-                <button
-                  onClick={autoSimulateActivePlayer}
-                  className="py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-bold hover:bg-slate-800 transition"
-                  title="Fast forward bidding war by AI"
-                >
-                  ⚡ Fast Solve
-                </button>
               </div>
             ) : (
-              <div className="p-3 rounded-xl bg-slate-950/40 border border-slate-900/60 text-center text-[10px] text-slate-500 uppercase tracking-widest font-extrabold">
+              <div className="p-3 rounded-xl bg-[#030810]/40 border border-white/5 text-center text-[10px] text-[#94A3B8]/60 uppercase tracking-widest font-extrabold">
                 🔒 Host ({clients.find(c => c.isHost)?.name}) controls auction flow
               </div>
             )}
@@ -210,12 +219,12 @@ export const MultiplayerLiveBiddingBoard: React.FC = () => {
       {/* RIGHT: Live Log Feed (Col Span 3) */}
       <div className="lg:col-span-3 flex flex-col justify-between">
         <div>
-          <h4 className="text-xs uppercase tracking-widest font-extrabold text-slate-500 mb-2.5">
+          <h4 className="text-xs uppercase tracking-widest font-extrabold text-[#94A3B8]/60 mb-2.5">
             Bidding Activity Ticker
           </h4>
-          <div className="glass-card rounded-2xl border border-slate-800/80 p-4 h-96 overflow-y-auto flex flex-col-reverse space-y-3 space-y-reverse">
+          <div className="glass-card rounded-2xl border border-white/5 p-4 h-96 overflow-y-auto flex flex-col-reverse space-y-3 space-y-reverse bg-[#07111F]/30">
             {logs.length === 0 ? (
-              <p className="text-xs text-slate-600 text-center py-12">Bidding activity will appear here.</p>
+              <p className="text-xs text-[#94A3B8]/40 text-center py-12">Bidding activity will appear here.</p>
             ) : (
               logs.map((log, index) => {
                 const isSold = log.startsWith('SOLD!');
@@ -226,12 +235,12 @@ export const MultiplayerLiveBiddingBoard: React.FC = () => {
                     key={index}
                     className={`text-xs p-2.5 rounded-xl border transition animate-fade-in ${
                       isSold
-                        ? 'bg-emerald-950/70 border-emerald-800/50 text-emerald-300 font-extrabold shadow shadow-emerald-500/10'
+                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300 font-extrabold shadow shadow-emerald-500/5'
                         : isPassed
-                        ? 'bg-slate-900 border-slate-800 text-slate-500 font-semibold'
+                        ? 'bg-white/5 border border-white/5 text-[#94A3B8]/60 font-semibold'
                         : isUser
-                        ? 'bg-yellow-950/70 border-yellow-800/50 text-yellow-300 font-bold shadow shadow-yellow-500/10'
-                        : 'bg-slate-950/60 border-slate-900 text-slate-300'
+                        ? 'bg-[#38BDF8]/10 border-[#38BDF8]/20 text-[#38BDF8] font-bold shadow shadow-[#38BDF8]/5'
+                        : 'bg-white/2 border border-white/2 text-[#F8FAFC]'
                     }`}
                   >
                     {log}
@@ -245,14 +254,14 @@ export const MultiplayerLiveBiddingBoard: React.FC = () => {
 
       {/* BOTTOM WIDE: Interactive Competitors Bidding Panel */}
       <div className="lg:col-span-12">
-        <h4 className="text-xs uppercase tracking-widest font-extrabold text-slate-500 mb-2.5 flex items-center justify-between">
+        <h4 className="text-xs uppercase tracking-widest font-extrabold text-[#94A3B8]/60 mb-2.5 flex items-center justify-between">
           <span>Competitors Live Dashboard</span>
-          <span className="text-[10px] text-yellow-500 font-bold uppercase tracking-wider bg-yellow-950/40 px-2 py-0.5 border border-yellow-900/60 rounded">
+          <span className="text-[10px] text-[#38BDF8] font-bold uppercase tracking-wider bg-[#38BDF8]/10 px-2 py-0.5 border border-[#38BDF8]/20 rounded">
             Room Code: {roomCode}
           </span>
         </h4>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          {teams.map((t) => {
+          {claimedTeams.map((t) => {
             const isCurrentBidder = t.id === currentBidderId;
             const isUser = t.id === userTeamId;
             const claimedBy = clients.find(c => c.teamId === t.id);
@@ -262,23 +271,33 @@ export const MultiplayerLiveBiddingBoard: React.FC = () => {
                 key={t.id}
                 className={`glass-card p-3 rounded-xl border flex flex-col justify-between transition-all duration-300 ${
                   isCurrentBidder 
-                    ? 'ring-2 ring-opacity-50 scale-102 bg-slate-900/90' 
-                    : 'bg-slate-950/60'
+                    ? 'ring-1 scale-102 bg-[#07111F]/80 backdrop-blur-md' 
+                    : 'bg-white/3'
                 }`}
                 style={{
-                  boxShadow: isCurrentBidder ? `0 0 15px ${t.color}30` : undefined,
+                  boxShadow: isCurrentBidder ? `0 4px 15px ${t.color}25` : undefined,
                   borderWidth: '1.5px',
-                  borderColor: isCurrentBidder ? t.color : 'rgba(255, 255, 255, 0.05)'
+                  borderColor: isCurrentBidder ? t.color : 'rgba(255, 255, 255, 0.08)'
                 }}
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center space-x-1.5 overflow-hidden">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full inline-block flex-shrink-0"
-                      style={{ backgroundColor: t.color }}
-                    ></span>
-                    <span className={`text-xs font-bold text-white uppercase truncate ${isUser ? 'underline decoration-yellow-400' : ''}`} title={t.name}>
-                      {t.shortName} {isUser ? '👤' : claimedBy ? '👥' : '🤖'}
+                  <div className="flex items-center space-x-2 overflow-hidden">
+                    {t.logoUrl ? (
+                      <img
+                        src={t.logoUrl}
+                        alt={t.shortName}
+                        className="w-8 h-8 object-contain flex-shrink-0 drop-shadow"
+                        referrerPolicy="no-referrer"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      <span
+                        className="w-2.5 h-2.5 rounded-full inline-block flex-shrink-0"
+                        style={{ backgroundColor: t.color }}
+                      ></span>
+                    )}
+                    <span className={`text-xs font-bold text-white uppercase truncate ${isUser ? 'underline decoration-[#38BDF8]' : ''}`} title={t.name}>
+                      {t.shortName} {isUser ? '👤' : claimedBy ? '👥' : ''}
                     </span>
                   </div>
                   {isCurrentBidder && (
@@ -293,17 +312,17 @@ export const MultiplayerLiveBiddingBoard: React.FC = () => {
 
                 <div className="flex justify-between items-end">
                   <div>
-                    <span className="block text-[8px] text-slate-500 uppercase">Purse Left</span>
-                    <span className="text-xs font-black text-slate-300">{t.purse.toFixed(2)} Cr</span>
+                    <span className="block text-[8px] text-[#94A3B8]/50 uppercase font-semibold">Purse Left</span>
+                    <span className="text-xs font-black text-[#F8FAFC]">{t.purse.toFixed(2)} Cr</span>
                   </div>
                   <div className="text-right">
-                    <span className="block text-[8px] text-slate-500 uppercase">Squad</span>
-                    <span className="text-xs font-bold text-slate-400">{t.players.length}/25</span>
+                    <span className="block text-[8px] text-[#94A3B8]/50 uppercase font-semibold">Squad</span>
+                    <span className="text-xs font-bold text-[#94A3B8]">{t.players.length}/25</span>
                   </div>
                 </div>
                 
                 {claimedBy && (
-                  <div className="mt-1 border-t border-slate-900/60 pt-1 text-[8px] text-slate-500 uppercase truncate">
+                  <div className="mt-1 border-t border-white/5 pt-1 text-[8px] text-[#94A3B8]/40 uppercase truncate">
                     Manager: {claimedBy.name}
                   </div>
                 )}
@@ -315,100 +334,18 @@ export const MultiplayerLiveBiddingBoard: React.FC = () => {
 
       {/* SOLD / UNSOLD BANNER MODAL SPLASH */}
       {(auctionStatus === 'sold_splash' || auctionStatus === 'unsold_splash') && (
-        <div className="absolute inset-0 bg-slate-950/95 rounded-3xl z-40 flex flex-col items-center justify-center p-6 text-center animate-fade-in border border-slate-800">
-          <div className="max-w-md w-full p-8 rounded-3xl border border-slate-800/80 bg-slate-900/60 shadow-2xl relative">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-500 via-yellow-400 to-red-500"></div>
-            
-            {auctionStatus === 'sold_splash' && lastWinner ? (
-              <>
-                <div className="w-20 h-20 rounded-full mx-auto bg-emerald-950 border-2 border-emerald-500 flex items-center justify-center text-4xl shadow-lg shadow-emerald-500/20 mb-4 animate-bounce">
-                  🔨
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 border border-emerald-800/80 px-2.5 py-1 bg-emerald-950/60 rounded-md">
-                  PLAYER SOLD!
-                </span>
-                
-                <h2 className="text-2xl font-black text-white mt-4 mb-1">
-                  {lastWinner.player.name}
-                </h2>
-                <p className="text-xs text-slate-400 uppercase tracking-widest mb-6">
-                  {lastWinner.player.role.replace('_', ' ')} | {lastWinner.player.nationality}
-                </p>
-
-                <div className="bg-slate-950/80 border border-slate-900 rounded-2xl p-4 mb-6 grid grid-cols-2 gap-4">
-                  <div className="text-left border-r border-slate-900 pr-4">
-                    <span className="block text-[9px] uppercase tracking-wider text-slate-500">Sold To</span>
-                    <span
-                      className="text-lg font-black uppercase"
-                      style={{ color: lastWinner.team.color }}
-                    >
-                      {lastWinner.team.name}
-                    </span>
-                  </div>
-                  <div className="text-right pl-4">
-                    <span className="block text-[9px] uppercase tracking-wider text-slate-500">Winning Price</span>
-                    <span className="text-xl font-black text-yellow-400">
-                      {lastWinner.price.toFixed(2)} Cr
-                    </span>
-                  </div>
-                </div>
-
-                {isHost ? (
-                  <button
-                    onClick={nextPlayer}
-                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-sm font-black uppercase tracking-wider transition active:scale-98 shadow-lg shadow-emerald-500/10"
-                  >
-                    Continue Auction →
-                  </button>
-                ) : (
-                  <div className="p-3 bg-slate-950/60 border border-slate-900 rounded-xl text-xs text-slate-500 uppercase tracking-wider font-extrabold animate-pulse">
-                    Waiting for host to continue...
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                <div className="w-20 h-20 rounded-full mx-auto bg-red-950 border-2 border-red-500/60 flex items-center justify-center text-4xl shadow-lg shadow-red-500/20 mb-4 animate-pulse">
-                  🚫
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-red-400 border border-red-800/80 px-2.5 py-1 bg-red-950/60 rounded-md">
-                  PLAYER UNSOLD
-                </span>
-                
-                <h2 className="text-2xl font-black text-white mt-4 mb-1">
-                  {currentPlayer.name}
-                </h2>
-                <p className="text-xs text-slate-400 uppercase tracking-widest mb-6">
-                  {currentPlayer.role.replace('_', ' ')} | {currentPlayer.nationality}
-                </p>
-
-                <div className="bg-slate-950/80 border border-slate-900 rounded-2xl p-4 mb-6">
-                  <span className="block text-[9px] uppercase tracking-wider text-slate-500">Opening Bid was</span>
-                  <span className="text-lg font-black text-slate-400">
-                    {currentPlayer.base_price.toFixed(2)} Cr
-                  </span>
-                  <p className="text-[10px] text-slate-500 mt-1">
-                    No teams placed a bid. Player will enter the unsold draft pool.
-                  </p>
-                </div>
-
-                {isHost ? (
-                  <button
-                    onClick={nextPlayer}
-                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-slate-950 text-sm font-black uppercase tracking-wider transition active:scale-98 shadow-lg shadow-red-500/10"
-                  >
-                    Continue Auction →
-                  </button>
-                ) : (
-                  <div className="p-3 bg-slate-950/60 border border-slate-900 rounded-xl text-xs text-slate-500 uppercase tracking-wider font-extrabold animate-pulse">
-                    Waiting for host to continue...
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </div>
+        <BiddingEffectsOverlay
+          status={auctionStatus === 'sold_splash' ? 'sold' : 'unsold'}
+          playerName={auctionStatus === 'sold_splash' && lastWinner ? lastWinner.player.name : currentPlayer.name}
+          playerRole={auctionStatus === 'sold_splash' && lastWinner ? lastWinner.player.role.replace('_', ' ') : currentPlayer.role.replace('_', ' ')}
+          teamName={auctionStatus === 'sold_splash' && lastWinner ? lastWinner.team.name : undefined}
+          teamLogoUrl={auctionStatus === 'sold_splash' && lastWinner ? lastWinner.team.logoUrl : undefined}
+          teamColor={auctionStatus === 'sold_splash' && lastWinner ? lastWinner.team.color : undefined}
+          amountStr={auctionStatus === 'sold_splash' && lastWinner ? `${lastWinner.price.toFixed(2)} Crore` : `${currentPlayer.base_price.toFixed(2)} Crore`}
+          onClose={nextPlayer}
+        />
       )}
+      </div>
     </div>
   );
 };

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="srhBg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#FF7F3E"/>
+      <stop offset="100%" stop-color="#C83B00"/>
+    </radialGradient>
+  </defs>
+  <!-- Shield shape -->
+  <path d="M100 10 L175 45 L175 120 Q175 170 100 192 Q25 170 25 120 L25 45 Z" fill="url(#srhBg)" stroke="#000000" stroke-width="6"/>
+  <!-- Inner border -->
+  <path d="M100 22 L163 53 L163 118 Q163 160 100 180 Q37 160 37 118 L37 53 Z" fill="none" stroke="#F1C40F" stroke-width="3"/>
+  <!-- SRH Text -->
+  <text x="100" y="125" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="44" fill="#000000" letter-spacing="1">SRH</text>
+  <!-- Sun/Eagle emblem -->
+  <!-- Sun rays background -->
+  <path d="M70 65 L100 35 L130 65 M80 60 L100 42 L120 60" fill="none" stroke="#F1C40F" stroke-width="4" stroke-linecap="round"/>
+  <!-- Eagle head or wing silhouette -->
+  <polygon points="90,65 100,50 110,65 100,72" fill="#000000"/>
+  <!-- Bottom banner text -->
+  <text x="100" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#000000" font-weight="700" letter-spacing="2">SUNRISERS HYDERABAD</text>
+</svg>

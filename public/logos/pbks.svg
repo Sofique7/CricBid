@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="pbksBg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#FF383D"/>
+      <stop offset="100%" stop-color="#9C0A0E"/>
+    </radialGradient>
+  </defs>
+  <!-- Shield shape -->
+  <path d="M100 10 L175 45 L175 120 Q175 170 100 192 Q25 170 25 120 L25 45 Z" fill="url(#pbksBg)" stroke="#D2D3D5" stroke-width="6"/>
+  <!-- Inner border -->
+  <path d="M100 22 L163 53 L163 118 Q163 160 100 180 Q37 160 37 118 L37 53 Z" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <!-- PBKS Text -->
+  <text x="100" y="122" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="40" fill="#FFFFFF" letter-spacing="1">PBKS</text>
+  <!-- Roaring Lion head profile silhouette -->
+  <path d="M85 70 C85 55 95 45 105 45 C115 45 120 52 118 60 C116 68 110 70 105 70 C100 70 95 72 90 75" fill="none" stroke="#D2D3D5" stroke-width="4" stroke-linecap="round"/>
+  <polygon points="98,42 102,42 100,36" fill="#D2D3D5"/>
+  <!-- Bottom banner text -->
+  <text x="100" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#D2D3D5" font-weight="700" letter-spacing="2">PUNJAB KINGS</text>
+</svg>

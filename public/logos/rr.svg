@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="rrBg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#FF5CA8"/>
+      <stop offset="100%" stop-color="#B81467"/>
+    </radialGradient>
+  </defs>
+  <!-- Shield shape -->
+  <path d="M100 10 L175 45 L175 120 Q175 170 100 192 Q25 170 25 120 L25 45 Z" fill="url(#rrBg)" stroke="#004B87" stroke-width="6"/>
+  <!-- Inner border -->
+  <path d="M100 22 L163 53 L163 118 Q163 160 100 180 Q37 160 37 118 L37 53 Z" fill="none" stroke="#F1C40F" stroke-width="3"/>
+  <!-- RR Text -->
+  <text x="100" y="125" text-anchor="middle" font-family="Arial Black, sans-serif" font-weight="900" font-size="52" fill="#F1C40F" letter-spacing="-2">RR</text>
+  <!-- Crown/Royal symbol at the top -->
+  <polygon points="75,65 85,45 93,58 100,38 107,58 115,45 125,65" fill="#F1C40F"/>
+  <!-- Elegant feathers or royal details -->
+  <circle cx="100" cy="33" r="3" fill="#F1C40F"/>
+  <!-- Bottom banner text -->
+  <text x="100" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#FFFFFF" font-weight="700" letter-spacing="2">RAJASTHAN ROYALS</text>
+</svg>
