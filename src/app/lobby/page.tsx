@@ -4,12 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMultiplayer } from '../../context/MultiplayerContext';
 import { Player } from '../../data/players';
-import { getSocket } from '../../utils/socketClient';
-
 export default function LobbyPage() {
   const router = useRouter();
-  const socket = getSocket();
   const {
+    hydrated,
+    clientId,
     roomCode,
     clients,
     playerName,
@@ -214,7 +213,7 @@ export default function LobbyPage() {
                     </div>
                     <div>
                       <span className="text-xs font-extrabold text-[#F8FAFC] block">
-                        {c.name} {c.id === socket.id && ' (You)'}
+                        {c.name}{hydrated && c.id === clientId ? ' (You)' : ''}
                       </span>
                       <span className="text-[10px] text-[#94A3B8]/50 block uppercase font-semibold">
                         {c.isHost ? '👑 Host / Auctioneer' : 'Player'}

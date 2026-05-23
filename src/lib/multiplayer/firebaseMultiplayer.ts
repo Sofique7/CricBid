@@ -1,0 +1,583 @@
+import {
+  get,
+  onDisconnect,
+  onValue,
+  ref,
+  remove,
+  runTransaction,
+  set,
+  update,
+  type Unsubscribe,
+} from 'firebase/database';
+import { Player } from '../../data/players';
+import { Team } from '../../data/teams';
+import {
+  applyBid,
+  handleTimerEnd,
+  nextPlayerState,
+  RoomGameState,
+  skipPlayerState,
+  startAuctionState,
+  validateBid,
+  forceSellState,
+} from '../auctionLogic';
+import { getFirebaseDatabase, isFirebaseConfigured } from '../firebase';
+import { getClientId } from '../../utils/clientId';
+import {
+  ClientPlayer,
+  FirebaseRoomRecord,
+  IMultiplayerService,
+  MultiplayerEvent,
+  MultiplayerEventMap,
+  toRoomSnapshot,
+} from './types';
+
+function firebaseErrorMessage(err: unknown): string {
+  if (err && typeof err === 'object' && 'code' in err) {
+    const code = String((err as { code: string }).code);
+    if (code === 'PERMISSION_DENIED') {
+      return 'Firebase denied write access. Deploy database.rules.json or enable test mode in the Firebase console.';
+    }
+  }
+  if (err instanceof Error) return err.message;
+  return 'Unknown Firebase error';
+}
+
+function roomRef(roomCode: string) {
+  return ref(getFirebaseDatabase(), `rooms/${roomCode}`);
+}
+
+function clientsRecord(clients: ClientPlayer[]): Record<string, ClientPlayer> {
+  return Object.fromEntries(clients.map((c) => [c.id, c]));
+}
+
+async function generateUniqueRoomCode(): Promise<string> {
+  const db = getFirebaseDatabase();
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const snapshot = await get(ref(db, `rooms/${code}`));
+    if (!snapshot.exists()) return code;
+  }
+  throw new Error('Could not generate a unique room code. Please try again.');
+}
+
+type Listener = (...args: unknown[]) => void;
+
+class FirebaseMultiplayerService implements IMultiplayerService {
+  readonly mode = 'firebase' as const;
+  private listeners = new Map<MultiplayerEvent, Set<Listener>>();
+  private roomUnsubscribe: Unsubscribe | null = null;
+  private prevSnapshot: ReturnType<typeof toRoomSnapshot> | null = null;
+  private timerInterval: ReturnType<typeof setInterval> | null = null;
+  private activeRoomCode: string | null = null;
+  private _clientId: string | null = null;
+
+  get clientId(): string {
+    if (typeof window === 'undefined') return '';
+    if (!this._clientId) {
+      this._clientId = getClientId();
+    }
+    return this._clientId;
+  }
+
+  watchClientId(onChange: (id: string) => void): () => void {
+    if (typeof window !== 'undefined') {
+      onChange(this.clientId);
+    }
+    return () => {};
+  }
+
+  on<E extends MultiplayerEvent>(
+    event: E,
+    handler: (payload: MultiplayerEventMap[E]) => void
+  ): void {
+    if (!this.listeners.has(event)) {
+      this.listeners.set(event, new Set());
+    }
+    this.listeners.get(event)!.add(handler as Listener);
+  }
+
+  off<E extends MultiplayerEvent>(
+    event: E,
+    handler: (payload: MultiplayerEventMap[E]) => void
+  ): void {
+    this.listeners.get(event)?.delete(handler as Listener);
+  }
+
+  private emit<E extends MultiplayerEvent>(event: E, payload: MultiplayerEventMap[E]): void {
+    this.listeners.get(event)?.forEach((handler) => {
+      (handler as (p: MultiplayerEventMap[E]) => void)(payload);
+    });
+  }
+
+  connect(): void {
+    // No-op: Firebase connects on first database operation.
+  }
+
+  private async readRoom(roomCode: string): Promise<FirebaseRoomRecord | null> {
+    const snapshot = await get(roomRef(roomCode));
+    if (!snapshot.exists()) return null;
+    return snapshot.val() as FirebaseRoomRecord;
+  }
+
+  private async writeGame(roomCode: string, game: RoomGameState): Promise<void> {
+    await update(roomRef(roomCode), { game });
+  }
+
+  private async writeClients(
+    roomCode: string,
+    clients: ClientPlayer[]
+  ): Promise<void> {
+    await update(roomRef(roomCode), { clients: clientsRecord(clients) });
+  }
+
+  private async writeRoom(roomCode: string, record: FirebaseRoomRecord): Promise<void> {
+    await set(roomRef(roomCode), record);
+  }
+
+  private registerPresence(roomCode: string): void {
+    const clientRef = ref(getFirebaseDatabase(), `rooms/${roomCode}/clients/${this.clientId}`);
+    onDisconnect(clientRef).remove();
+  }
+
+  private stopHostTimer(): void {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  private startHostTimer(roomCode: string): void {
+    this.stopHostTimer();
+    this.timerInterval = setInterval(() => {
+      void this.tickTimer(roomCode);
+    }, 1000);
+  }
+
+  private async tickTimer(roomCode: string): Promise<void> {
+    const record = await this.readRoom(roomCode);
+    if (!record) return;
+
+    const { game } = record;
+    if (game.hostId !== this.clientId) return;
+    if (!game.started || game.isPaused || game.auctionStatus !== 'bidding') return;
+
+    if (game.timer > 0) {
+      const nextGame = { ...game, timer: game.timer - 1 };
+      await this.writeGame(roomCode, nextGame);
+      return;
+    }
+
+    const ended = handleTimerEnd(game);
+    await this.writeGame(roomCode, ended);
+  }
+
+  private subscribeRoom(roomCode: string, initialEvent: 'room_created' | 'room_joined'): void {
+    this.unsubscribeRoom();
+    this.activeRoomCode = roomCode;
+    this.prevSnapshot = null;
+
+    const unsubscribe = onValue(roomRef(roomCode), (snapshot) => {
+      if (!snapshot.exists()) return;
+      const record = snapshot.val() as FirebaseRoomRecord;
+      const next = toRoomSnapshot(record);
+      const prev = this.prevSnapshot;
+
+      if (!prev) {
+        this.emit(initialEvent, next);
+        this.prevSnapshot = next;
+        if (next.hostId === this.clientId && next.started && !next.isPaused) {
+          this.startHostTimer(roomCode);
+        }
+        return;
+      }
+
+      const clientsChanged =
+        JSON.stringify(prev.clients) !== JSON.stringify(next.clients);
+      const clientCountIncreased = next.clients.length > prev.clients.length;
+      const clientCountDecreased = next.clients.length < prev.clients.length;
+
+      if (clientCountIncreased && clientsChanged) {
+        this.emit('player_joined', { clients: next.clients, logs: next.logs });
+      } else if (clientCountDecreased && clientsChanged) {
+        this.emit('player_left', {
+          clients: next.clients,
+          logs: next.logs,
+          hostId: next.hostId,
+        });
+      } else if (clientsChanged) {
+        this.emit('team_claimed', { clients: next.clients, logs: next.logs });
+      }
+
+      if (prev.isPaused !== next.isPaused) {
+        if (next.isPaused) {
+          this.emit('auction_paused', { isPaused: true, logs: next.logs });
+        } else {
+          this.emit('auction_resumed', { isPaused: false, logs: next.logs });
+        }
+      }
+
+      const bidChanged =
+        prev.currentBid !== next.currentBid ||
+        prev.currentBidderId !== next.currentBidderId;
+      const timerOnly =
+        prev.timer !== next.timer &&
+        !bidChanged &&
+        prev.auctionStatus === next.auctionStatus &&
+        JSON.stringify(prev.players) === JSON.stringify(next.players);
+
+      if (
+        bidChanged &&
+        next.auctionStatus === 'bidding' &&
+        (prev.auctionStatus === 'bidding' || prev.currentBid !== next.currentBid)
+      ) {
+        this.emit('bid_placed', {
+          currentBid: next.currentBid,
+          currentBidderId: next.currentBidderId,
+          timer: next.timer,
+          logs: next.logs,
+        });
+      } else if (timerOnly && next.auctionStatus === 'bidding') {
+        this.emit('timer_tick', {
+          timer: next.timer,
+          currentBid: next.currentBid,
+          currentBidderId: next.currentBidderId,
+          logs: next.logs,
+          aiBidMade: false,
+        });
+      }
+
+      const splashTransition =
+        (next.auctionStatus === 'sold_splash' || next.auctionStatus === 'unsold_splash') &&
+        prev.auctionStatus === 'bidding';
+      if (splashTransition) {
+        this.emit('timer_end', {
+          players: next.players,
+          teams: next.teams,
+          auctionStatus: next.auctionStatus,
+          lastWinner: next.lastWinner,
+          logs: next.logs,
+        });
+        this.stopHostTimer();
+      }
+
+      const majorStateChange =
+        prev.auctionStatus !== next.auctionStatus ||
+        prev.started !== next.started ||
+        prev.currentPlayerIndex !== next.currentPlayerIndex ||
+        JSON.stringify(prev.players) !== JSON.stringify(next.players) ||
+        JSON.stringify(prev.teams) !== JSON.stringify(next.teams) ||
+        JSON.stringify(prev.lastWinner) !== JSON.stringify(next.lastWinner);
+
+      if (majorStateChange && !splashTransition) {
+        this.emit('state_update', next);
+      }
+
+      if (next.hostId === this.clientId) {
+        if (
+          next.started &&
+          next.auctionStatus === 'bidding' &&
+          !next.isPaused &&
+          !this.timerInterval
+        ) {
+          this.startHostTimer(roomCode);
+        }
+        if (next.isPaused || next.auctionStatus !== 'bidding') {
+          this.stopHostTimer();
+        }
+      } else {
+        this.stopHostTimer();
+      }
+
+      this.prevSnapshot = next;
+    });
+
+    this.roomUnsubscribe = unsubscribe;
+  }
+
+  unsubscribeRoom(): void {
+    this.stopHostTimer();
+    if (this.roomUnsubscribe) {
+      this.roomUnsubscribe();
+      this.roomUnsubscribe = null;
+    }
+    this.prevSnapshot = null;
+    this.activeRoomCode = null;
+  }
+
+  async createRoom(hostName: string, players: Player[], teams: Team[]): Promise<void> {
+    if (!isFirebaseConfigured()) {
+      this.emit('join_error', 'Firebase is not configured for multiplayer.');
+      return;
+    }
+
+    try {
+      const roomCode = await generateUniqueRoomCode();
+      const game: RoomGameState = {
+        code: roomCode,
+        hostId: this.clientId,
+        started: false,
+        isPaused: true,
+        auctionStatus: 'idle',
+        players,
+        teams,
+        currentPlayerIndex: 0,
+        currentBid: 0,
+        currentBidderId: null,
+        timer: 10,
+        logs: [`Room created by ${hostName}. Room Code: ${roomCode}`],
+        lastWinner: null,
+      };
+
+      const clients: ClientPlayer[] = [
+        { id: this.clientId, name: hostName, teamId: null, isHost: true },
+      ];
+
+      await this.writeRoom(roomCode, { game, clients: clientsRecord(clients) });
+      this.registerPresence(roomCode);
+      this.subscribeRoom(roomCode, 'room_created');
+    } catch (err) {
+      console.error('[multiplayer] createRoom failed:', err);
+      this.emit(
+        'join_error',
+        `Failed to create room: ${firebaseErrorMessage(err)}`
+      );
+    }
+  }
+
+  async joinRoom(roomCode: string, playerName: string): Promise<void> {
+    if (!isFirebaseConfigured()) {
+      this.emit('join_error', 'Firebase is not configured for multiplayer.');
+      return;
+    }
+
+    try {
+      const normalized = roomCode.trim();
+      const record = await this.readRoom(normalized);
+      if (!record) {
+        this.emit('join_error', 'Room not found. Please verify the code.');
+        return;
+      }
+      if (record.game.started) {
+        this.emit('join_error', 'Auction has already started in this room.');
+        return;
+      }
+
+      const clients = Object.values(record.clients || {}).filter(Boolean);
+      const nextClients: ClientPlayer[] = [
+        ...clients.filter((c) => c.id !== this.clientId),
+        { id: this.clientId, name: playerName, teamId: null, isHost: false },
+      ];
+      const logs = [...record.game.logs, `${playerName} joined the room.`];
+
+      await update(roomRef(normalized), {
+        clients: clientsRecord(nextClients),
+        'game/logs': logs,
+      });
+
+      this.registerPresence(normalized);
+      this.subscribeRoom(normalized, 'room_joined');
+    } catch (err) {
+      console.error('[multiplayer] joinRoom failed:', err);
+      this.emit('join_error', `Failed to join room: ${firebaseErrorMessage(err)}`);
+    }
+  }
+
+  async claimTeam(roomCode: string, teamId: string | null): Promise<void> {
+    const record = await this.readRoom(roomCode);
+    if (!record) return;
+
+    const clients = Object.values(record.clients || {}).filter(Boolean);
+    const me = clients.find((c) => c.id === this.clientId);
+    if (!me) return;
+
+    if (teamId) {
+      const taken = clients.some((c) => c.id !== this.clientId && c.teamId === teamId);
+      if (taken) {
+        this.emit('claim_error', 'Team is already taken by another player.');
+        return;
+      }
+    }
+
+    const updatedClients = clients.map((c) =>
+      c.id === this.clientId ? { ...c, teamId } : c
+    );
+    const teamName = teamId
+      ? record.game.teams.find((t) => t.id === teamId)?.shortName ?? 'Unknown'
+      : 'None';
+    const logs = [...record.game.logs, `${me.name} selected team: ${teamName}`];
+
+    await update(roomRef(roomCode), {
+      clients: clientsRecord(updatedClients),
+      'game/logs': logs,
+    });
+  }
+
+  async startAuction(roomCode: string): Promise<void> {
+    const record = await this.readRoom(roomCode);
+    if (!record || record.game.hostId !== this.clientId) return;
+    const game = startAuctionState(record.game);
+    await this.writeGame(roomCode, game);
+    this.startHostTimer(roomCode);
+  }
+
+  async pauseAuction(roomCode: string): Promise<void> {
+    const record = await this.readRoom(roomCode);
+    if (!record || record.game.hostId !== this.clientId) return;
+    await this.writeGame(roomCode, { ...record.game, isPaused: true });
+    this.stopHostTimer();
+  }
+
+  async resumeAuction(roomCode: string): Promise<void> {
+    const record = await this.readRoom(roomCode);
+    if (!record || record.game.hostId !== this.clientId) return;
+    await this.writeGame(roomCode, { ...record.game, isPaused: false });
+    if (record.game.auctionStatus === 'bidding') {
+      this.startHostTimer(roomCode);
+    }
+  }
+
+  async placeBid(roomCode: string, teamId: string): Promise<void> {
+    const db = getFirebaseDatabase();
+    const roomReference = roomRef(roomCode);
+
+    const result = await runTransaction(roomReference, (current) => {
+      if (!current) return current;
+      const record = current as FirebaseRoomRecord;
+      const me = record.clients?.[this.clientId];
+      if (!me) return;
+
+      const validation = validateBid(record.game, teamId, me.teamId);
+      if (!validation.ok) {
+        return;
+      }
+
+      const team = record.game.teams.find((t) => t.id === teamId)!;
+      record.game = applyBid(record.game, teamId, validation.nextBid, me.name);
+      return record;
+    });
+
+    if (!result.committed) {
+      const record = await this.readRoom(roomCode);
+      const me = record?.clients[this.clientId];
+      if (record && me) {
+        const validation = validateBid(record.game, teamId, me.teamId);
+        if (!validation.ok) {
+          this.emit('bid_error', validation.error);
+          return;
+        }
+      }
+      this.emit('bid_error', 'Bid could not be placed. Try again.');
+    }
+  }
+
+  async skipPlayer(roomCode: string): Promise<void> {
+    const record = await this.readRoom(roomCode);
+    if (!record || record.game.hostId !== this.clientId) return;
+    await this.writeGame(roomCode, skipPlayerState(record.game));
+    this.stopHostTimer();
+  }
+
+  async nextPlayer(
+    roomCode: string,
+    overrideName?: string,
+    overrideBasePrice?: number
+  ): Promise<void> {
+    const record = await this.readRoom(roomCode);
+    if (!record || record.game.hostId !== this.clientId) return;
+    const game = nextPlayerState(record.game, overrideName, overrideBasePrice);
+    await this.writeGame(roomCode, game);
+    if (game.auctionStatus === 'bidding' && !game.isPaused) {
+      this.startHostTimer(roomCode);
+    } else {
+      this.stopHostTimer();
+    }
+  }
+
+  async forceSell(roomCode: string, teamId: string, amount: number): Promise<void> {
+    const record = await this.readRoom(roomCode);
+    if (!record || record.game.hostId !== this.clientId) return;
+    await this.writeGame(roomCode, forceSellState(record.game, teamId, amount));
+    this.stopHostTimer();
+  }
+
+  async resetAuction(
+    roomCode: string,
+    initialPlayersList: Player[],
+    initialTeamsList: Team[]
+  ): Promise<void> {
+    const record = await this.readRoom(roomCode);
+    if (!record || record.game.hostId !== this.clientId) return;
+
+    this.stopHostTimer();
+    const clients = Object.values(record.clients || {})
+      .filter(Boolean)
+      .map((c) => ({ ...c, teamId: null }));
+
+    const game: RoomGameState = {
+      ...record.game,
+      started: false,
+      isPaused: true,
+      auctionStatus: 'idle',
+      players: initialPlayersList,
+      teams: initialTeamsList,
+      currentPlayerIndex: 0,
+      currentBid: 0,
+      currentBidderId: null,
+      timer: 10,
+      lastWinner: null,
+      logs: ['Auction was reset by Host. Lobby is active.'],
+    };
+
+    await this.writeRoom(roomCode, { game, clients: clientsRecord(clients) });
+  }
+
+  async leaveRoom(roomCode: string | null): Promise<void> {
+    this.unsubscribeRoom();
+    if (!roomCode || !isFirebaseConfigured()) return;
+
+    const record = await this.readRoom(roomCode);
+    if (!record) return;
+
+    const clients = Object.values(record.clients || {}).filter(
+      (c) => c && c.id !== this.clientId
+    );
+
+    if (clients.length === 0) {
+      await remove(roomRef(roomCode));
+      return;
+    }
+
+    let hostId = record.game.hostId;
+    let nextClients = clients;
+
+    if (hostId === this.clientId) {
+      const nextHost = clients[0];
+      hostId = nextHost.id;
+      nextClients = clients.map((c) => ({
+        ...c,
+        isHost: c.id === nextHost.id,
+      }));
+      record.game.logs = [...record.game.logs, `${nextHost.name} is now the host.`];
+    }
+
+    await update(roomRef(roomCode), {
+      clients: clientsRecord(nextClients),
+      'game/hostId': hostId,
+      'game/logs': record.game.logs,
+    });
+
+    await remove(
+      ref(getFirebaseDatabase(), `rooms/${roomCode}/clients/${this.clientId}`)
+    );
+  }
+}
+
+let service: FirebaseMultiplayerService | null = null;
+
+export function getFirebaseMultiplayerService(): FirebaseMultiplayerService {
+  if (!service) {
+    service = new FirebaseMultiplayerService();
+  }
+  return service;
+}

@@ -28,7 +28,8 @@ const enrichTeams = (teamsList: Team[]): Team[] => {
 import { Team, initialTeams } from '../data/teams';
 import { soundEffects } from '../utils/sound';
 import { voiceAuctioneer } from '../utils/voiceAuctioneer';
-import { getSocket } from '../utils/socketClient';
+import { getMultiplayerMode, getMultiplayerService } from '../lib/multiplayer';
+import { RoomSnapshot } from '../lib/multiplayer/types';
 
 interface ClientPlayer {
   id: string;
@@ -38,14 +39,16 @@ interface ClientPlayer {
 }
 
 interface MultiplayerContextType {
-  // Socket Room specific states
+  /** False during SSR/first paint — avoid rendering client-only UI until true. */
+  hydrated: boolean;
+  clientId: string;
+  multiplayerMode: 'firebase' | 'socket';
   roomCode: string | null;
   clients: ClientPlayer[];
   playerName: string;
   isHost: boolean;
   error: string | null;
   
-  // Game states mirrored from server
   players: Player[];
   teams: Team[];
   currentPlayerIndex: number;
@@ -63,7 +66,6 @@ interface MultiplayerContextType {
   auctionStatus: 'idle' | 'bidding' | 'sold_splash' | 'unsold_splash' | 'completed';
   lastWinner: { player: Player; team: Team; price: number } | null;
 
-  // Actions
   createRoom: (name: string, customPlayers?: Player[]) => void;
   joinRoom: (code: string, name: string) => void;
   selectUserTeam: (teamId: string) => void;
@@ -82,6 +84,9 @@ interface MultiplayerContextType {
 const MultiplayerContext = createContext<MultiplayerContextType | undefined>(undefined);
 
 export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const mp = getMultiplayerService();
+  const [hydrated, setHydrated] = useState(false);
+  const [clientId, setClientId] = useState('');
   const [roomCode, setRoomCode] = useState<string | null>(null);
   const [clients, setClients] = useState<ClientPlayer[]>([]);
   const [playerName, setPlayerName] = useState<string>('');
@@ -100,13 +105,9 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [auctionStatus, setAuctionStatus] = useState<'idle' | 'bidding' | 'sold_splash' | 'unsold_splash' | 'completed'>('idle');
   const [lastWinner, setLastWinner] = useState<{ player: Player; team: Team; price: number } | null>(null);
 
-  const socket = getSocket();
+  const userTeamId = clients.find(c => c.id === clientId)?.teamId || null;
+  const isHost = clients.find(c => c.id === clientId)?.isHost || false;
 
-  // Find user's claimed team ID in clients list
-  const userTeamId = clients.find(c => c.id === socket.id)?.teamId || null;
-  const isHost = clients.find(c => c.id === socket.id)?.isHost || false;
-
-  // Derived history listings
   const activePool = players.filter(p => p.status === 'pool' || p.status === 'active');
   const currentPlayer = activePool[currentPlayerIndex] || null;
   const soldHistory = players.filter(p => p.status === 'sold');
@@ -116,6 +117,7 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const teamsRef = useRef(teams);
   const playersRef = useRef(players);
   const lastSpokenPlayerIdRef = useRef<string | null>(null);
+  const roomCodeRef = useRef(roomCode);
 
   useEffect(() => {
     auctionStatusRef.current = auctionStatus;
@@ -129,16 +131,23 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     playersRef.current = players;
   }, [players]);
 
-  // Sync sound settings with sound utility
+  useEffect(() => {
+    roomCodeRef.current = roomCode;
+  }, [roomCode]);
+
   useEffect(() => {
     soundEffects.setEnabled(soundEnabled);
   }, [soundEnabled]);
 
-  // Connect socket and register listeners
   useEffect(() => {
-    socket.connect();
+    setHydrated(true);
+    return mp.watchClientId(setClientId);
+  }, [mp]);
 
-    socket.on('room_created', (data) => {
+  useEffect(() => {
+    mp.connect();
+
+    const applyRoomSnapshot = (data: RoomSnapshot) => {
       setRoomCode(data.code);
       setClients(data.clients);
       setPlayers(enrichPlayers(data.players));
@@ -148,48 +157,32 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setIsAuctionStarted(data.started);
       setIsPaused(data.isPaused);
       setError(null);
-    });
+    };
 
-    socket.on('room_joined', (data) => {
-      setRoomCode(data.code);
-      setClients(data.clients);
-      setPlayers(enrichPlayers(data.players));
-      setTeams(enrichTeams(data.teams));
-      setLogs(data.logs);
-      setAuctionStatus(data.auctionStatus);
-      setIsAuctionStarted(data.started);
-      setIsPaused(data.isPaused);
-      setError(null);
-    });
+    const onJoinError = (msg: string) => setError(msg);
 
-    socket.on('join_error', (msg) => {
-      setError(msg);
-    });
+    mp.on('room_created', applyRoomSnapshot);
+    mp.on('room_joined', applyRoomSnapshot);
+    mp.on('join_error', onJoinError);
+    mp.on('claim_error', onJoinError);
+    mp.on('bid_error', onJoinError);
 
-    socket.on('claim_error', (msg) => {
-      setError(msg);
-    });
-
-    socket.on('bid_error', (msg) => {
-      setError(msg);
-    });
-
-    socket.on('player_joined', (data) => {
+    mp.on('player_joined', (data) => {
       setClients(data.clients);
       setLogs(data.logs);
     });
 
-    socket.on('player_left', (data) => {
+    mp.on('player_left', (data) => {
       setClients(data.clients);
       setLogs(data.logs);
     });
 
-    socket.on('team_claimed', (data) => {
+    mp.on('team_claimed', (data) => {
       setClients(data.clients);
       setLogs(data.logs);
     });
 
-    socket.on('state_update', (data) => {
+    mp.on('state_update', (data) => {
       setPlayers(enrichPlayers(data.players));
       setTeams(enrichTeams(data.teams));
       setCurrentPlayerIndex(data.currentPlayerIndex);
@@ -208,7 +201,6 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         price: data.lastWinner.price
       } : null);
 
-      // Trigger splash sounds on transition
       if (data.auctionStatus === 'sold_splash' && prevStatus !== 'sold_splash') {
         soundEffects.playSoldSound();
         soundEffects.playGavelSound();
@@ -216,30 +208,28 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         soundEffects.playGavelSound();
       }
 
-      // Voice next player announcement
-      const activePool = data.players.filter((pl: any) => pl.status === 'pool' || pl.status === 'active');
-      const p = activePool[0]; // Next player is at top of remaining pool
+      const pool = data.players.filter((pl) => pl.status === 'pool' || pl.status === 'active');
+      const p = pool[0];
       if (p && data.currentBid === 0 && data.auctionStatus === 'bidding' && lastSpokenPlayerIdRef.current !== p.id) {
         lastSpokenPlayerIdRef.current = p.id;
         voiceAuctioneer.speakNextPlayer(p.name, `${p.base_price} crore`);
       }
     });
 
-    socket.on('bid_placed', (data) => {
+    mp.on('bid_placed', (data) => {
       setCurrentBid(data.currentBid);
       setCurrentBidderId(data.currentBidderId);
       setTimer(data.timer);
       setLogs(data.logs);
       soundEffects.playBidSound();
 
-      // Voice bid announcement
       const bidTeam = data.currentBidderId ? teamsRef.current.find(t => t.id === data.currentBidderId) : null;
       if (bidTeam) {
         voiceAuctioneer.speakBidPlaced(bidTeam.shortName, `${data.currentBid} crore`, 3);
       }
     });
 
-    socket.on('timer_tick', (data) => {
+    mp.on('timer_tick', (data) => {
       setTimer(data.timer);
       setCurrentBid(data.currentBid);
       setCurrentBidderId(data.currentBidderId);
@@ -252,7 +242,6 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
       if (data.timer <= 3 && data.timer > 0) {
         soundEffects.playBuzzerSound();
 
-        // Voice countdown ticks
         if (data.timer === 3) {
           voiceAuctioneer.speakCountdown("Going once...");
         } else if (data.timer === 2) {
@@ -263,7 +252,7 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }
     });
 
-    socket.on('timer_end', (data) => {
+    mp.on('timer_end', (data) => {
       setPlayers(enrichPlayers(data.players));
       setTeams(enrichTeams(data.teams));
       setAuctionStatus(data.auctionStatus);
@@ -279,121 +268,98 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         soundEffects.playSoldSound();
         soundEffects.playGavelSound();
 
-        // Voice SOLD announcement
-        const activePool = playersRef.current.filter(pl => pl.status === 'pool' || pl.status === 'active');
-        const p = activePool[0];
+        const pool = playersRef.current.filter(pl => pl.status === 'pool' || pl.status === 'active');
+        const p = pool[0];
         if (p && data.lastWinner) {
           voiceAuctioneer.speakSold(p.name, data.lastWinner.team.name, `${data.lastWinner.price} crore`);
         }
       } else {
         soundEffects.playGavelSound();
 
-        // Voice UNSOLD announcement
-        const activePool = playersRef.current.filter(pl => pl.status === 'pool' || pl.status === 'active');
-        const p = activePool[0];
+        const pool = playersRef.current.filter(pl => pl.status === 'pool' || pl.status === 'active');
+        const p = pool[0];
         if (p) {
           voiceAuctioneer.speakUnsold(p.name);
         }
       }
     });
 
-    socket.on('auction_paused', (data) => {
+    mp.on('auction_paused', (data) => {
       setIsPaused(data.isPaused);
       setLogs(data.logs);
     });
 
-    socket.on('auction_resumed', (data) => {
+    mp.on('auction_resumed', (data) => {
       setIsPaused(data.isPaused);
       setLogs(data.logs);
     });
 
     return () => {
-      // Only remove listeners — do NOT disconnect the socket here.
-      // Disconnecting on every re-render would kick the player from their room.
-      socket.off('room_created');
-      socket.off('room_joined');
-      socket.off('join_error');
-      socket.off('claim_error');
-      socket.off('bid_error');
-      socket.off('player_joined');
-      socket.off('player_left');
-      socket.off('team_claimed');
-      socket.off('state_update');
-      socket.off('bid_placed');
-      socket.off('timer_tick');
-      socket.off('timer_end');
-      socket.off('auction_paused');
-      socket.off('auction_resumed');
+      mp.off('room_created', applyRoomSnapshot);
+      mp.off('room_joined', applyRoomSnapshot);
+      mp.off('join_error', onJoinError);
+      mp.off('claim_error', onJoinError);
+      mp.off('bid_error', onJoinError);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Actions
   const createRoom = (name: string, customPlayers?: Player[]) => {
     setPlayerName(name);
-    socket.emit('create_room', {
-      hostName: name,
-      players: customPlayers || initialPlayers.map(p => ({ ...p, status: 'pool', sold_to: undefined, sold_price: undefined })),
-      teams: initialTeams.map(t => ({ ...t, purse: 120.0, players: [] }))
-    });
+    void mp.createRoom(
+      name,
+      customPlayers || initialPlayers.map(p => ({ ...p, status: 'pool', sold_to: undefined, sold_price: undefined })),
+      initialTeams.map(t => ({ ...t, purse: 120.0, players: [] }))
+    );
   };
 
   const joinRoom = (code: string, name: string) => {
     setPlayerName(name);
-    socket.emit('join_room', {
-      roomCode: code,
-      playerName: name
-    });
+    void mp.joinRoom(code, name);
   };
 
   const selectUserTeam = (teamId: string) => {
     if (!roomCode) return;
-    socket.emit('claim_team', {
-      roomCode,
-      teamId
-    });
+    void mp.claimTeam(roomCode, teamId);
   };
 
   const startAuction = () => {
     if (!roomCode || !isHost) return;
-    socket.emit('start_auction', { roomCode });
+    void mp.startAuction(roomCode);
   };
 
   const pauseAuction = () => {
     if (!roomCode || !isHost) return;
-    socket.emit('pause_auction', { roomCode });
+    void mp.pauseAuction(roomCode);
   };
 
   const resumeAuction = () => {
     if (!roomCode || !isHost) return;
-    socket.emit('resume_auction', { roomCode });
+    void mp.resumeAuction(roomCode);
   };
 
   const placeUserBid = () => {
     if (!roomCode || !userTeamId) return;
-    socket.emit('place_bid', {
-      roomCode,
-      teamId: userTeamId
-    });
+    void mp.placeBid(roomCode, userTeamId);
   };
 
   const skipPlayer = () => {
     if (!roomCode || !isHost) return;
-    socket.emit('skip_player', { roomCode });
+    void mp.skipPlayer(roomCode);
   };
 
   const nextPlayer = () => {
     if (!roomCode || !isHost) return;
-    socket.emit('next_player', { roomCode });
+    void mp.nextPlayer(roomCode);
   };
 
   const resetAuction = () => {
     if (!roomCode || !isHost) return;
-    socket.emit('reset_auction', {
+    void mp.resetAuction(
       roomCode,
-      initialPlayersList: initialPlayers.map(p => ({ ...p, status: 'pool', sold_to: undefined, sold_price: undefined })),
-      initialTeamsList: initialTeams.map(t => ({ ...t, purse: 120.0, players: [] }))
-    });
+      initialPlayers.map(p => ({ ...p, status: 'pool', sold_to: undefined, sold_price: undefined })),
+      initialTeams.map(t => ({ ...t, purse: 120.0, players: [] }))
+    );
   };
 
   const toggleSound = () => {
@@ -401,7 +367,7 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   const leaveRoom = () => {
-    socket.disconnect();
+    void mp.leaveRoom(roomCodeRef.current);
     setRoomCode(null);
     setClients([]);
     setPlayers([]);
@@ -409,10 +375,9 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setLogs([]);
     setAuctionStatus('idle');
     setIsAuctionStarted(false);
-    socket.connect(); // reconnect socket for future sessions
   };
 
-  const executeVoiceCommand = (cmd: any) => {
+  const executeVoiceCommand = (cmd: { type: string; name?: string; basePrice?: number; team?: string; price?: number }) => {
     if (!roomCode || !isHost || !isAuctionStarted) return;
 
     switch (cmd.type) {
@@ -429,18 +394,12 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         nextPlayer();
         break;
       case 'NEXT_PLAYER_OVERRIDE':
-        socket.emit('next_player', {
-          roomCode,
-          overrideName: cmd.name,
-          overrideBasePrice: cmd.basePrice
-        });
+        void mp.nextPlayer(roomCode, cmd.name, cmd.basePrice);
         break;
       case 'SELL_PLAYER':
-        socket.emit('force_sell', {
-          roomCode,
-          teamId: cmd.team,
-          amount: cmd.price
-        });
+        if (cmd.team && cmd.price !== undefined) {
+          void mp.forceSell(roomCode, cmd.team, cmd.price);
+        }
         break;
       default:
         break;
@@ -449,6 +408,9 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   return (
     <MultiplayerContext.Provider value={{
+      hydrated,
+      clientId,
+      multiplayerMode: getMultiplayerMode(),
       roomCode,
       clients,
       playerName,
