@@ -6,6 +6,7 @@ import {
   forceSellState,
   handleTimerEnd,
   nextPlayerState,
+  RoomGameState,
   skipPlayerState,
   startAuctionState,
   validateBid,
@@ -112,9 +113,19 @@ export async function roomStoreGet(roomCode: string) {
   return toRoomSnapshot(record);
 }
 
+function normalizeGame(game: RoomGameState): RoomGameState {
+  return {
+    ...game,
+    players: game.players ?? [],
+    teams: (game.teams ?? []).map((t) => ({ ...t, players: t.players ?? [] })),
+    logs: game.logs ?? [],
+  };
+}
+
 async function load(roomCode: string): Promise<FirebaseRoomRecord> {
   const record = await fbGetRoom(roomCode);
-  if (!record) throw new Error('Room not found');
+  if (!record?.game) throw new Error('Room not found');
+  record.game = normalizeGame(record.game);
   return record;
 }
 
@@ -140,10 +151,11 @@ export async function roomStoreClaimTeam(
   }
 
   record.clients[clientId] = { ...me, teamId };
+  const teams = record.game?.teams ?? [];
   const teamName = teamId
-    ? record.game.teams.find((t) => t.id === teamId)?.shortName ?? 'Unknown'
+    ? teams.find((t) => t.id === teamId)?.shortName ?? 'Unknown'
     : 'None';
-  record.game.logs = [...record.game.logs, `${me.name} selected team: ${teamName}`];
+  record.game.logs = [...(record.game.logs ?? []), `${me.name} selected team: ${teamName}`];
   await save(roomCode, record);
   return toRoomSnapshot(record);
 }

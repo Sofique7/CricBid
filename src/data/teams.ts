@@ -113,3 +113,8 @@ export const initialTeams: Team[] = [
     players: []
   }
 ];
+
+/** Fresh franchise list for lobby / when Firebase snapshot omits teams. */
+export function getLobbyTeams(): Team[] {
+  return initialTeams.map((t) => ({ ...t, purse: 120.0, players: [] }));
+}

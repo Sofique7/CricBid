@@ -11,21 +11,21 @@ initialPlayers.forEach(p => {
   }
 });
 
-const enrichPlayers = (playersList: Player[]): Player[] => {
-  return playersList.map(p => ({
+const enrichPlayers = (playersList?: Player[]): Player[] => {
+  return (playersList ?? []).map(p => ({
     ...p,
     image: p.image || playerImageMap[p.id] || playerImageMap[p.name.toLowerCase().trim()] || ''
   }));
 };
 
-const enrichTeams = (teamsList: Team[]): Team[] => {
-  return teamsList.map(t => ({
+const enrichTeams = (teamsList?: Team[]): Team[] => {
+  return (teamsList ?? []).map(t => ({
     ...t,
     players: enrichPlayers(t.players)
   }));
 };
 
-import { Team, initialTeams } from '../data/teams';
+import { Team, getLobbyTeams } from '../data/teams';
 import { soundEffects } from '../utils/sound';
 import { voiceAuctioneer } from '../utils/voiceAuctioneer';
 import { getMultiplayerMode, getMultiplayerService } from '../lib/multiplayer';
@@ -149,13 +149,13 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     const applyRoomSnapshot = (data: RoomSnapshot) => {
       setRoomCode(data.code);
-      setClients(data.clients);
+      setClients(data.clients ?? []);
       setPlayers(enrichPlayers(data.players));
-      setTeams(enrichTeams(data.teams));
-      setLogs(data.logs);
-      setAuctionStatus(data.auctionStatus);
-      setIsAuctionStarted(data.started);
-      setIsPaused(data.isPaused);
+      setTeams(enrichTeams(data.teams?.length ? data.teams : getLobbyTeams()));
+      setLogs(data.logs ?? []);
+      setAuctionStatus(data.auctionStatus ?? 'idle');
+      setIsAuctionStarted(data.started ?? false);
+      setIsPaused(data.isPaused ?? true);
       setError(null);
     };
 
@@ -184,7 +184,9 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     mp.on('state_update', (data) => {
       setPlayers(enrichPlayers(data.players));
-      setTeams(enrichTeams(data.teams));
+      if (data.teams?.length) {
+        setTeams(enrichTeams(data.teams));
+      }
       setCurrentPlayerIndex(data.currentPlayerIndex);
       setCurrentBid(data.currentBid);
       setCurrentBidderId(data.currentBidderId);
@@ -208,7 +210,7 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
         soundEffects.playGavelSound();
       }
 
-      const pool = data.players.filter((pl) => pl.status === 'pool' || pl.status === 'active');
+      const pool = (data.players ?? []).filter((pl) => pl.status === 'pool' || pl.status === 'active');
       const p = pool[0];
       if (p && data.currentBid === 0 && data.auctionStatus === 'bidding' && lastSpokenPlayerIdRef.current !== p.id) {
         lastSpokenPlayerIdRef.current = p.id;
@@ -309,7 +311,7 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     void mp.createRoom(
       name,
       customPlayers || initialPlayers.map(p => ({ ...p, status: 'pool', sold_to: undefined, sold_price: undefined })),
-      initialTeams.map(t => ({ ...t, purse: 120.0, players: [] }))
+      getLobbyTeams()
     );
   };
 
@@ -320,7 +322,7 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const selectUserTeam = (teamId: string) => {
     if (!roomCode) return;
-    void mp.claimTeam(roomCode, teamId);
+    void mp.claimTeam(roomCode, teamId || null);
   };
 
   const startAuction = () => {
@@ -358,7 +360,7 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
     void mp.resetAuction(
       roomCode,
       initialPlayers.map(p => ({ ...p, status: 'pool', sold_to: undefined, sold_price: undefined })),
-      initialTeams.map(t => ({ ...t, purse: 120.0, players: [] }))
+      getLobbyTeams()
     );
   };
 

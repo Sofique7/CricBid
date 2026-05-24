@@ -165,6 +165,7 @@ export class ApiMultiplayerService implements IMultiplayerService {
       const msg = err instanceof Error ? err.message : 'Action failed';
       if (action === 'place_bid') this.emit('bid_error', msg);
       else if (action === 'claim_team') this.emit('claim_error', msg);
+      else this.emit('join_error', msg);
     }
   }
 

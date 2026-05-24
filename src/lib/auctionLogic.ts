@@ -153,13 +153,14 @@ export function applyBid(
 }
 
 export function startAuctionState(room: RoomGameState): RoomGameState {
-  const activePool = getActivePool(room.players);
+  const roomPlayers = room.players ?? [];
+  const activePool = getActivePool(roomPlayers);
   const p = activePool[0];
-  let players = room.players;
-  let logs = [...room.logs];
+  let players = roomPlayers;
+  let logs = [...(room.logs ?? [])];
 
   if (p) {
-    players = room.players.map((pl) =>
+    players = roomPlayers.map((pl) =>
       pl.id === p.id ? { ...pl, status: 'active' as const } : pl
     );
     logs.unshift(`Player under the hammer: ${p.name} (Base Price: ${p.base_price} Cr)`);

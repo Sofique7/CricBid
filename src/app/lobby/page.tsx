@@ -266,7 +266,7 @@ export default function LobbyPage() {
           )}
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {teams.map((t) => {
+            {(teams ?? []).map((t) => {
               const claimedBy = clients.find(c => c.teamId === t.id);
               const isMine = userTeamId === t.id;
               const isClaimedByOther = claimedBy && !isMine;

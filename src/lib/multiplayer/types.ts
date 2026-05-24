@@ -54,10 +54,45 @@ export interface FirebaseRoomRecord {
   clients: Record<string, ClientPlayer>;
 }
 
-export function toRoomSnapshot(record: FirebaseRoomRecord): RoomSnapshot {
+export function toRoomSnapshot(record: FirebaseRoomRecord | null | undefined): RoomSnapshot {
+  const clients = Object.values(record?.clients || {}).filter(Boolean);
+  const game = record?.game;
+
+  if (!game) {
+    return {
+      code: '',
+      hostId: '',
+      started: false,
+      isPaused: true,
+      auctionStatus: 'idle',
+      players: [],
+      teams: [],
+      currentPlayerIndex: 0,
+      currentBid: 0,
+      currentBidderId: null,
+      timer: 10,
+      logs: [],
+      lastWinner: null,
+      clients,
+    };
+  }
+
   return {
-    ...record.game,
-    clients: Object.values(record.clients || {}).filter(Boolean),
+    ...game,
+    code: game.code ?? '',
+    hostId: game.hostId ?? '',
+    started: game.started ?? false,
+    isPaused: game.isPaused ?? true,
+    auctionStatus: game.auctionStatus ?? 'idle',
+    players: game.players ?? [],
+    teams: (game.teams ?? []).map((t) => ({ ...t, players: t.players ?? [] })),
+    currentPlayerIndex: game.currentPlayerIndex ?? 0,
+    currentBid: game.currentBid ?? 0,
+    currentBidderId: game.currentBidderId ?? null,
+    timer: game.timer ?? 10,
+    logs: game.logs ?? [],
+    lastWinner: game.lastWinner ?? null,
+    clients,
   };
 }
 

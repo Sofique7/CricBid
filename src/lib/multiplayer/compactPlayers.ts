@@ -9,6 +9,6 @@ export function compactPlayersForRoom(players: Player[]): Player[] {
 export function compactTeamsForRoom(teams: Team[]): Team[] {
   return teams.map((t) => ({
     ...t,
-    players: compactPlayersForRoom(t.players),
+    players: compactPlayersForRoom(t.players ?? []),
   }));
 }

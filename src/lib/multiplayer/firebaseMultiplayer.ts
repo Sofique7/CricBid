@@ -385,41 +385,65 @@ class FirebaseMultiplayerService implements IMultiplayerService {
   }
 
   async claimTeam(roomCode: string, teamId: string | null): Promise<void> {
-    const record = await this.readRoom(roomCode);
-    if (!record) return;
+    const normalizedTeamId = teamId?.trim() ? teamId : null;
+    try {
+      const record = await this.readRoom(roomCode);
+      if (!record) return;
 
-    const clients = Object.values(record.clients || {}).filter(Boolean);
-    const me = clients.find((c) => c.id === this.clientId);
-    if (!me) return;
+      const clients = Object.values(record.clients || {}).filter(Boolean);
+      const me = clients.find((c) => c.id === this.clientId);
+      if (!me) return;
 
-    if (teamId) {
-      const taken = clients.some((c) => c.id !== this.clientId && c.teamId === teamId);
-      if (taken) {
-        this.emit('claim_error', 'Team is already taken by another player.');
-        return;
+      if (normalizedTeamId) {
+        const taken = clients.some((c) => c.id !== this.clientId && c.teamId === normalizedTeamId);
+        if (taken) {
+          this.emit('claim_error', 'Team is already taken by another player.');
+          return;
+        }
       }
+
+      const updatedClients = clients.map((c) =>
+        c.id === this.clientId ? { ...c, teamId: normalizedTeamId } : c
+      );
+      const teams = record.game?.teams ?? [];
+      const teamName = normalizedTeamId
+        ? teams.find((t) => t.id === normalizedTeamId)?.shortName ?? 'Unknown'
+        : 'None';
+      const logs = [...(record.game?.logs ?? []), `${me.name} selected team: ${teamName}`];
+
+      await update(roomRef(roomCode), {
+        clients: clientsRecord(updatedClients),
+        'game/logs': logs,
+      });
+    } catch (err) {
+      console.error('[multiplayer] claimTeam failed:', err);
+      this.emit('claim_error', firebaseErrorMessage(err));
     }
-
-    const updatedClients = clients.map((c) =>
-      c.id === this.clientId ? { ...c, teamId } : c
-    );
-    const teamName = teamId
-      ? record.game.teams.find((t) => t.id === teamId)?.shortName ?? 'Unknown'
-      : 'None';
-    const logs = [...record.game.logs, `${me.name} selected team: ${teamName}`];
-
-    await update(roomRef(roomCode), {
-      clients: clientsRecord(updatedClients),
-      'game/logs': logs,
-    });
   }
 
   async startAuction(roomCode: string): Promise<void> {
-    const record = await this.readRoom(roomCode);
-    if (!record || record.game.hostId !== this.clientId) return;
-    const game = startAuctionState(record.game);
-    await this.writeGame(roomCode, game);
-    this.startHostTimer(roomCode);
+    try {
+      const record = await this.readRoom(roomCode);
+      if (!record) {
+        this.emit('join_error', 'Room not found.');
+        return;
+      }
+      if (record.game.hostId !== this.clientId) {
+        this.emit('join_error', 'Only the host can start the auction.');
+        return;
+      }
+      const game = startAuctionState({
+        ...record.game,
+        players: record.game.players ?? [],
+        teams: record.game.teams ?? [],
+        logs: record.game.logs ?? [],
+      });
+      await this.writeGame(roomCode, game);
+      this.startHostTimer(roomCode);
+    } catch (err) {
+      console.error('[multiplayer] startAuction failed:', err);
+      this.emit('join_error', firebaseErrorMessage(err));
+    }
   }
 
   async pauseAuction(roomCode: string): Promise<void> {
