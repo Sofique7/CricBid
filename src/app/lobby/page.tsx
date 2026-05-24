@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMultiplayer } from '../../context/MultiplayerContext';
+import { LobbyBackgroundProvider } from '../../components/LobbyBackgroundProvider';
 import { Player } from '../../data/players';
 export default function LobbyPage() {
   const router = useRouter();
@@ -168,7 +169,8 @@ export default function LobbyPage() {
 
   // Render Lobby Waiting Room Screen (Inside active room)
   return (
-    <div className="py-6 space-y-8 max-w-5xl mx-auto animate-fade-in">
+    <LobbyBackgroundProvider teamId={userTeamId}>
+      <div className="py-6 space-y-8 max-w-5xl mx-auto animate-fade-in">
       {/* Top Status Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/5 pb-5 gap-4">
         <div>
@@ -377,6 +379,6 @@ export default function LobbyPage() {
           </div>
         </div>
       </div>
-    </div>
+    </LobbyBackgroundProvider>
   );
 }

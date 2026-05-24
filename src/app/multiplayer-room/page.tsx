@@ -4,11 +4,12 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMultiplayer } from '../../context/MultiplayerContext';
 import { MultiplayerLiveBiddingBoard } from '../../components/MultiplayerLiveBiddingBoard';
+import { TeamBackgroundProvider } from '../../components/TeamBackgroundProvider';
 
 
 export default function MultiplayerRoomPage() {
   const router = useRouter();
-  const { roomCode } = useMultiplayer();
+  const { roomCode, userTeamId } = useMultiplayer();
 
   useEffect(() => {
     if (!roomCode) {
@@ -26,26 +27,28 @@ export default function MultiplayerRoomPage() {
   }
 
   return (
-    <div className="py-6 space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/5 pb-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-black text-[#F8FAFC] uppercase tracking-tight">
-            Multiplayer Draft Arena
-          </h1>
-          <p className="text-xs text-[#94A3B8] mt-1">
-            Real-time multiplayer bidding room. Compete live against your friends to build the ultimate franchise squad.
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        {/* Main board */}
-        <div className="lg:col-span-9">
-          <MultiplayerLiveBiddingBoard />
+    <TeamBackgroundProvider teamId={userTeamId}>
+      <div className="py-6 space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/5 pb-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-black text-[#F8FAFC] uppercase tracking-tight">
+              Multiplayer Draft Arena
+            </h1>
+            <p className="text-xs text-[#94A3B8] mt-1">
+              Real-time multiplayer bidding room. Compete live against your friends to build the ultimate franchise squad.
+            </p>
+          </div>
         </div>
 
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          {/* Main board */}
+          <div className="lg:col-span-9">
+            <MultiplayerLiveBiddingBoard />
+          </div>
 
+
+        </div>
       </div>
-    </div>
+    </TeamBackgroundProvider>
   );
 }
