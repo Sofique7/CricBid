@@ -133,6 +133,9 @@ export function validateBid(
   if (clientTeamId !== teamId) {
     return { ok: false, error: 'You must claim the team before bidding.' };
   }
+  if (room.currentBidderId === teamId) {
+    return { ok: false, error: 'You already hold the highest bid.' };
+  }
 
   const squadRep = analyzeSquad(team.players);
   if (p.overseas && squadRep.overseasCount >= 8) {

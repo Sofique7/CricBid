@@ -36,6 +36,7 @@ interface AuctionContextType {
   placeUserBid: () => void;
   skipPlayer: () => void;
   nextPlayer: () => void;
+  sellNow: () => void;
   resetAuction: () => void;
   importCSVPlayers: (customPlayers: Player[]) => void;
   toggleSound: () => void;
@@ -51,9 +52,11 @@ const LOCAL_STORAGE_KEY = 'ipl_auction_sim_state_v2';
 // Standard bidding increment rules
 export function getNextBidAmount(currentBid: number, basePrice: number): number {
   if (currentBid === 0) return basePrice;
-  if (currentBid < 2.0) return parseFloat((currentBid + 0.20).toFixed(2));
-  if (currentBid < 5.0) return parseFloat((currentBid + 0.50).toFixed(2));
-  return parseFloat((currentBid + 1.00).toFixed(2));
+  if (currentBid < 2.0) return parseFloat((currentBid + 0.10).toFixed(2));
+  if (currentBid < 5.0) return parseFloat((currentBid + 0.20).toFixed(2));
+  if (currentBid < 10.0) return parseFloat((currentBid + 0.50).toFixed(2));
+  if (currentBid < 20.0) return parseFloat((currentBid + 1.00).toFixed(2));
+  return parseFloat((currentBid + 2.00).toFixed(2));
 }
 
 export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -410,7 +413,7 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     // Load next player
     setCurrentBid(0);
     setCurrentBidderId(null);
-    setTimer(10);
+    setTimer(20);
     setAuctionStatus('bidding');
     setIsPaused(false);
     
@@ -424,6 +427,14 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
+  const sellNow = () => {
+    if (currentBidderId && currentBid > 0) {
+      handleTimerEnd();
+    } else {
+      skipPlayer();
+    }
+  };
+
   const resetAuction = () => {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
     setPlayers(initialPlayers.map(p => ({ ...p, status: 'pool', sold_to: undefined, sold_price: undefined })));
@@ -431,7 +442,7 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setCurrentPlayerIndex(0);
     setCurrentBid(0);
     setCurrentBidderId(null);
-    setTimer(10);
+    setTimer(20);
     setIsPaused(true);
     setUserTeamId(null);
     setIsAuctionStarted(false);
@@ -447,7 +458,7 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setCurrentPlayerIndex(0);
     setCurrentBid(0);
     setCurrentBidderId(null);
-    setTimer(10);
+    setTimer(20);
     setIsPaused(true);
     setIsAuctionStarted(false);
     setLogs([`Successfully loaded ${customPlayers.length} custom players via CSV! Select a team to begin.`]);
@@ -647,6 +658,7 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       placeUserBid,
       skipPlayer,
       nextPlayer,
+      sellNow,
       resetAuction,
       importCSVPlayers,
       toggleSound,
