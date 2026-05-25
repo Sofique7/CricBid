@@ -17,37 +17,49 @@ function env(name: string): string | undefined {
 /** Read config fresh on every call — env vars override built-in CricBid defaults. */
 export function readFirebaseConfig(): FirebaseOptions {
   const defaults = CRICBID_FIREBASE_DEFAULTS;
-  return {
-    apiKey:
-      env('NEXT_PUBLIC_FIREBASE_API_KEY') ||
-      env('FIREBASE_API_KEY') ||
-      env('NEXT_PUBLIC_FIREBASE_APIKEY') ||
-      defaults.apiKey,
-    authDomain:
-      env('NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN') ||
-      env('FIREBASE_AUTH_DOMAIN') ||
-      defaults.authDomain,
-    databaseURL:
-      env('NEXT_PUBLIC_FIREBASE_DATABASE_URL') ||
-      env('FIREBASE_DATABASE_URL') ||
-      env('NEXT_PUBLIC_FIREBASE_DATABASEURL') ||
-      defaults.databaseURL,
-    projectId:
-      env('NEXT_PUBLIC_FIREBASE_PROJECT_ID') ||
-      env('FIREBASE_PROJECT_ID') ||
-      env('NEXT_PUBLIC_FIREBASE_PROJECTID') ||
-      defaults.projectId,
-    storageBucket:
-      env('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET') ||
-      env('FIREBASE_STORAGE_BUCKET') ||
-      defaults.storageBucket,
-    messagingSenderId:
-      env('NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID') ||
-      env('FIREBASE_MESSAGING_SENDER_ID') ||
-      defaults.messagingSenderId,
-    appId:
-      env('NEXT_PUBLIC_FIREBASE_APP_ID') || env('FIREBASE_APP_ID') || defaults.appId,
-  };
+
+  // Check if we have enough environment variables to override defaults
+  // We prioritize NEXT_PUBLIC_* but also check server-only fallbacks.
+  const apiKey =
+    env('NEXT_PUBLIC_FIREBASE_API_KEY') ||
+    env('FIREBASE_API_KEY') ||
+    env('NEXT_PUBLIC_FIREBASE_APIKEY');
+  const projectId =
+    env('NEXT_PUBLIC_FIREBASE_PROJECT_ID') ||
+    env('FIREBASE_PROJECT_ID') ||
+    env('NEXT_PUBLIC_FIREBASE_PROJECTID');
+
+  // If the user has provided their own Firebase credentials via ENV, use them.
+  // Otherwise, fallback to the built-in CricBid project defaults.
+  if (apiKey || projectId) {
+    return {
+      apiKey: apiKey || defaults.apiKey,
+      projectId: projectId || defaults.projectId,
+      authDomain:
+        env('NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN') ||
+        env('FIREBASE_AUTH_DOMAIN') ||
+        (projectId ? `${projectId}.firebaseapp.com` : defaults.authDomain),
+      databaseURL:
+        env('NEXT_PUBLIC_FIREBASE_DATABASE_URL') ||
+        env('FIREBASE_DATABASE_URL') ||
+        env('NEXT_PUBLIC_FIREBASE_DATABASEURL') ||
+        defaults.databaseURL,
+      storageBucket:
+        env('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET') ||
+        env('FIREBASE_STORAGE_BUCKET') ||
+        defaults.storageBucket,
+      messagingSenderId:
+        env('NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID') ||
+        env('FIREBASE_MESSAGING_SENDER_ID') ||
+        defaults.messagingSenderId,
+      appId:
+        env('NEXT_PUBLIC_FIREBASE_APP_ID') ||
+        env('FIREBASE_APP_ID') ||
+        defaults.appId,
+    };
+  }
+
+  return defaults;
 }
 
 export function getMissingFirebaseEnvKeys(): string[] {

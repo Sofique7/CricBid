@@ -53,7 +53,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else if (error.code === 'auth/unauthorized-domain') {
         console.error("Unauthorized domain. Add this domain to Firebase Console > Authentication > Settings.");
       } else if (error.code === 'auth/configuration-not-found') {
-        console.error("Firebase configuration missing or incorrect.");
+        console.error("Firebase configuration missing or incorrect. Check your environment variables (API Key, Project ID, Auth Domain).");
+        console.error("Common fix: Ensure Identity Platform is enabled in Firebase Console and the Google provider is active.");
       }
 
       alert(error.message);
