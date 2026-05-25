@@ -428,7 +428,6 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const leaveRoom = () => {
     void mp.leaveRoom(roomCodeRef.current);
-    clearPersistedMultiplayerSession();
     setRoomCode(null);
     setClients([]);
     setPlayers([]);
