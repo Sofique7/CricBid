@@ -20,7 +20,7 @@ import {
   validateBid,
   forceSellState,
 } from '../auctionLogic';
-import { getFirebaseDatabase, isFirebaseConfigured } from '../firebase';
+import { getFirebaseDatabase, isFirebaseConfigured } from '../firebaseApp';
 import { getClientId } from '../../utils/clientId';
 import { compactPlayersForRoom, compactTeamsForRoom } from './compactPlayers';
 import { sanitizeForFirebase } from './sanitizeForFirebase';

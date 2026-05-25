@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getFirebaseConfigErrorMessage, isFirebaseConfigured } from '@/lib/firebase';
+import { getFirebaseConfigErrorMessage, isFirebaseConfigured } from '../../../../../../lib/firebaseApp';
 import {
   roomStoreClaimTeam,
   roomStoreForceSell,

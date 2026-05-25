@@ -5,7 +5,7 @@ import {
   getUnsetFirebaseEnvKeys,
   isFirebaseConfigured,
   readFirebaseConfig,
-} from '@/lib/firebase';
+} from '../../../../lib/firebaseApp';
 
 export const dynamic = 'force-dynamic';
 

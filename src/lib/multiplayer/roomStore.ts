@@ -11,7 +11,7 @@ import {
   startAuctionState,
   validateBid,
 } from '../auctionLogic';
-import { getFirebaseDatabase, isFirebaseConfigured } from '../firebase';
+import { getFirebaseDatabase, isFirebaseConfigured } from '../firebaseApp';
 import { compactPlayersForRoom, compactTeamsForRoom } from './compactPlayers';
 import { asFirebaseArray, sanitizeForFirebase } from './sanitizeForFirebase';
 import { ClientPlayer, FirebaseRoomRecord, toRoomSnapshot } from './types';

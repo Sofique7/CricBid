@@ -1,4 +1,4 @@
-import { isFirebaseConfiguredOnClient } from '../firebase';
+import { isFirebaseConfiguredOnClient } from '../firebaseApp';
 import { getApiMultiplayerService } from './apiMultiplayer';
 import { getFirebaseMultiplayerService } from './firebaseMultiplayer';
 import { isDeployedProduction } from './host';
