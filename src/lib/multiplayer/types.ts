@@ -128,4 +128,5 @@ export interface IMultiplayerService {
   leaveRoom(roomCode: string | null): Promise<void>;
   /** Subscribe to client id changes (socket connect / firebase local id). Returns unsubscribe. */
   watchClientId(onChange: (id: string) => void): () => void;
+  setClientId(id: string | null): void;
 }

@@ -37,6 +37,10 @@ export class SocketMultiplayerService implements IMultiplayerService {
     };
   }
 
+  setClientId(id: string | null): void {
+    // Socket mode always uses socket.id, so we ignore manual overrides
+  }
+
   private getSocket(): Socket {
     if (!this.socket) {
       this.socket = io(socketOrigin(), {

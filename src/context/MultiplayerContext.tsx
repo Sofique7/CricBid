@@ -99,9 +99,7 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const mp = getMultiplayerService();
   
   useEffect(() => {
-    if (user && 'setClientId' in mp) {
-      (mp as any).setClientId(user.uid);
-    }
+    mp.setClientId(user?.uid || null);
   }, [user, mp]);
 
   const [hydrated, setHydrated] = useState(false);
@@ -205,7 +203,10 @@ export const MultiplayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   useEffect(() => {
     setHydrated(true);
-    return mp.watchClientId(setClientId);
+    return mp.watchClientId((id) => {
+      console.log('Multiplayer Client ID:', id);
+      setClientId(id);
+    });
   }, [mp]);
 
   useEffect(() => {

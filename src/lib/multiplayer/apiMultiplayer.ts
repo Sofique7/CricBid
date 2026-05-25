@@ -32,16 +32,25 @@ export class ApiMultiplayerService implements IMultiplayerService {
   private timerInterval: ReturnType<typeof setInterval> | null = null;
   private prevSnapshot: RoomSnapshot | null = null;
   private _clientId: string | null = null;
+  private clientIdListeners = new Set<(id: string) => void>();
+
+  setClientId(id: string | null) {
+    this._clientId = id;
+    this.clientIdListeners.forEach((fn) => fn(this.clientId));
+  }
 
   get clientId(): string {
     if (typeof window === 'undefined') return '';
-    if (!this._clientId) this._clientId = getClientId();
-    return this._clientId;
+    if (this._clientId) return this._clientId;
+    return getClientId();
   }
 
   watchClientId(onChange: (id: string) => void): () => void {
+    this.clientIdListeners.add(onChange);
     if (typeof window !== 'undefined') onChange(this.clientId);
-    return () => {};
+    return () => {
+      this.clientIdListeners.delete(onChange);
+    };
   }
 
   on<E extends MultiplayerEvent>(
