@@ -477,8 +477,8 @@ body {
    GOLD RING (player image frame)
 ═══════════════════════════════════════════════ */
 .gold-ring {
-  border: 1.5px solid var(--accent);
-  box-shadow: 0 0 0 1px rgba(200,162,77,0.15), inset 0 0 16px rgba(200,162,77,0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), inset 0 0 16px rgba(255, 255, 255, 0.04);
 }
 
 /* ═══════════════════════════════════════════════

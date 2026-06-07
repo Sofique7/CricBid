@@ -4,6 +4,7 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/
 import type { Auth } from "firebase/auth";
 import { getDatabase } from "firebase/database";
 import type { Database } from "firebase/database";
+import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 import type { Analytics } from "firebase/analytics";
 import { CRICBID_FIREBASE_DEFAULTS } from "./firebaseDefaults";
@@ -71,6 +72,7 @@ export const getFirebaseDatabase = (): Database => getDatabase(getFirebaseApp())
 export const app = getFirebaseApp();
 export const auth = getFirebaseAuth();
 export const database = getFirebaseDatabase();
+export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: 'select_account'

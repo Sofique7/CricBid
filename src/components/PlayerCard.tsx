@@ -81,10 +81,10 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player, showBidOverlay=f
           backdropFilter: 'var(--glass-blur)',
           WebkitBackdropFilter: 'var(--glass-blur)',
           border: player.rating >= 87 
-            ? '2.5px solid rgba(200, 162, 77, 0.75)' 
+            ? '2.5px solid rgba(255, 255, 255, 0.75)' 
             : '1px solid var(--glass-border)',
           boxShadow: player.rating >= 87 
-            ? '0 30px 80px rgba(200, 162, 77, 0.22), var(--glass-shadow-lg)' 
+            ? '0 30px 80px rgba(255, 255, 255, 0.12), var(--glass-shadow-lg)' 
             : 'var(--glass-shadow)'
         }}
       >
@@ -93,7 +93,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player, showBidOverlay=f
           className="h-48 flex items-center justify-center relative overflow-hidden"
           style={{ 
             background: player.rating >= 87 
-               ? 'linear-gradient(135deg, rgba(200, 162, 77, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%)' 
+               ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%)' 
                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%)' 
           }}
         >
@@ -102,7 +102,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player, showBidOverlay=f
             className="gold-ring w-32 h-32 rounded-full flex items-center justify-center overflow-hidden"
             style={{ 
               background: 'rgba(255,255,255,0.06)', 
-              borderColor: player.rating >= 87 ? '#C8A24D' : 'rgba(255,255,255,0.20)',
+              borderColor: player.rating >= 87 ? 'rgba(255, 255, 255, 0.75)' : 'rgba(255,255,255,0.20)',
               borderWidth: player.rating >= 87 ? '2px' : '1px',
               boxShadow: '0 8px 24px rgba(0,0,0,0.15)'
             }}
@@ -231,7 +231,7 @@ export const PlayerCard: React.FC<PlayerCardProps> = ({ player, showBidOverlay=f
             <div className="p-7 text-white">
               <div className="flex items-start gap-4 mb-6">
                 <div className="gold-ring w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden" 
-                  style={{ background:'rgba(255,255,255,0.06)', borderColor: player.rating >= 87 ? '#C8A24D' : 'rgba(255,255,255,0.12)' }}>
+                  style={{ background:'rgba(255,255,255,0.06)', borderColor: player.rating >= 87 ? 'rgba(255, 255, 255, 0.75)' : 'rgba(255,255,255,0.12)' }}>
                   {avatar}
                 </div>
                 <div className="min-w-0">
