@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { LobbyBackgroundProvider } from '../../components/LobbyBackgroundProvider';
 import { Player } from '../../data/players';
 import { readPersistedMultiplayerSession, PersistedSession } from '../../utils/persistedMultiplayerSession';
+
 export default function LobbyPage() {
   const router = useRouter();
   const {
@@ -35,26 +36,18 @@ export default function LobbyPage() {
   const [persistedSession, setPersistedSession] = useState<PersistedSession | null>(null);
   const [rejoining, setRejoining] = useState(false);
 
-  // Check for a persisted session on mount
   useEffect(() => {
     if (!hydrated) return;
     const session = readPersistedMultiplayerSession();
-    if (session && session.roomCode) {
-      setPersistedSession(session);
-    }
+    if (session && session.roomCode) setPersistedSession(session);
   }, [hydrated]);
 
   useEffect(() => {
-    if (user && !localName) {
-      setLocalName(user.displayName || 'Player');
-    }
+    if (user && !localName) setLocalName(user.displayName || 'Player');
   }, [user, localName]);
 
-  // Redirect to room if started
   useEffect(() => {
-    if (roomCode && isAuctionStarted) {
-      router.push('/multiplayer-room');
-    }
+    if (roomCode && isAuctionStarted) router.push('/multiplayer-room');
   }, [roomCode, isAuctionStarted, router]);
 
   const handleCreate = (e: React.FormEvent) => {
@@ -76,53 +69,73 @@ export default function LobbyPage() {
     joinRoom(persistedSession.roomCode, name, true);
   };
 
-
-
-  // Render Lobby Setup Screen (Before entering room)
+  /* ────────────────────────────────────────────
+     SETUP SCREEN (before entering a room)
+  ─────────────────────────────────────────────*/
   if (!roomCode) {
     return (
-      <div className="max-w-2xl mx-auto py-6 space-y-8">
+      <div className="max-w-xl mx-auto py-8 space-y-8">
+        {/* Header */}
         <div className="text-center space-y-3">
-          <span className="text-xs uppercase tracking-widest font-extrabold text-[#38BDF8] bg-[#38BDF8]/10 border border-[#38BDF8]/20 px-3.5 py-1.5 rounded-full inline-block">
-            ⚡ Play with Friends
+          <span
+            className="inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border"
+            style={{ background: '#1E1E1E', color: '#fff', borderColor: '#1E1E1E' }}
+          >
+            ⚡ Multiplayer
           </span>
-          <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase leading-none bg-gradient-to-r from-[#F8FAFC] via-[#94A3B8] to-[#F8FAFC] bg-clip-text text-transparent">
-            Multiplayer Room Lobby
+          <h1
+            className="text-3xl md:text-4xl font-black tracking-tight"
+            style={{ color: '#1E1E1E', letterSpacing: '-0.025em' }}
+          >
+            Auction Lobby
           </h1>
-          <p className="text-xs md:text-sm text-[#94A3B8] max-w-lg mx-auto font-medium">
-            Host a room to invite your friends using a room code, or enter an active room code to join their auction live.
+          <p className="text-sm" style={{ color: '#666666' }}>
+            Host a room and invite friends with a code, or join an active auction room.
           </p>
         </div>
 
-        {/* Rejoin Room Banner */}
+        {/* Rejoin banner */}
         {persistedSession && !roomCode && (
-          <div className="glass-card rounded-2xl p-5 border border-amber-500/20 bg-amber-500/5 backdrop-blur-md shadow-lg">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div
+            className="rounded-2xl p-4 border"
+            style={{ background: '#FFFBEB', borderColor: '#FDE68A' }}
+          >
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div
+                  className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: '#FEF3C7', border: '1px solid #FDE68A' }}
+                >
+                  <svg className="w-4 h-4" style={{ color: '#B45309' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-black text-amber-300 uppercase tracking-wide">Previous Session Found</p>
-                  <p className="text-xs text-[#94A3B8] mt-0.5">
-                    Room <span className="font-mono font-bold text-amber-400 tracking-widest">{persistedSession.roomCode}</span>
-                    {persistedSession.playerName && <> as <span className="font-bold text-white">{persistedSession.playerName}</span></>}
+                  <p className="text-xs font-bold uppercase tracking-wide" style={{ color: '#92400E' }}>
+                    Previous Session Found
+                  </p>
+                  <p className="text-xs mt-0.5" style={{ color: '#B45309' }}>
+                    Room{' '}
+                    <span className="font-mono font-black tracking-widest">
+                      {persistedSession.roomCode}
+                    </span>
+                    {persistedSession.playerName && (
+                      <> as <span className="font-bold">{persistedSession.playerName}</span></>
+                    )}
                   </p>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-shrink-0">
                 <button
                   onClick={handleRejoin}
                   disabled={rejoining}
-                  className="btn-primary px-6 py-2.5 text-xs font-black uppercase tracking-widest disabled:cursor-not-allowed"
+                  className="btn-primary px-4 py-2 text-xs"
                 >
-                  {rejoining ? 'Rejoining...' : '🔄 Rejoin Room'}
+                  {rejoining ? 'Rejoining…' : '↩ Rejoin'}
                 </button>
                 <button
                   onClick={() => setPersistedSession(null)}
-                  className="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-[#94A3B8] border border-white/10 hover:bg-white/5 transition cursor-pointer"
+                  className="btn-secondary px-4 py-2 text-xs"
                 >
                   Dismiss
                 </button>
@@ -131,99 +144,88 @@ export default function LobbyPage() {
           </div>
         )}
 
-        {/* Tabs switcher */}
-        <div className="flex border-b border-white/5 justify-center space-x-8">
-          <button
-            onClick={() => setActiveTab('create')}
-            className={`pb-3 text-sm font-black uppercase tracking-wider border-b-2 transition-all duration-300 cursor-pointer ${
-              activeTab === 'create'
-                ? 'border-[#38BDF8] text-[#38BDF8]'
-                : 'border-transparent text-[#94A3B8]/60 hover:text-[#F8FAFC]'
-            }`}
-          >
-            Create Room
-          </button>
-          <button
-            onClick={() => setActiveTab('join')}
-            className={`pb-3 text-sm font-black uppercase tracking-wider border-b-2 transition-all duration-300 cursor-pointer ${
-              activeTab === 'join'
-                ? 'border-[#38BDF8] text-[#38BDF8]'
-                : 'border-transparent text-[#94A3B8]/60 hover:text-[#F8FAFC]'
-            }`}
-          >
-            Join Room
-          </button>
+        {/* Tab switcher */}
+        <div
+          className="flex border-b"
+          style={{ borderColor: '#E7DFD1' }}
+        >
+          {(['create', 'join'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className="pb-3 px-1 mr-6 text-sm font-semibold border-b-2 transition-all duration-200 cursor-pointer"
+              style={{
+                borderBottomColor: activeTab === tab ? '#1E1E1E' : 'transparent',
+                color: activeTab === tab ? '#1E1E1E' : '#999999',
+              }}
+            >
+              {tab === 'create' ? 'Create Room' : 'Join Room'}
+            </button>
+          ))}
         </div>
 
         {error && (
-          <div className="text-xs font-semibold text-red-400 bg-red-950/20 border border-red-500/20 p-3 rounded-xl text-center">
+          <div
+            className="text-xs font-semibold p-3 rounded-xl text-center border"
+            style={{ background: '#FEF2F2', borderColor: '#FECACA', color: '#B91C1C' }}
+          >
             {error}
           </div>
         )}
 
-        <div className="glass-card rounded-3xl p-6 border border-white/5 shadow-2xl relative bg-[#0F172A]/40 backdrop-blur-md">
+        {/* Form card */}
+        <div className="surface-card p-6">
           {activeTab === 'create' ? (
-            <form onSubmit={handleCreate} className="space-y-6">
-              <div className="space-y-2">
-                <label className="block text-xs uppercase tracking-wider font-extrabold text-[#94A3B8]/60">
-                  Your Nickname / Host Name
-                </label>
+            <form onSubmit={handleCreate} className="space-y-5">
+              <div className="space-y-1.5">
+                <label className="section-label block">Your Name / Host Name</label>
                 <input
+                  id="create-name-input"
                   type="text"
-                  placeholder="Enter Nickname..."
+                  placeholder="e.g. Darshan"
                   value={localName}
                   onChange={(e) => setLocalName(e.target.value)}
                   maxLength={15}
                   required
-                  className="w-full bg-[#030810]/60 border border-white/5 focus:border-[#38BDF8] rounded-xl px-4 py-3 text-sm text-[#F8FAFC] placeholder-[#94A3B8]/30 focus:outline-none transition-colors"
+                  className="form-input"
                 />
               </div>
-
-              <button
-                type="submit"
-                className="btn-primary btn-primary--highlight w-full py-4 text-xs font-black uppercase tracking-widest cursor-pointer"
-              >
-                Create Room & Get Code
+              <button type="submit" id="create-room-btn" className="btn-primary w-full py-3.5 text-sm">
+                Create Room &amp; Get Code
               </button>
             </form>
           ) : (
-            <form onSubmit={handleJoin} className="space-y-6">
+            <form onSubmit={handleJoin} className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="block text-xs uppercase tracking-wider font-extrabold text-slate-400">
-                    Your Nickname
-                  </label>
+                <div className="space-y-1.5">
+                  <label className="section-label block">Your Nickname</label>
                   <input
+                    id="join-name-input"
                     type="text"
-                    placeholder="Enter Nickname..."
+                    placeholder="e.g. Darshan"
                     value={localName}
                     onChange={(e) => setLocalName(e.target.value)}
                     maxLength={15}
                     required
-                    className="w-full bg-slate-900/60 border border-white/5 focus:border-blue-500 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none transition-colors"
+                    className="form-input"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="block text-xs uppercase tracking-wider font-extrabold text-slate-400">
-                    6-Digit Room Code
-                  </label>
+                <div className="space-y-1.5">
+                  <label className="section-label block">6-Digit Room Code</label>
                   <input
+                    id="join-code-input"
                     type="text"
-                    placeholder="Enter Code..."
+                    placeholder="ABC123"
                     value={localCode}
                     onChange={(e) => setLocalCode(e.target.value.toUpperCase())}
                     maxLength={6}
                     required
-                    className="w-full bg-slate-900/60 border border-white/5 focus:border-blue-500 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none transition-colors tracking-widest font-black text-center"
+                    className="form-input font-mono font-black text-center tracking-widest text-base"
                   />
                 </div>
               </div>
-
-              <button
-                type="submit"
-                className="btn-primary btn-primary--highlight w-full py-4 text-xs font-black uppercase tracking-widest cursor-pointer"
-              >
-                Join Friends' Room
+              <button type="submit" id="join-room-btn" className="btn-primary w-full py-3.5 text-sm">
+                Join Room
               </button>
             </form>
           )}
@@ -232,216 +234,255 @@ export default function LobbyPage() {
     );
   }
 
-  // Render Lobby Waiting Room Screen (Inside active room)
+  /* ────────────────────────────────────────────
+     WAITING ROOM (inside active room)
+  ─────────────────────────────────────────────*/
   return (
     <LobbyBackgroundProvider teamId={userTeamId}>
-      <div className="py-6 space-y-8 animate-fade-in">
-      {/* Top Status Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-white/5 pb-5 gap-4">
-        <div>
-          <span className="text-[10px] uppercase font-bold text-[#38BDF8] tracking-widest px-2.5 py-1 bg-[#38BDF8]/10 border border-[#38BDF8]/20 rounded-md inline-block mb-1.5 animate-pulse">
-            Waiting Room Lobby
-          </span>
-          <h1 className="text-2xl md:text-3xl font-black text-[#F8FAFC] uppercase tracking-tight">
-            Room Code: <span className="text-[#38BDF8] font-mono tracking-widest select-all">{roomCode}</span>
-          </h1>
-          <p className="text-xs text-[#94A3B8]/60 mt-1 font-semibold">
-            Share this 6-digit room code with your friends so they can join.
-          </p>
-        </div>
+      <div className="py-4 space-y-8">
 
-        <button
-          onClick={leaveRoom}
-          className="px-5 py-2.5 rounded-xl border border-red-500/20 text-red-400 hover:text-[#F8FAFC] hover:bg-red-500/10 text-xs font-extrabold uppercase tracking-wider transition cursor-pointer"
+        {/* Top status bar */}
+        <div
+          className="flex flex-col md:flex-row md:items-center justify-between pb-5 gap-4 border-b"
+          style={{ borderColor: '#E7DFD1' }}
         >
-          Exit Room
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
-        {/* LEFT PANEL: Connected Players List (Col Span 4) */}
-        <div className="lg:col-span-4 flex flex-col">
-          <h2 className="text-xs uppercase tracking-widest font-black text-[#94A3B8]/60 mb-3 flex items-center justify-between">
-            <span>Connected Players ({clients.length})</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-          </h2>
-          
-          <div className="glass-card rounded-2xl border border-white/5 p-4 space-y-3 flex-grow overflow-y-auto max-h-[350px] bg-[#07111F]/30">
-            {clients.map((c) => {
-              const clientTeam = teams.find(t => t.id === c.teamId);
-              return (
-                <div
-                  key={c.id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-[#030810]/40 border border-white/5"
-                >
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-[#030810]/80 border border-white/5 flex items-center justify-center text-xs font-black text-[#94A3B8]/60">
-                      {c.name.slice(0, 2).toUpperCase()}
-                    </div>
-                    <div>
-                      <span className="text-xs font-extrabold text-[#F8FAFC] block">
-                        {c.name}{hydrated && c.id === clientId ? ' (You)' : ''}
-                      </span>
-                      <span className="text-[10px] text-[#94A3B8]/50 block uppercase font-semibold">
-                        {c.isHost ? '👑 Host / Auctioneer' : 'Player'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {clientTeam ? (
-                    <div className="flex items-center space-x-1.5">
-                      {clientTeam.logoUrl && (
-                        <img
-                          src={clientTeam.logoUrl}
-                          alt={clientTeam.shortName}
-                          className="w-6 h-6 object-contain drop-shadow"
-                          referrerPolicy="no-referrer"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                        />
-                      )}
-                      <span
-                        className="text-[9px] font-black px-2 py-1 rounded uppercase shadow-sm"
-                        style={{ backgroundColor: `${clientTeam.color}20`, border: `1px solid ${clientTeam.color}50`, color: clientTeam.color }}
-                      >
-                        {clientTeam.shortName}
-                      </span>
-                    </div>
-                  ) : (
-                    <span className="text-[9px] font-bold text-[#94A3B8]/40 uppercase tracking-wider">Spectating</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* RIGHT PANEL: Team Claiming Board (Col Span 8) */}
-        <div className="lg:col-span-8 flex flex-col space-y-4">
           <div>
-            <h2 className="text-xs uppercase tracking-widest font-black text-[#94A3B8]/60 mb-1">
-              Select Your Franchise
-            </h2>
-            <p className="text-[11px] text-[#94A3B8] font-semibold">
-              Pick a franchise to manage during the draft. Unclaimed franchises will remain inactive.
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="live-dot" />
+              <span className="section-label">Waiting Room</span>
+            </div>
+            <h1
+              className="text-2xl md:text-3xl font-black tracking-tight"
+              style={{ color: '#1E1E1E', letterSpacing: '-0.02em' }}
+            >
+              Room{' '}
+              <span
+                className="font-mono select-all"
+                style={{ color: '#2B2B2B' }}
+              >
+                {roomCode}
+              </span>
+            </h1>
+            <p className="text-xs mt-1" style={{ color: '#999999' }}>
+              Share this 6-digit code with friends to let them join.
             </p>
           </div>
 
-          {error && (
-            <div className="text-xs font-semibold text-red-400 bg-red-950/20 border border-red-500/20 p-2.5 rounded-xl text-center">
-              {error}
+          <button
+            onClick={leaveRoom}
+            className="btn-secondary px-5 py-2 text-xs self-start md:self-auto"
+            style={{ color: '#B91C1C', borderColor: '#FECACA' }}
+          >
+            Exit Room
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
+
+          {/* LEFT: Connected Players */}
+          <div className="lg:col-span-4 flex flex-col">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="section-label">Connected Players ({clients.length})</h2>
+              <span className="live-dot" />
             </div>
-          )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
-            {(teams ?? []).map((t) => {
-              const claimedBy = clients.find(c => c.teamId === t.id);
-              const isMine = userTeamId === t.id;
-              const isClaimedByOther = claimedBy && !isMine;
-
-              return (
-                <div
-                  key={t.id}
-                  onClick={() => !isClaimedByOther && selectUserTeam(isMine ? '' : t.id)}
-                  className={`glass-card p-4 rounded-xl border relative overflow-hidden group select-none flex flex-col justify-between transition-all duration-300 ${
-                    isMine
-                      ? 'ring-1 scale-102 bg-[#07111F]/80 backdrop-blur-md'
-                      : isClaimedByOther
-                      ? 'bg-white/2 border-white/5 opacity-30 cursor-not-allowed'
-                      : 'bg-white/4 hover:bg-white/8 hover:-translate-y-0.5 cursor-pointer'
-                  }`}
-                  style={{
-                    boxShadow: isMine ? `0 4px 15px ${t.color}25` : undefined,
-                    borderWidth: '1px',
-                    borderColor: isMine ? t.color : 'rgba(255, 255, 255, 0.08)'
-                  }}
-                >
+            <div
+              className="surface-card-sm p-3 space-y-2 flex-grow overflow-y-auto"
+              style={{ maxHeight: '360px' }}
+            >
+              {clients.map((c) => {
+                const clientTeam = teams.find(t => t.id === c.teamId);
+                return (
                   <div
-                    className="absolute top-0 inset-x-0 h-[2px]"
-                    style={{ backgroundColor: t.color }}
-                  ></div>
-
-                  <div className="flex items-center space-x-2.5 mb-2">
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center shadow-inner relative flex-shrink-0"
-                      style={{
-                        backgroundColor: `${t.color}15`,
-                        border: `1px solid ${t.color}30`,
-                      }}
-                    >
-                      {t.logoUrl ? (
-                        <img
-                          src={t.logoUrl}
-                          alt={t.shortName}
-                          className="w-10 h-10 object-contain drop-shadow"
-                          referrerPolicy="no-referrer"
-                          onError={(e) => {
-                            const el = e.target as HTMLImageElement;
-                            el.style.display = 'none';
-                            if (el.nextSibling) (el.nextSibling as HTMLElement).style.display = 'flex';
-                          }}
-                        />
-                      ) : null}
-                      <span
-                        className="text-xs font-black hidden items-center justify-center w-full h-full"
-                        style={{ color: t.color }}
+                    key={c.id}
+                    className="flex items-center justify-between p-3 rounded-xl border"
+                    style={{ background: '#F9F4EC', borderColor: '#E7DFD1' }}
+                  >
+                    <div className="flex items-center space-x-2.5">
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
+                        style={{ background: '#FFFDF8', border: '1px solid #E7DFD1', color: '#666666' }}
                       >
-                        {t.shortName}
-                      </span>
+                        {c.name.slice(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold block" style={{ color: '#1E1E1E' }}>
+                          {c.name}{hydrated && c.id === clientId ? ' (You)' : ''}
+                        </span>
+                        <span className="text-[10px] block uppercase font-medium" style={{ color: '#999999' }}>
+                          {c.isHost ? '👑 Host' : 'Player'}
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-xs font-black text-[#F8FAFC] group-hover:text-[#38BDF8] transition-colors uppercase leading-tight line-clamp-2">
-                        {t.name}
-                      </h3>
-                      <span className="text-[9px] text-[#94A3B8]/60 uppercase tracking-wider block mt-1 font-semibold">
-                        120.0 Cr Purse
-                      </span>
-                    </div>
-                  </div>
 
-                  <div className="border-t border-white/5 pt-2 text-[9px] uppercase tracking-wider text-[#94A3B8]/60">
-                    {isMine ? (
-                      <span className="text-[#38BDF8] font-black">✓ Claimed By You</span>
-                    ) : isClaimedByOther ? (
-                      <span className="text-red-400 font-semibold truncate block">
-                        👤 Taken: {claimedBy?.name}
-                      </span>
+                    {clientTeam ? (
+                      <div className="flex items-center space-x-1.5">
+                        {clientTeam.logoUrl && (
+                          <img
+                            src={clientTeam.logoUrl}
+                            alt={clientTeam.shortName}
+                            className="w-6 h-6 object-contain"
+                            referrerPolicy="no-referrer"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                          />
+                        )}
+                        <span
+                          className="text-[9px] font-bold px-2 py-0.5 rounded-full uppercase"
+                          style={{
+                            background: `${clientTeam.color}18`,
+                            border: `1px solid ${clientTeam.color}40`,
+                            color: clientTeam.color,
+                          }}
+                        >
+                          {clientTeam.shortName}
+                        </span>
+                      </div>
                     ) : (
-                      <span className="text-[#94A3B8]/40 font-bold">Available</span>
+                      <span className="text-[9px] font-medium uppercase" style={{ color: '#BBBBBB' }}>
+                        Spectating
+                      </span>
                     )}
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
-          {/* Start Button Area */}
-          <div className="border-t border-white/5 pt-5 text-center">
-            {isHost ? (
-              <div className="space-y-2.5 max-w-sm mx-auto">
-                <button
-                  onClick={startAuction}
-                  disabled={!userTeamId}
-                  className={`btn-primary w-full py-4 text-xs font-black uppercase tracking-wider shadow-lg transition-all duration-200 disabled:opacity-50 ${
-                    userTeamId ? 'btn-primary--highlight animate-pulse cursor-pointer' : 'cursor-not-allowed'
-                  }`}
-                >
-                  Start Multiplayer Auction →
-                </button>
-                {!userTeamId && (
-                  <p className="text-[10px] text-red-400 font-semibold uppercase tracking-wider">
-                    Please claim a team before starting the auction.
-                  </p>
-                )}
-              </div>
-            ) : (
-              <div className="p-4 rounded-xl bg-[#030810]/40 border border-white/5 max-w-md mx-auto text-xs text-[#94A3B8]/60 uppercase tracking-wider font-extrabold flex items-center justify-center space-x-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#94A3B8]/40 animate-ping"></span>
-                <span>Waiting for Host ({clients.find(c => c.isHost)?.name || 'Auctioneer'}) to start...</span>
+          {/* RIGHT: Franchise Selection */}
+          <div className="lg:col-span-8 flex flex-col space-y-5">
+            <div>
+              <h2 className="section-label mb-1">Select Your Franchise</h2>
+              <p className="text-xs" style={{ color: '#999999' }}>
+                Pick a franchise to manage. Unclaimed franchises will remain inactive.
+              </p>
+            </div>
+
+            {error && (
+              <div
+                className="text-xs font-semibold p-2.5 rounded-xl text-center border"
+                style={{ background: '#FEF2F2', borderColor: '#FECACA', color: '#B91C1C' }}
+              >
+                {error}
               </div>
             )}
+
+            {/* Franchise cards — SaaS pricing card style */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {(teams ?? []).map((t) => {
+                const claimedBy = clients.find(c => c.teamId === t.id);
+                const isMine = userTeamId === t.id;
+                const isClaimedByOther = claimedBy && !isMine;
+
+                return (
+                  <div
+                    key={t.id}
+                    id={`franchise-card-${t.id}`}
+                    onClick={() => !isClaimedByOther && selectUserTeam(isMine ? '' : t.id)}
+                    className="relative overflow-hidden rounded-2xl border flex flex-col transition-all duration-200 select-none"
+                    style={{
+                      background: isMine ? '#FFFDF8' : '#FAFAF8',
+                      borderColor: isMine ? t.color : '#E7DFD1',
+                      boxShadow: isMine
+                        ? `0 4px 20px ${t.color}22, 0 1px 4px rgba(0,0,0,0.06)`
+                        : '0 1px 4px rgba(0,0,0,0.04)',
+                      opacity: isClaimedByOther ? 0.45 : 1,
+                      cursor: isClaimedByOther ? 'not-allowed' : 'pointer',
+                      transform: isMine ? 'translateY(-2px)' : undefined,
+                    }}
+                  >
+                    {/* Team color accent bar */}
+                    <div
+                      className="h-1 w-full"
+                      style={{ background: t.color }}
+                    />
+
+                    <div className="p-4 flex flex-col flex-grow">
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div
+                          className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
+                          style={{
+                            background: `${t.color}12`,
+                            border: `1px solid ${t.color}28`,
+                          }}
+                        >
+                          {t.logoUrl && (
+                            <img
+                              src={t.logoUrl}
+                              alt={t.shortName}
+                              className="w-9 h-9 object-contain"
+                              referrerPolicy="no-referrer"
+                              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                            />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <h3
+                            className="text-xs font-bold uppercase leading-tight line-clamp-2"
+                            style={{ color: '#1E1E1E' }}
+                          >
+                            {t.name}
+                          </h3>
+                          <span className="text-[10px] font-medium" style={{ color: '#999999' }}>
+                            ₹120 Cr Purse
+                          </span>
+                        </div>
+                      </div>
+
+                      <div
+                        className="pt-2.5 border-t text-[10px] font-semibold uppercase tracking-wide"
+                        style={{ borderColor: '#E7DFD1' }}
+                      >
+                        {isMine ? (
+                          <span style={{ color: '#3BA55D' }}>✓ Claimed By You</span>
+                        ) : isClaimedByOther ? (
+                          <span style={{ color: '#B91C1C' }} className="truncate block">
+                            Taken by {claimedBy?.name}
+                          </span>
+                        ) : (
+                          <span style={{ color: '#BBBBBB' }}>Available</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Start / Waiting area */}
+            <div
+              className="border-t pt-5"
+              style={{ borderColor: '#E7DFD1' }}
+            >
+              {isHost ? (
+                <div className="space-y-2 max-w-sm">
+                  <button
+                    id="start-auction-btn"
+                    onClick={startAuction}
+                    disabled={!userTeamId}
+                    className="btn-primary w-full py-3.5 text-sm"
+                  >
+                    Start Multiplayer Auction →
+                  </button>
+                  {!userTeamId && (
+                    <p className="text-[10px] font-semibold" style={{ color: '#B91C1C' }}>
+                      Select a franchise before starting.
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-medium"
+                  style={{ background: '#F9F4EC', borderColor: '#E7DFD1', color: '#666666' }}
+                >
+                  <span className="live-dot" />
+                  <span>
+                    Waiting for {clients.find(c => c.isHost)?.name || 'Host'} to start the auction…
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
       </div>
     </LobbyBackgroundProvider>
   );

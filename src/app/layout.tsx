@@ -7,8 +7,8 @@ import { Navbar } from "../components/Navbar";
 import { GoogleSignInBubble } from "../components/GoogleSignInBubble";
 
 export const metadata: Metadata = {
-  title: "CricBid - Premium Live Auction Simulator",
-  description: "Experience the ultimate cricket draft arena. Claim your franchise, bid in real-time, and draft your elite Playing XI on the CricBid studio broadcast platform.",
+  title: "CricBid – Bid. Draft. Dominate.",
+  description: "Real-time IPL-style player auctions with friends. Claim your franchise, manage your purse, and build a championship squad — live.",
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' }
@@ -23,15 +23,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen flex flex-col bg-[#0F172A] text-[#F8FAFC] relative antialiased">
-        <div className="studio-bg">
-          <div className="stadium-texture"></div>
-        </div>
+      <body className="min-h-screen flex flex-col antialiased" style={{ background: '#F5EFE4', color: '#1E1E1E' }}>
         <AuthProvider>
           <AuctionProvider>
             <MultiplayerProvider>
               <Navbar />
-              <main className="flex-grow p-4 md:p-8 max-w-7xl w-full mx-auto relative z-10">
+              <main className="flex-grow px-4 py-6 md:px-8 md:py-10 max-w-7xl w-full mx-auto relative">
                 {children}
               </main>
               <GoogleSignInBubble />
