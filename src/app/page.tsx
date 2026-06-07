@@ -34,7 +34,7 @@ export default function HomePage() {
         >
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-slow-zoom animate-cinematic-reveal pointer-events-none"
-            style={{ backgroundImage: "url('/front_bg.jpg')" }}
+            style={{ backgroundImage: "url('/front_bg.png')" }}
           />
 
           <button onClick={handleSkip}

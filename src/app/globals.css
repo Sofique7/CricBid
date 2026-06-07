@@ -351,12 +351,18 @@ body {
 }
 
 .team-bg-image, .lobby-bg-image {
-  position: absolute; top: 0; left: 0;
-  width: 100%; height: 100%;
-  object-fit: cover; object-position: center; z-index: -2;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70vw; height: 60vh;
+  max-width: 1000px; max-height: 600px;
+  object-fit: cover;
+  border-radius: var(--radius-xl);
+  opacity: 0.45;
+  filter: saturate(1.1) brightness(0.8) blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: var(--glass-shadow-lg);
   transition: opacity 0.8s var(--ease-apple);
-  opacity: 0.55;                  /* Stadium art clearly visible */
-  filter: saturate(0.85) brightness(1.02);
 }
 
 .team-bg-overlay, .lobby-bg-overlay {
