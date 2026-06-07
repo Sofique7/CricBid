@@ -12,8 +12,16 @@ export const getSessionToken = () => {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { password } = body;
+    const { password, email } = body;
     const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const adminEmail = process.env.ADMIN_EMAIL || 'just.darshan510@gmail.com';
+
+    if (!email || email.trim().toLowerCase() !== adminEmail.trim().toLowerCase()) {
+      return NextResponse.json(
+        { error: 'Access Denied: This Google account is not authorized as Admin' }, 
+        { status: 403 }
+      );
+    }
 
     if (password !== adminPassword) {
       return NextResponse.json({ error: 'Incorrect password' }, { status: 401 });
