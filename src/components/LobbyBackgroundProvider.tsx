@@ -52,7 +52,7 @@ export const LobbyBackgroundProvider: React.FC<LobbyBackgroundProviderProps> = (
   }, [teamId]);
 
   return (
-    <div className="relative w-full min-h-screen">
+    <div className="relative w-full min-h-screen overflow-hidden">
       <div className="lobby-bg-container lobby-bg-fade-in">
         {!imageError && backgroundUrl ? (
           <img src={backgroundUrl} alt="Team Background" className="lobby-bg-image" />
@@ -60,6 +60,31 @@ export const LobbyBackgroundProvider: React.FC<LobbyBackgroundProviderProps> = (
           <div className="lobby-bg-fallback" />
         )}
       </div>
+
+      {/* Liquid Glass Background Blobs - Warm glowing theme */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-[-5] opacity-80">
+        <div className="absolute top-[10%] left-[20%] w-[380px] h-[380px] rounded-full bg-white/40 blur-[120px] animate-[float-blob-1_22s_infinite_alternate]" />
+        <div className="absolute bottom-[20%] right-[10%] w-[520px] h-[520px] rounded-full bg-[rgba(255,225,180,0.35)] blur-[150px] animate-[float-blob-2_32s_infinite_alternate]" />
+        <div className="absolute top-[45%] right-[30%] w-[420px] h-[420px] rounded-full bg-[rgba(255,250,215,0.35)] blur-[130px] animate-[float-blob-3_28s_infinite_alternate]" />
+      </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes float-blob-1 {
+          0% { transform: translate(0px, 0px) scale(1); }
+          50% { transform: translate(140px, 90px) scale(1.3); }
+          100% { transform: translate(-30px, 160px) scale(0.95); }
+        }
+        @keyframes float-blob-2 {
+          0% { transform: translate(0px, 0px) scale(1.15); }
+          50% { transform: translate(-120px, -140px) scale(0.8); }
+          100% { transform: translate(80px, -60px) scale(1.25); }
+        }
+        @keyframes float-blob-3 {
+          0% { transform: translate(0px, 0px) scale(0.9); }
+          50% { transform: translate(90px, -100px) scale(1.2); }
+          100% { transform: translate(-120px, 70px) scale(0.85); }
+        }
+      `}} />
 
       {/* Dark overlay for readability */}
       <div

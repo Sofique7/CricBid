@@ -11,7 +11,9 @@ export const MultiplayerAIAdvisor: React.FC = () => {
   if (!userTeam) {
     return (
       <div className="glass p-6 h-full flex flex-col justify-center items-center text-center text-white">
-        <span className="text-2xl mb-2">🤖</span>
+        <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-3" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'rgba(255,255,255,0.50)' }}><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="15" x2="8" y2="15"/><line x1="16" y1="15" x2="16" y2="15"/></svg>
+        </div>
         <h3 className="text-sm font-bold text-white/40 uppercase tracking-wider">
           AI Squad Advisor
         </h3>
@@ -33,7 +35,9 @@ export const MultiplayerAIAdvisor: React.FC = () => {
       {/* Title */}
       <div>
         <div className="flex items-center space-x-2 mb-4">
-          <span className="text-xl">🤖</span>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.14)' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'rgba(255,255,255,0.75)' }}><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="15" x2="8" y2="15"/><line x1="16" y1="15" x2="16" y2="15"/></svg>
+          </div>
           <h3 className="text-base font-bold text-white tracking-tight">
             AI Squad Advisor
           </h3>
@@ -42,22 +46,22 @@ export const MultiplayerAIAdvisor: React.FC = () => {
         {/* Warnings and Checklist */}
         <div className="space-y-3 mb-6">
           {report.errors.map((err, i) => (
-            <div key={i} className="flex items-start space-x-2.5 p-3 rounded-xl bg-[#FF453A]/10 border border-[#FF453A]/20 text-[#FF453A] text-xs font-semibold animate-pulse">
-              <span className="text-base leading-none">⚠️</span>
+            <div key={i} className="flex items-start space-x-2.5 p-3 rounded-xl bg-[rgba(215,0,21,0.08)] border border-[rgba(215,0,21,0.20)] text-[var(--danger)] text-xs font-semibold animate-pulse">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               <span>{err}</span>
             </div>
           ))}
 
           {report.warnings.map((warn, i) => (
-            <div key={i} className="flex items-start space-x-2.5 p-3 rounded-xl bg-[#FF9F0A]/10 border border-[#FF9F0A]/20 text-[#FF9F0A] text-xs font-medium">
-              <span className="text-base leading-none">💡</span>
+            <div key={i} className="flex items-start space-x-2.5 p-3 rounded-xl bg-[rgba(201,125,0,0.08)] border border-[rgba(201,125,0,0.20)] text-[#AE5600] text-xs font-medium">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
               <span>{warn}</span>
             </div>
           ))}
 
           {report.errors.length === 0 && report.warnings.length === 0 && (
-            <div className="flex items-start space-x-2.5 p-3 rounded-xl bg-[#30D158]/10 border border-[#30D158]/20 text-[#30D158] text-xs font-semibold">
-              <span className="text-base leading-none">✅</span>
+            <div className="flex items-start space-x-2.5 p-3 rounded-xl bg-[rgba(36,138,61,0.08)] border border-[rgba(36,138,61,0.20)] text-[var(--success)] text-xs font-semibold">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               <span>Roster satisfies all minimum role and squad size regulations! Excellent draft balance.</span>
             </div>
           )}
@@ -74,7 +78,7 @@ export const MultiplayerAIAdvisor: React.FC = () => {
           <div className="space-y-4">
             <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between">
               <div>
-                <span className="text-[9px] uppercase font-bold text-[#C8A24D] block tracking-wider mb-0.5">
+                <span className="text-[9px] uppercase font-bold text-[#9F8469] block tracking-wider mb-0.5">
                   Top Suggestion
                 </span>
                 <span className="text-sm font-bold text-white block">
@@ -111,7 +115,7 @@ export const MultiplayerAIAdvisor: React.FC = () => {
                           {alt.role.replace('_', ' ')} (OVR {alt.rating})
                         </span>
                       </div>
-                      <span className="font-bold text-[#C8A24D]">
+                      <span className="font-bold text-[#9F8469]">
                         ₹{alt.base_price.toFixed(2)} Cr
                       </span>
                     </div>

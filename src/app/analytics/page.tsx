@@ -4,7 +4,6 @@ import React, { useState, useMemo } from 'react';
 import { useAuction } from '../../context/AuctionContext';
 import { useMultiplayer } from '../../context/MultiplayerContext';
 import { PlayerCard } from '../../components/PlayerCard';
-import { CSVUploader } from '../../components/CSVUploader';
 import { Player } from '../../data/players';
 
 export default function PlayerAnalyticsPage() {
@@ -21,8 +20,6 @@ export default function PlayerAnalyticsPage() {
   const [sortBy, setSortBy] = useState<string>('rating-desc');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [currentPage, setCurrentPage] = useState(1);
-  const [showUploader, setShowUploader] = useState(false);
-  const [csvUploadedMsg, setCsvUploadedMsg] = useState<string | null>(null);
 
   const itemsPerPage = 12;
 
@@ -73,12 +70,6 @@ export default function PlayerAnalyticsPage() {
 
   const totalPages = Math.ceil(processedPlayers.length / itemsPerPage);
 
-  const handleCSVSuccess = () => {
-    setCsvUploadedMsg('New roster imported and draft pool updated successfully!');
-    setShowUploader(false);
-    setCurrentPage(1);
-    setTimeout(() => setCsvUploadedMsg(null), 5000);
-  };
 
   const roleLabels: Record<string, string> = {
     opener: 'Opener',
@@ -102,34 +93,7 @@ export default function PlayerAnalyticsPage() {
             Search, filter, and inspect the performance metrics of all {players.length} players in the pool.
           </p>
         </div>
-        <div className="mt-4 md:mt-0 flex items-center space-x-3">
-          <button
-            onClick={() => setShowUploader(!showUploader)}
-            className="px-4 py-2 text-xs font-bold uppercase rounded-full bg-white text-black hover:bg-white/85 shadow-sm transition cursor-pointer border-none"
-          >
-            {showUploader ? 'Close Uploader' : '📂 Seed Custom CSV'}
-          </button>
-        </div>
       </div>
-
-      {/* CSV Uploader panel */}
-      {showUploader && (
-        <div className="glass p-6 max-w-xl mx-auto shadow-md animate-fade-in text-white">
-          <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-2">
-            Import Roster Sheet
-          </h3>
-          <p className="text-xs text-white/60 mb-4">
-            Uploading a custom CSV sheet here will override the active player pool and reset any ongoing simulations.
-          </p>
-          <CSVUploader onUploadSuccess={handleCSVSuccess} />
-        </div>
-      )}
-
-      {csvUploadedMsg && (
-        <div className="max-w-xl mx-auto text-xs font-semibold text-[#30D158] bg-[#30D158]/10 border border-[#30D158]/20 p-2.5 rounded-xl text-center">
-          {csvUploadedMsg}
-        </div>
-      )}
 
       {/* Controls: Search and Filters */}
       <div className="glass p-4 grid grid-cols-1 md:grid-cols-12 gap-3.5 items-center">
@@ -147,7 +111,7 @@ export default function PlayerAnalyticsPage() {
               setCurrentPage(1);
             }}
             placeholder="Search e.g. Kohli, Bumrah..."
-            className="w-full text-xs bg-white/10 border border-white/15 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#C8A24D]/55 focus:bg-white/15"
+            className="glass-input w-full text-xs px-3 py-2"
           />
         </div>
 
@@ -162,8 +126,7 @@ export default function PlayerAnalyticsPage() {
               setSelectedRole(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full text-xs bg-white/10 border border-white/15 rounded-xl px-2 py-2 text-white focus:outline-none focus:border-[#C8A24D]/55 focus:bg-white/15"
-            style={{ color: '#FFFFFF', backgroundColor: '#1A1A1E' }}
+            className="glass-select w-full text-xs px-2 py-2"
           >
             <option value="all">All Roles</option>
             <option value="opener">Openers</option>
@@ -187,8 +150,7 @@ export default function PlayerAnalyticsPage() {
               setSelectedNationality(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full text-xs bg-white/10 border border-white/15 rounded-xl px-2 py-2 text-white focus:outline-none focus:border-[#C8A24D]/55 focus:bg-white/15"
-            style={{ color: '#FFFFFF', backgroundColor: '#1A1A1E' }}
+            className="glass-select w-full text-xs px-2 py-2"
           >
             <option value="all">All Players</option>
             <option value="domestic">Indian (Domestic)</option>
@@ -207,8 +169,7 @@ export default function PlayerAnalyticsPage() {
               setSelectedStatus(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full text-xs bg-white/10 border border-white/15 rounded-xl px-2 py-2 text-white focus:outline-none focus:border-[#C8A24D]/55 focus:bg-white/15"
-            style={{ color: '#FFFFFF', backgroundColor: '#1A1A1E' }}
+            className="glass-select w-full text-xs px-2 py-2"
           >
             <option value="all">All States</option>
             <option value="pool">Available in Pool</option>
@@ -225,8 +186,7 @@ export default function PlayerAnalyticsPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="w-full text-xs bg-white/10 border border-white/15 rounded-xl px-2 py-2 text-white focus:outline-none focus:border-[#C8A24D]/55 focus:bg-white/15"
-            style={{ color: '#FFFFFF', backgroundColor: '#1A1A1E' }}
+            className="glass-select w-full text-xs px-2 py-2"
           >
             <option value="rating-desc">Rating: High to Low</option>
             <option value="rating-asc">Rating: Low to High</option>
@@ -237,29 +197,40 @@ export default function PlayerAnalyticsPage() {
         </div>
 
         {/* View Switcher */}
-        <div className="md:col-span-1 flex justify-end space-x-1.5 self-end">
-          <button
-            onClick={() => setViewMode('grid')}
-            className={`p-2 rounded-lg text-xs transition cursor-pointer border-none ${
-              viewMode === 'grid'
-                ? 'bg-white text-black font-bold shadow-sm'
-                : 'bg-white/5 text-white/60 hover:text-white'
-            }`}
-            title="Grid Card View"
-          >
-            🎴
-          </button>
-          <button
-            onClick={() => setViewMode('table')}
-            className={`p-2 rounded-lg text-xs transition cursor-pointer border-none ${
-              viewMode === 'table'
-                ? 'bg-white text-black font-bold shadow-sm'
-                : 'bg-white/5 text-white/60 hover:text-white'
-            }`}
-            title="Stats Sheet Table"
-          >
-            📊
-          </button>
+        <div className="md:col-span-1 flex justify-end self-end">
+          <div className="flex items-center gap-0.5 p-0.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)' }}>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-2 rounded-md transition-all duration-150 cursor-pointer border-none ${
+                viewMode === 'grid'
+                  ? 'shadow-sm'
+                  : 'opacity-40 hover:opacity-70'
+              }`}
+              style={viewMode === 'grid' ? { background: 'rgba(255,255,255,0.14)' } : { background: 'transparent' }}
+              title="Grid Card View"
+            >
+              {/* 2×2 grid squares icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              className={`p-2 rounded-md transition-all duration-150 cursor-pointer border-none ${
+                viewMode === 'table'
+                  ? 'shadow-sm'
+                  : 'opacity-40 hover:opacity-70'
+              }`}
+              style={viewMode === 'table' ? { background: 'rgba(255,255,255,0.14)' } : { background: 'transparent' }}
+              title="Stats Sheet Table"
+            >
+              {/* Horizontal list lines icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -334,17 +305,22 @@ export default function PlayerAnalyticsPage() {
                         <td className="px-4 py-3.5 font-bold text-white flex items-center space-x-1.5">
                           <span>{player.name}</span>
                           {player.is_wicketkeeper && (
-                            <span className="text-[8px] bg-[#30D158]/10 border border-[#30D158]/20 text-[#30D158] font-extrabold px-1 rounded">
+                            <span className="text-[8px] bg-[rgba(36,138,61,0.08)] border border-[rgba(36,138,61,0.20)] text-[var(--success)] font-extrabold px-1 rounded">
                               WK
                             </span>
                           )}
                         </td>
                         <td className="px-4 py-3.5 text-white/60">{mappedRole}</td>
-                        <td className="px-4 py-3.5 text-center font-extrabold text-[#C8A24D]">
+                        <td className="px-4 py-3.5 text-center font-extrabold text-[#9F8469]">
                           {player.rating}
                         </td>
                         <td className="px-4 py-3.5 text-center text-white/60">
-                          {player.nationality} {player.overseas && '✈'}
+                          <span className="flex items-center justify-center gap-1.5">
+                            <span>{player.nationality}</span>
+                            {player.overseas && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" title="Overseas Player" />
+                            )}
+                          </span>
                         </td>
                         <td className="px-4 py-3.5 text-right font-bold text-white">
                           {player.base_price.toFixed(2)} Cr
@@ -355,15 +331,15 @@ export default function PlayerAnalyticsPage() {
                         <td className="px-4 py-3.5 text-center text-white">
                           {player.batting_average !== undefined ? player.batting_average : '-'}
                         </td>
-                        <td className="px-4 py-3.5 text-center text-[#30D158] font-semibold">
+                        <td className="px-4 py-3.5 text-center text-[var(--success)] font-semibold">
                           {player.wickets !== undefined ? player.wickets : '-'}
                         </td>
-                        <td className="px-4 py-3.5 text-center text-[#FF453A] font-semibold">
+                        <td className="px-4 py-3.5 text-center text-[var(--danger)] font-semibold">
                           {player.economy !== undefined ? player.economy : '-'}
                         </td>
                         <td className="px-4 py-3.5 text-right font-semibold">
                           {player.status === 'sold' ? (
-                            <span className="font-bold text-[#C8A24D]">
+                            <span className="font-bold text-[#9F8469]">
                               SOLD ({player.sold_price?.toFixed(2)} Cr)
                             </span>
                           ) : player.status === 'unsold' ? (
@@ -371,7 +347,7 @@ export default function PlayerAnalyticsPage() {
                               Unsold
                             </span>
                           ) : (
-                            <span className="text-[#30D158] font-bold uppercase tracking-wider text-[10px] animate-pulse">
+                            <span className="text-[var(--success)] font-bold uppercase tracking-wider text-[10px] animate-pulse">
                               Available
                             </span>
                           )}

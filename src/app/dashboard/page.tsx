@@ -30,7 +30,7 @@ export default function TeamDashboardPage() {
   if (!userTeamId || !selectedTeamId) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C8A24D]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#9F8469]"></div>
         <p className="mt-4 text-[#6E6E73]">Redirecting to team selection...</p>
       </div>
     );
@@ -66,8 +66,8 @@ export default function TeamDashboardPage() {
         </p>
       </div>
 
-      {/* Team Tabs Selector (Horizontal scrolling bar) */}
-      <div className="flex overflow-x-auto pb-3 gap-2 border-b border-[rgba(255,255,255,0.08)] scrollbar-thin">
+      {/* Team Tabs Selector */}
+      <div className="flex overflow-x-auto pb-3 gap-2 border-b scrollbar-thin" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
         {teams.map((t) => {
           const isSelected = t.id === selectedTeamId;
           const isUser = t.id === userTeamId;
@@ -75,22 +75,24 @@ export default function TeamDashboardPage() {
             <button
               key={t.id}
               onClick={() => setSelectedTeamId(t.id)}
-              className={`px-3.5 py-2 rounded-full border text-xs font-bold uppercase whitespace-nowrap transition-all flex items-center space-x-1.5 cursor-pointer ${
-                isSelected
-                  ? 'bg-white text-black shadow-sm'
-                  : 'bg-white/5 border-white/10 text-white/60 hover:text-white hover:bg-white/10'
-              }`}
-              style={{
-                borderColor: isSelected ? t.color : undefined,
-                borderWidth: isSelected ? '2px' : '1px'
+              className="px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer flex-shrink-0"
+              style={isSelected ? {
+                background: `${t.color}22`,
+                border: `1.5px solid ${t.color}60`,
+                color: t.color,
+                boxShadow: `0 0 12px ${t.color}20`,
+              } : {
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                color: 'rgba(245,245,247,0.45)',
               }}
             >
               <span
-                className="w-2 h-2 rounded-full inline-block"
-                style={{ backgroundColor: t.color }}
-              ></span>
+                className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                style={{ backgroundColor: isSelected ? t.color : 'rgba(255,255,255,0.25)' }}
+              />
               <span>{t.shortName}</span>
-              {isUser && <span className="text-[10px]" title="Your Franchise">👤</span>}
+              {isUser && <span className="w-1.5 h-1.5 rounded-full bg-[#D4963A] flex-shrink-0" title="Your Franchise" />}
             </button>
           );
         })}
@@ -201,74 +203,71 @@ export default function TeamDashboardPage() {
             </div>
           </div>
 
-          {/* Squad Rules & Checklist Panel */}
-          <div className="glass p-6 space-y-4">
-            <h3 className="section-label border-b border-[rgba(255,255,255,0.08)] pb-2.5">
-              Squad Compliance Check
-            </h3>
-            
-            <div className="space-y-2.5">
-              {squadReport.errors.map((err, i) => (
-                <div key={i} className="flex items-start space-x-2.5 p-3 rounded-xl bg-[#FF453A]/10 border border-[#FF453A]/20 text-[#FF453A] text-xs font-semibold">
-                  <span className="text-base leading-none">⚠️</span>
-                  <span>{err}</span>
-                </div>
-              ))}
 
-              {squadReport.warnings.map((warn, i) => (
-                <div key={i} className="flex items-start space-x-2.5 p-3 rounded-xl bg-[#FF9F0A]/10 border border-[#FF9F0A]/20 text-[#FF9F0A] text-xs font-medium">
-                  <span className="text-base leading-none">💡</span>
-                  <span>{warn}</span>
-                </div>
-              ))}
 
-              {squadReport.errors.length === 0 && squadReport.warnings.length === 0 && selectedTeam.players.length > 0 && (
-                <div className="flex items-start space-x-2.5 p-3 rounded-xl bg-[#30D158]/10 border border-[#30D158]/20 text-[#30D158] text-xs font-semibold">
-                  <span className="text-base leading-none">✅</span>
-                  <span>All rules satisfied! Roster is balanced and ready for simulation runs.</span>
-                </div>
-              )}
-
-              {selectedTeam.players.length === 0 && (
-                <div className="text-xs text-white/40 text-center py-4 italic font-medium">
-                  Franchise has not drafted any players yet.
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
         {/* RIGHT: Roster List or Pitch Visualizer (Col Span 8) */}
         <div className="lg:col-span-8 space-y-4">
-          {/* View Toggle */}
-          <div className="flex justify-between items-center bg-white/5 border border-white/10 p-1.5 rounded-2xl">
-            <div className="flex space-x-1.5">
+          {/* View Toggle — Apple UISegmentedControl */}
+          <div className="flex justify-between items-center">
+            {/* Dark pill track */}
+            <div
+              className="flex items-center p-[3px] rounded-[12px]"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '0.5px solid rgba(255,255,255,0.10)',
+                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.30)',
+              }}
+            >
               <button
                 onClick={() => setActiveTab('roster')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all cursor-pointer ${
-                  activeTab === 'roster'
-                    ? 'bg-white border-none text-black font-bold shadow-sm'
-                    : 'text-white/60 hover:text-white'
-                }`}
+                className="flex items-center gap-1.5 px-4 py-[6px] rounded-[9px] text-[13px] font-semibold transition-all duration-200 cursor-pointer border-none outline-none"
+                style={activeTab === 'roster' ? {
+                  background: 'rgba(255,255,255,0.12)',
+                  color: '#F5F5F7',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.30), 0 0.5px 1px rgba(0,0,0,0.20)',
+                } : {
+                  background: 'transparent',
+                  color: 'rgba(245,245,247,0.40)',
+                }}
               >
-                📋 Full Squad ({selectedTeam.players.length})
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+                  <circle cx="3" cy="6" r="1.2" fill="currentColor" stroke="none"/>
+                  <circle cx="3" cy="12" r="1.2" fill="currentColor" stroke="none"/>
+                  <circle cx="3" cy="18" r="1.2" fill="currentColor" stroke="none"/>
+                </svg>
+                Full Squad ({selectedTeam.players.length})
               </button>
+
               <button
                 onClick={() => setActiveTab('pitch')}
-                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all cursor-pointer ${
-                  activeTab === 'pitch'
-                    ? 'bg-white border-none text-black font-bold shadow-sm'
-                    : 'text-white/60 hover:text-white'
-                }`}
+                className="flex items-center gap-1.5 px-4 py-[6px] rounded-[9px] text-[13px] font-semibold transition-all duration-200 cursor-pointer border-none outline-none"
+                style={activeTab === 'pitch' ? {
+                  background: 'rgba(255,255,255,0.12)',
+                  color: '#F5F5F7',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.30), 0 0.5px 1px rgba(0,0,0,0.20)',
+                } : {
+                  background: 'transparent',
+                  color: 'rgba(245,245,247,0.40)',
+                }}
               >
-                🏏 Strongest Playing XI (11)
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L3 7v6c0 5.25 3.75 10.15 9 11.25C17.25 23.15 21 18.25 21 13V7L12 2z"/>
+                </svg>
+                Strongest Playing XI (11)
               </button>
             </div>
-            
-            <div className="pr-2 text-[10px] text-white/40 uppercase tracking-widest font-bold hidden md:block">
-              {activeTab === 'roster' ? 'Browsing drafted pool' : 'Tactical pitch preview'}
+
+            <div
+              className="hidden md:block text-[11px] font-semibold uppercase tracking-widest"
+              style={{ color: 'rgba(245,245,247,0.30)', letterSpacing: '0.08em' }}
+            >
+              {activeTab === 'roster' ? 'Drafted Pool' : 'Tactical XI'}
             </div>
           </div>
+
 
           {/* Roster tab */}
           {activeTab === 'roster' && (
@@ -331,11 +330,13 @@ export default function TeamDashboardPage() {
                                 <span className="font-bold text-xs text-white block truncate">
                                   {player.name}
                                 </span>
-                                <span className="text-[9px] uppercase tracking-wider text-white/60 flex items-center space-x-1 font-semibold mt-0.5">
+                                <span className="text-[9px] uppercase tracking-wider text-white/60 flex items-center gap-1 font-semibold mt-0.5">
                                   <span>{player.role.replace('_', ' ')}</span>
                                   <span>•</span>
                                   <span>OVR {player.rating}</span>
-                                  {player.overseas && <span className="text-[#C8A24D]">✈</span>}
+                                  {player.overseas && (
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse ml-1" title="Overseas Player" />
+                                  )}
                                 </span>
                               </div>
                               

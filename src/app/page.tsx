@@ -70,21 +70,36 @@ export default function HomePage() {
       )}
 
       {/* ── Home ── */}
-      <div className="min-h-[85vh] flex flex-col justify-center items-center py-20 px-4 text-white">
+      <div className="min-h-[85vh] flex flex-col justify-center items-center py-20 px-4 text-white relative">
 
         {/* Hero */}
         <div className="text-center max-w-3xl mx-auto" style={{ marginBottom: '80px' }}>
-          <div className="inline-flex items-center gap-2 mb-8 px-3.5 py-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.16)', backdropFilter: 'blur(12px)' }}>
+          <div className="inline-flex items-center gap-2 mb-8 px-3.5 py-1.5 rounded-full" style={{ background: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.08)', backdropFilter: 'blur(12px)' }}>
             <span className="live-dot" />
-            <span className="text-[11px] font-semibold tracking-wide uppercase" style={{ color: 'rgba(255,255,255,0.75)', letterSpacing: '0.08em' }}>
+            <span className="text-[11px] font-semibold tracking-wide uppercase" style={{ color: 'var(--text-secondary)', letterSpacing: '0.08em' }}>
               Live Draft &amp; Auction Platform
             </span>
           </div>
 
-          <h1 className="display-large mb-6">
-            Build Your<br />
-            <span style={{ color: '#FFFFFF' }}>Dream Squad.</span>
-          </h1>
+          <div className="inline-flex items-center gap-[48px] text-center xl:text-left max-w-full mb-6">
+            {/* Floating Cricket Gear Showcase Visual */}
+            <img 
+              src="/cricket_gear.png?v=14" 
+              alt="Cricket Gear" 
+              className="pointer-events-none select-none animate-fade-in hidden xl:block" 
+              style={{ 
+                height: '270px',
+                width: 'auto',
+                filter: 'brightness(1.15) contrast(1.05) saturate(1.10) drop-shadow(0 24px 40px rgba(212,150,58,0.20)) drop-shadow(0 8px 16px rgba(0,0,0,0.40))',
+                imageRendering: '-webkit-optimize-contrast' as any
+              }} 
+            />
+
+            <h1 className="display-large text-center xl:text-left">
+              Build Your<br />
+              <span style={{ color: 'var(--text-primary)' }}>Dream Squad.</span>
+            </h1>
+          </div>
 
           <p className="text-lg font-normal max-w-lg mx-auto mb-10 leading-relaxed text-white/70" style={{ fontWeight: 400 }}>
             Real-time multiplayer IPL-style auctions. Claim a franchise, bid strategically,
@@ -110,39 +125,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Feature row */}
-        <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5">
-          {[
-            {
-              icon: '💰',
-              title: 'Budget Management',
-              body: 'Every franchise enters with ₹120 Cr. All bids are verified and deducted in real time. Outbid rivals, but never overspend.',
-            },
-            {
-              icon: '📋',
-              title: 'Roster Rules',
-              body: 'Build a squad of 12 to 25 players including a Wicketkeeper. Maximum 8 overseas stars per franchise.',
-            },
-            {
-              icon: '⚡',
-              title: 'Live Competition',
-              body: 'Host a private room, invite friends with a 6-digit code, claim your franchise, and out-strategize rivals live.',
-            },
-          ].map((card) => (
-            <div
-              key={card.title}
-              className="glass glass-hover p-7"
-            >
-              <span className="text-3xl mb-4 block">{card.icon}</span>
-              <h3 className="text-[15px] font-semibold mb-2 text-white" style={{ letterSpacing: '-0.01em' }}>
-                {card.title}
-              </h3>
-              <p className="text-sm leading-relaxed font-normal text-white/60">
-                {card.body}
-              </p>
-            </div>
-          ))}
-        </div>
+
       </div>
     </div>
   );

@@ -15,12 +15,14 @@ export const Navbar: React.FC = () => {
   const { userTeamId, teams, soundEnabled, voiceEnabled, toggleSound, toggleVoice, resetAuction } = activeContext;
   const [isOpen, setIsOpen] = useState(false);
   const userTeam = teams.find(t => t.id === userTeamId);
+  const isHost = isMultiplayerActive ? multiplayer.isHost : true;
 
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Lobby', path: '/lobby' },
     { name: 'Auction', path: '/multiplayer-room', disabled: !multiplayer.roomCode || !multiplayer.isAuctionStarted },
     { name: 'Dashboard', path: '/dashboard', disabled: !userTeamId },
+    { name: 'Rules', path: '/rules' },
     { name: 'Analytics', path: '/analytics' },
   ];
 
@@ -29,21 +31,23 @@ export const Navbar: React.FC = () => {
       <nav
         className="w-full max-w-7xl mx-auto rounded-full pointer-events-auto"
         style={{
-          background: 'rgba(28, 28, 30, 0.55)',
+          background: 'rgba(103, 79, 45, 0.80)',
           backdropFilter: 'blur(40px) saturate(1.8)',
           WebkitBackdropFilter: 'blur(40px) saturate(1.8)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          boxShadow: '0 30px 100px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12)',
+          border: '1px solid rgba(255, 210, 140, 0.14)',
+          boxShadow: '0 30px 100px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 210, 140, 0.10)',
         }}
       >
         <div className="max-w-7xl mx-auto px-5 md:px-8 flex items-center justify-between" style={{ height: '60px' }}>
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
-            <img src="/cricbid-icon.svg" alt="CricBid" className="h-7 w-7 object-contain" />
-            <span className="font-bold text-base tracking-tight select-none" style={{ color: '#FFFFFF', letterSpacing: '-0.02em' }}>
-              CricBid
-            </span>
+          <Link href="/" className="flex items-center flex-shrink-0">
+            <img
+              src="/cric_bid_logo_transparent.png?v=1"
+              alt="CricBid"
+              className="object-contain select-none"
+              style={{ height: '34px', width: 'auto', filter: 'brightness(0) invert(1) drop-shadow(0 1px 4px rgba(0,0,0,0.18))' }}
+            />
           </Link>
 
           {/* Center — floating pill nav */}
@@ -113,9 +117,9 @@ export const Navbar: React.FC = () => {
               title={voiceEnabled ? 'Mute auctioneer' : 'Enable auctioneer'}
               className="btn-icon"
               style={{
-                background: voiceEnabled ? 'rgba(255, 255, 255, 0.06)' : 'rgba(255, 69, 58, 0.15)',
-                borderColor: voiceEnabled ? 'rgba(255, 255, 255, 0.10)' : 'rgba(255, 69, 58, 0.25)',
-                color: voiceEnabled ? 'rgba(255, 255, 255, 0.75)' : '#FF453A',
+                background: voiceEnabled ? 'rgba(255, 255, 255, 0.06)' : 'rgba(215, 0, 21, 0.15)',
+                borderColor: voiceEnabled ? 'rgba(255, 255, 255, 0.10)' : 'rgba(215, 0, 21, 0.25)',
+                color: voiceEnabled ? 'rgba(255, 255, 255, 0.75)' : 'var(--danger)',
               }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -140,11 +144,11 @@ export const Navbar: React.FC = () => {
               </svg>
             </button>
 
-            {userTeamId && (
+            {isHost && (
               <button
                 onClick={() => { if (confirm('Reset the auction? All draft progress will be lost.')) { resetAuction(); window.location.href = '/'; } }}
-                className="text-xs font-bold px-3 py-1.5 rounded-full transition-all duration-200"
-                style={{ color: '#FF453A', background: 'rgba(255, 69, 58, 0.15)', border: '1px solid rgba(255, 69, 58, 0.25)' }}
+                className="text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all duration-200"
+                style={{ color: 'rgba(255,255,255,0.45)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', letterSpacing: '0.01em' }}
               >
                 Reset
               </button>
@@ -153,7 +157,7 @@ export const Navbar: React.FC = () => {
 
           {/* Mobile hamburger */}
           <div className="md:hidden flex items-center gap-2">
-            <button onClick={toggleVoice} className="btn-icon" style={{ color: voiceEnabled ? 'rgba(255,255,255,0.70)' : '#FF453A' }}>
+            <button onClick={toggleVoice} className="btn-icon" style={{ color: voiceEnabled ? 'rgba(255,255,255,0.70)' : 'var(--danger)' }}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-2.08c3.39-.49 6-3.39 6-6.92h-2z" />
               </svg>
@@ -192,11 +196,11 @@ export const Navbar: React.FC = () => {
                 <span className="font-bold text-white">₹{userTeam.purse.toFixed(2)} Cr</span>
               </div>
             )}
-            {userTeamId && (
+            {isHost && (
               <button
                 onClick={() => { if (confirm('Reset?')) { resetAuction(); window.location.href = '/'; } }}
                 className="px-3 py-2 rounded-2xl text-xs font-bold text-left mt-1"
-                style={{ color: '#FF453A', background: 'rgba(255, 69, 58, 0.15)' }}
+                style={{ color: 'var(--danger)', background: 'rgba(215, 0, 21, 0.15)' }}
               >
                 Reset Simulation
               </button>

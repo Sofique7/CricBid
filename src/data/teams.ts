@@ -16,10 +16,10 @@ export const initialTeams: Team[] = [
     id: 'team_csk',
     name: 'Chennai Super Kings',
     shortName: 'CSK',
-    color: '#FFCB05',
+    color: '#FFD60A',
     secondaryColor: '#005CA5',
     purse: 120.0,
-    logoUrl: '/logos/csk.png',
+    logoUrl: '/logos/csk.png?v=11',
     players: []
   },
   {
@@ -39,7 +39,7 @@ export const initialTeams: Team[] = [
     color: '#EC1C24',
     secondaryColor: '#BCA570',
     purse: 120.0,
-    logoUrl: '/logos/rcb.png',
+    logoUrl: '/logos/rcb.png?v=11',
     players: []
   },
   {
@@ -109,7 +109,7 @@ export const initialTeams: Team[] = [
     color: '#0C2340',
     secondaryColor: '#13A499',
     purse: 120.0,
-    logoUrl: '/logos/lsg.svg',
+    logoUrl: '/logos/lsg.png?v=11',
     players: []
   }
 ];

@@ -264,7 +264,7 @@ Travis Head,opener,Australia,51,1513,4,9.2,32.89,169.81,no,2cr
         onClick={onButtonClick}
         className={`glass border-2 border-dashed rounded-3xl p-8 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center min-h-[180px] ${
           dragActive
-            ? 'border-[#C8A24D] bg-[#C2A77C]/70 shadow-md'
+            ? 'border-[#9F8469] bg-[#BCA895]/70 shadow-md'
             : 'border-[rgba(0,0,0,0.10)] hover:border-[rgba(0,0,0,0.18)] bg-white/20 hover:bg-white/40'
         }`}
       >
@@ -288,7 +288,7 @@ Travis Head,opener,Australia,51,1513,4,9.2,32.89,169.81,no,2cr
         </p>
         
         {error && (
-          <div className="mt-4 text-xs font-semibold text-[#FF453A] bg-[#FF453A]/10 px-3 py-1.5 rounded-xl border border-[#FF453A]/20">
+          <div className="mt-4 text-xs font-semibold text-[var(--danger)] bg-[var(--danger)]/10 px-3 py-1.5 rounded-xl border border-[var(--danger)]/20">
             {error}
           </div>
         )}
@@ -299,7 +299,7 @@ Travis Head,opener,Australia,51,1513,4,9.2,32.89,169.81,no,2cr
         <span className="text-[#6E6E73] font-semibold">Supports spinners, openers, finishers, all-rounders, etc.</span>
         <button
           onClick={downloadTemplate}
-          className="text-[#C8A24D] hover:text-[#B59140] font-bold flex items-center space-x-1 transition cursor-pointer"
+          className="text-[#9F8469] hover:text-[#8A6F56] font-bold flex items-center space-x-1 transition cursor-pointer"
         >
           <span>📥 Download Template CSV</span>
         </button>

@@ -2,37 +2,37 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════
-   APPLE HIG DESIGN TOKENS
+   APPLE HIG DESIGN TOKENS — Dark Mode
 ═══════════════════════════════════════════════ */
 :root {
-  /* Apple palette */
-  --bg:              #121214;
-  --bg-gradient:     radial-gradient(circle at 50% 30%, #202024 0%, #121214 100%);
-  --bg-elevated:     rgba(255,255,255,0.08);
-  --text-primary:    #FFFFFF;
-  --text-secondary:  rgba(255,255,255,0.65);
-  --text-tertiary:   rgba(255,255,255,0.40);
-  --accent:          #C8A24D;
-  --accent-dim:      rgba(200,162,77,0.18);
-  --success:         #30D158;
-  --danger:          #FF453A;
-  --btn-primary:     #FFFFFF;
-  --btn-hover:       #E5E5EA;
+  /* Dark warm espresso — deep beige in the dark */
+  --bg:              #674F2D;
+  --bg-gradient:     radial-gradient(ellipse at 50% 0%, #8A6A3A 0%, #674F2D 55%, #4E3B1F 100%);
+  --bg-elevated:     rgba(255, 220, 160, 0.05);
+  --text-primary:    #F2EAD8;
+  --text-secondary:  rgba(242, 234, 216, 0.60);
+  --text-tertiary:   rgba(242, 234, 216, 0.35);
+  --accent:          #D4963A;
+  --accent-dim:      rgba(212, 150, 58, 0.18);
+  --success:         #2B8246;
+  --danger:          #C83B3B;
+  --btn-primary:     #D4963A;
+  --btn-hover:       #E5A84A;
 
-  /* Apple Glass - Highly polished crisp dark glass for visionOS */
-  --glass:           rgba(28,28,30,0.45);
-  --glass-md:        rgba(40,40,45,0.60);
-  --glass-strong:    rgba(50,50,55,0.75);
-  --glass-border:    rgba(255,255,255,0.16);
-  --glass-border-md: rgba(255,255,255,0.22);
+  /* Warm glass — panels tinted with espresso warmth */
+  --glass:           rgba(255, 210, 140, 0.06);
+  --glass-md:        rgba(255, 210, 140, 0.10);
+  --glass-strong:    rgba(255, 210, 140, 0.15);
+  --glass-border:    rgba(255, 200, 120, 0.12);
+  --glass-border-md: rgba(255, 200, 120, 0.20);
   --glass-blur:      blur(40px) saturate(1.8);
   --glass-blur-sm:   blur(24px) saturate(1.6);
   --glass-blur-xs:   blur(12px) saturate(1.4);
-  --glass-shadow:    0 30px 80px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.12);
-  --glass-shadow-sm: 0 12px 40px rgba(0,0,0,0.18);
-  --glass-shadow-lg: 0 40px 120px rgba(0,0,0,0.40), inset 0 1.5px 0 rgba(255,255,255,0.18);
+  --glass-shadow:    0 20px 60px rgba(10, 5, 0, 0.30), inset 0 1px 0 rgba(255, 210, 140, 0.12);
+  --glass-shadow-sm: 0 10px 30px rgba(10, 5, 0, 0.22);
+  --glass-shadow-lg: 0 35px 100px rgba(10, 5, 0, 0.42), inset 0 1.5px 0 rgba(255, 210, 140, 0.18);
 
-  /* Apple Spacing - Tighter for higher density */
+  /* Apple Spacing */
   --space-xs:  6px;
   --space-sm:  12px;
   --space-md:  18px;
@@ -94,7 +94,7 @@ body {
     90deg,
     rgba(255, 255, 255, 0) 0%,
     rgba(255, 255, 255, 0.4) 40%,
-    rgba(200, 162, 77, 0.25) 50%,
+    rgba(159, 132, 105, 0.25) 50%,
     rgba(255, 255, 255, 0.4) 60%,
     rgba(255, 255, 255, 0) 100%
   );
@@ -171,15 +171,47 @@ body {
 .glass-beige-light  { background: var(--glass);    backdrop-filter: var(--glass-blur-sm); -webkit-backdrop-filter: var(--glass-blur-sm); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow-sm); border-radius: var(--radius-md); }
 .glass-beige-panel  { background: var(--glass-md); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); border: 1px solid var(--glass-border-md); box-shadow: var(--glass-shadow-lg); border-radius: var(--radius-xl); }
 
+/* Glass Form Fields */
+.glass-input, .glass-select {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(20px) saturate(1.8) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border-radius: 12px !important;
+  color: var(--text-primary) !important;
+  transition: all 0.2s var(--ease-apple) !important;
+}
+
+.glass-input::placeholder {
+  color: rgba(242, 234, 216, 0.40) !important;
+}
+
+.glass-input:hover, .glass-select:hover {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.glass-input:focus, .glass-select:focus {
+  outline: none !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(212, 150, 58, 0.45) !important;
+  box-shadow: 0 0 0 3px rgba(212, 150, 58, 0.12) !important;
+}
+
+.glass-select option {
+  background-color: #2E2214 !important; /* Deep warm espresso to blend with body radial gradient */
+  color: #F2EAD8 !important;
+}
+
 /* ═══════════════════════════════════════════════
    APPLE NAVBAR — floating pill
 ═══════════════════════════════════════════════ */
 .navbar {
-  background: rgba(245,240,232,0.72);
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  border-bottom: 1px solid rgba(255,255,255,0.20);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 4px 20px rgba(0,0,0,0.06);
+  background: rgba(103, 79, 45, 0.80);
+  backdrop-filter: blur(40px) saturate(1.8);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8);
+  border-bottom: 1px solid rgba(255, 210, 140, 0.12);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.18), 0 4px 20px rgba(0,0,0,0.12);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -187,12 +219,12 @@ body {
 
 /* Floating pill variant for inner container */
 .nav-pill {
-  background: rgba(255,255,255,0.10);
+  background: rgba(255, 210, 140, 0.06);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  border: 1px solid rgba(255,255,255,0.20);
+  border: 1px solid rgba(255, 200, 120, 0.12);
   border-radius: var(--radius-full);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.30);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -204,17 +236,17 @@ body {
 ═══════════════════════════════════════════════ */
 .btn-primary {
   background: var(--btn-primary);
-  color: #1D1D1F;
+  color: #FFF;
   border: none;
   border-radius: var(--radius-sm);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.9rem;
   letter-spacing: -0.01em;
   cursor: pointer;
   transition: transform 0.25s var(--ease-apple), background 0.2s ease, box-shadow 0.25s var(--ease-apple);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.08);
+  box-shadow: 0 4px 16px rgba(212, 150, 58, 0.40), inset 0 1px 0 rgba(255,255,255,0.20);
 }
-.btn-primary:hover   { transform: translateY(-2px); background: var(--btn-hover); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+.btn-primary:hover   { transform: translateY(-2px); background: var(--btn-hover); box-shadow: 0 8px 24px rgba(212, 150, 58, 0.50); }
 .btn-primary:active  { transform: translateY(0); transition-duration: 0.1s; }
 .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
 
@@ -268,8 +300,8 @@ body {
 .form-input:focus {
   outline: none;
   background: rgba(255,255,255,0.14);
-  border-color: rgba(200,162,77,0.50);
-  box-shadow: 0 0 0 3px rgba(200,162,77,0.12);
+  border-color: rgba(159, 132, 105, 0.50);
+  box-shadow: 0 0 0 3px rgba(159, 132, 105, 0.12);
 }
 
 /* ═══════════════════════════════════════════════
@@ -322,23 +354,23 @@ body {
   border-color: rgba(255,255,255,0.10);
 }
 
-/* Pastel role badges — subtle */
-.badge-role-opener           { background:rgba(255,69,58,0.10);   color:#FF453A; border-color:rgba(255,69,58,0.20);   }
-.badge-role-middle_order     { background:rgba(255,159,10,0.10);  color:#FF9F0A; border-color:rgba(255,159,10,0.20);  }
-.badge-role-finisher         { background:rgba(94,92,230,0.10);   color:#5E5CE6; border-color:rgba(94,92,230,0.20);   }
-.badge-role-spinner          { background:rgba(50,215,75,0.10);   color:#30A64A; border-color:rgba(50,215,75,0.20);   }
-.badge-role-death_bowler     { background:rgba(10,132,255,0.10);  color:#0A84FF; border-color:rgba(10,132,255,0.20);  }
-.badge-role-powerplay_bowler { background:rgba(90,200,250,0.10);  color:#2A9FCC; border-color:rgba(90,200,250,0.20);  }
-.badge-role-all_rounder      { background:rgba(200,162,77,0.12);  color:#C8A24D; border-color:rgba(200,162,77,0.25);  }
-.badge-role-wk               { background:rgba(50,215,75,0.10);   color:#248A3D; border-color:rgba(50,215,75,0.20);   }
+/* Role badges — high-contrast dark-mode palette */
+.badge-role-opener           { background: rgba(212, 140, 60, 0.12) !important; color: #D4963A !important; border-color: rgba(212, 140, 60, 0.22) !important; }
+.badge-role-middle_order     { background: rgba(140, 105, 74, 0.12) !important; color: #A88F78 !important; border-color: rgba(140, 105, 74, 0.22) !important; }
+.badge-role-finisher         { background: rgba(200, 150, 80, 0.12) !important; color: #C8A96E !important; border-color: rgba(200, 150, 80, 0.22) !important; }
+.badge-role-spinner          { background: rgba(160, 140, 110, 0.12) !important; color: #A89880 !important; border-color: rgba(160, 140, 110, 0.22) !important; }
+.badge-role-death_bowler     { background: rgba(110, 85, 58, 0.12) !important; color: #8C7A6A !important; border-color: rgba(110, 85, 58, 0.22) !important; }
+.badge-role-powerplay_bowler { background: rgba(180, 150, 120, 0.12) !important; color: #B3A490 !important; border-color: rgba(180, 150, 120, 0.22) !important; }
+.badge-role-all_rounder      { background: rgba(200, 149, 90, 0.12) !important; color: #D4963A !important; border-color: rgba(200, 149, 90, 0.22) !important; }
+.badge-role-wk               { background: rgba(200, 169, 110, 0.12) !important; color: #C8A96E !important; border-color: rgba(200, 169, 110, 0.22) !important; }
 
 /* ═══════════════════════════════════════════════
    SCROLLBARS — ultra subtle
 ═══════════════════════════════════════════════ */
 ::-webkit-scrollbar        { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  { background: rgba(255,255,255,0.20); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.35); }
+::-webkit-scrollbar-thumb  { background: rgba(255,255,255,0.12); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
 
 /* ═══════════════════════════════════════════════
    BACKGROUND PROVIDERS — very light overlay
@@ -352,16 +384,13 @@ body {
 
 .team-bg-image, .lobby-bg-image {
   position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 70vw; height: 60vh;
-  max-width: 1000px; max-height: 600px;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
   object-fit: cover;
-  border-radius: var(--radius-xl);
-  opacity: 0.45;
-  filter: saturate(1.1) brightness(0.8) blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: var(--glass-shadow-lg);
+  opacity: 0.65;
+  filter: saturate(1.1) brightness(0.95) blur(3px);
+  border: none;
+  box-shadow: none;
   transition: opacity 0.8s var(--ease-apple);
 }
 
@@ -372,11 +401,11 @@ body {
   pointer-events: none;
 }
 
-/* Soft beige wash on top of team art — NOT dark */
+/* Field drab vignette on top of team art */
 .team-bg-overlay::after, .lobby-bg-overlay::after {
   content: '';
   position: absolute; inset: 0;
-  background: rgba(245,240,232,0.25);
+  background: rgba(103, 79, 45, 0.35);
   pointer-events: none;
 }
 
@@ -443,9 +472,9 @@ body {
   -webkit-backdrop-filter: var(--glass-blur-xs);
   transition: all 0.2s var(--ease-apple);
 }
-.log-entry-sold    { background:rgba(48,209,88,0.12);  border-color:rgba(48,209,88,0.25);  color:#30D158; font-weight:600; }
-.log-entry-passed  { background:rgba(255,255,255,0.04); border-color:var(--glass-border);  color:var(--text-tertiary); }
-.log-entry-user    { background:rgba(200,162,77,0.12);  border-color:rgba(200,162,77,0.25); color:#C8A24D; font-weight:600; }
+.log-entry-sold    { background:rgba(48,209,88,0.10);   border-color:rgba(48,209,88,0.22);   color:var(--success); font-weight:600; }
+.log-entry-passed  { background:rgba(255,255,255,0.03); border-color:var(--glass-border);   color:var(--text-tertiary); }
+.log-entry-user    { background:rgba(212,150,58,0.12);  border-color:rgba(212,150,58,0.25);  color:#D4963A; font-weight:600; }
 
 /* ═══════════════════════════════════════════════
    STAT CHIP
@@ -470,7 +499,7 @@ body {
 /* ═══════════════════════════════════════════════
    URGENCY / TIMER
 ═══════════════════════════════════════════════ */
-@keyframes timer-urgent { 0%,100% { color:var(--danger); } 50% { color:#FF6961; } }
+@keyframes timer-urgent { 0%,100% { color:#C8955A; } 50% { color:#E0B07A; } }
 .timer-urgent { animation: timer-urgent 0.6s ease infinite; }
 
 /* ═══════════════════════════════════════════════
@@ -484,4 +513,34 @@ body {
 /* ═══════════════════════════════════════════════
    APPLE DIVIDER
 ═══════════════════════════════════════════════ */
-.divider { border: none; border-top: 1px solid rgba(255,255,255,0.12); }
+.divider { border: none; border-top: 1px solid rgba(0,0,0,0.12); }
+
+/* ═══════════════════════════════════════════════
+   TAILWIND UTILITY OVERRIDES FOR DARK MODE
+═══════════════════════════════════════════════ */
+
+/* Specific component fixes for dark mode */
+.btn-primary {
+  background: var(--accent) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 16px rgba(212, 150, 58, 0.40), inset 0 1px 0 rgba(255,255,255,0.20) !important;
+}
+.btn-primary:hover {
+  background: var(--btn-hover) !important;
+  color: #FFFFFF !important;
+}
+.btn-primary * {
+  color: #FFFFFF !important;
+}
+
+.btn-secondary {
+  color: var(--text-primary) !important;
+  border-color: var(--glass-border) !important;
+}
+
+.btn-icon {
+  color: var(--text-secondary) !important;
+}
+.btn-icon:hover {
+  color: var(--text-primary) !important;
+}

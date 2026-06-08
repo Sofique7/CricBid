@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { Player, initialPlayers } from '../data/players';
-import { Team, getLobbyTeams } from '../data/teams';
+import { Team, getLobbyTeams, initialTeams } from '../data/teams';
 import { soundEffects } from '../utils/sound';
 import { voiceAuctioneer } from '../utils/voiceAuctioneer';
 import { readVoiceEnabled, writeVoiceEnabled } from '../utils/voicePreferences';
@@ -33,10 +33,14 @@ const enrichPlayers = (playersList?: Player[] | Record<string, Player>): Player[
 };
 
 const enrichTeams = (teamsList?: Team[]): Team[] => {
-  return (teamsList ?? []).map(t => ({
-    ...t,
-    players: enrichPlayers(t.players)
-  }));
+  return (teamsList ?? []).map(t => {
+    const freshTeam = initialTeams.find(it => it.id === t.id);
+    return {
+      ...t,
+      logoUrl: freshTeam ? freshTeam.logoUrl : t.logoUrl,
+      players: enrichPlayers(t.players)
+    };
+  });
 };
 
 interface ClientPlayer {

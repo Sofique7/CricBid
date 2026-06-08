@@ -133,8 +133,17 @@ export const AuctionProvider: React.FC<{ children: React.ReactNode }> = ({ child
           return p;
         });
 
+        // Merge latest logo URLs from initialTeams to prevent cache staleness
+        const mergedTeams = (parsed.teams || initialTeams).map((t: Team) => {
+          const freshTeam = initialTeams.find(it => it.id === t.id);
+          if (freshTeam) {
+            return { ...t, logoUrl: freshTeam.logoUrl };
+          }
+          return t;
+        });
+
         setPlayers(mergedPlayers);
-        setTeams(parsed.teams || initialTeams);
+        setTeams(mergedTeams);
         setCurrentPlayerIndex(parsed.currentPlayerIndex || 0);
         setCurrentBid(parsed.currentBid || 0);
         setCurrentBidderId(parsed.currentBidderId || null);

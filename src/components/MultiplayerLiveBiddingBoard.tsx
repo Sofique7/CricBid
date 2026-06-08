@@ -48,7 +48,7 @@ export const MultiplayerLiveBiddingBoard: React.FC = () => {
 
   /* Bid button label */
   const bidBtnLabel = !userTeamId ? 'Claim a Team in Lobby to Bid'
-    : userHoldsBid         ? '✓ You Hold the High Bid'
+    : userHoldsBid         ? '● You Hold the High Bid'
     : userOverseasLimit    ? 'Overseas Limit Reached (Max 8)'
     : userSquadFull        ? 'Squad Full (Max 25)'
     : !userHasBudget && userTeam ? `Need ₹${nextBidAmount.toFixed(2)} Cr — Insufficient Purse`
@@ -58,166 +58,139 @@ export const MultiplayerLiveBiddingBoard: React.FC = () => {
   return (
     <div className="flex flex-col space-y-6">
       {error && (
-        <div className="text-xs font-semibold p-3 rounded-xl text-center text-[#FF453A] bg-[#FF453A]/10 border border-[#FF453A]/25">
+        <div className="text-xs font-semibold p-3 rounded-xl text-center text-[var(--danger)] bg-[var(--danger)]/10 border border-[var(--danger)]/25">
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 relative items-stretch">
 
-        {/* ── LEFT: Player Card (col 4) ── */}
-        <div className="lg:col-span-4 flex flex-col">
+        {/* ── LEFT: Player Card (col 5) ── */}
+        <div className="lg:col-span-5 flex flex-col">
           <div className="h-full flex flex-col justify-between">
             <h4 className="section-label mb-2">Active Player</h4>
             <PlayerCard player={currentPlayer} showBidOverlay={false} />
           </div>
         </div>
 
-        {/* ── CENTER & RIGHT: Unified Command Center (col 8) ── */}
-        <div className="lg:col-span-8 flex flex-col">
+        {/* ── RIGHT: Unified Command Center (col 7) ── */}
+        <div className="lg:col-span-7 flex flex-col">
           <h4 className="section-label mb-2">Auction Command Center</h4>
-          <div className="glass p-6 grid grid-cols-1 md:grid-cols-12 gap-6 flex-grow min-h-[420px] shadow-md">
+          <div className="glass p-6 flex flex-col justify-between flex-grow min-h-[420px] shadow-md">
 
-            {/* Left side: Bidding Info and controls (Col 7) */}
-            <div className="md:col-span-7 flex flex-col justify-between">
-              
-              {/* Status + Timer */}
-              <div className="flex justify-between items-center pb-4 border-b border-[rgba(255,255,255,0.08)]">
-                <div>
-                  <span className="section-label block mb-0.5">Status</span>
-                  <div className="flex items-center gap-1.5">
-                    {!isPaused && <span className="live-dot" />}
-                    <span
-                      className="text-xs font-bold uppercase tracking-wide"
-                      style={{ color: isPaused ? '#FF453A' : '#30D158' }}
-                    >
-                      {isPaused ? 'Paused' : 'Live Bidding'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Countdown ring */}
-                <div className="relative w-16 h-16 flex items-center justify-center">
-                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 72 72">
-                    <circle cx="36" cy="36" r={radius} stroke="rgba(255,255,255,0.08)" strokeWidth="4" fill="transparent" />
-                    <circle
-                      cx="36" cy="36" r={radius}
-                      stroke={timerUrgent ? '#FF453A' : '#FFFFFF'}
-                      strokeWidth="4" fill="transparent"
-                      strokeDasharray={circumference}
-                      strokeDashoffset={strokeOffset}
-                      className="transition-all duration-1000 ease-linear"
-                      strokeLinecap="round"
-                    />
-                  </svg>
+            {/* Status + Timer */}
+            <div className="flex justify-between items-center pb-4 border-b border-[rgba(255,255,255,0.08)]">
+              <div>
+                <span className="section-label block mb-0.5">Status</span>
+                <div className="flex items-center gap-1.5">
+                  {!isPaused && <span className="live-dot" style={{ background: '#C8A96E', boxShadow: '0 0 6px rgba(200, 169, 110, 0.35)' }} />}
                   <span
-                    className={`absolute text-lg font-black ${timerUrgent ? 'timer-urgent' : ''}`}
-                    style={{ color: timerUrgent ? '#FF453A' : '#FFFFFF' }}
+                    className="text-xs font-bold uppercase tracking-wide"
+                    style={{ color: isPaused ? 'rgba(200, 185, 160, 0.65)' : '#C8A96E' }}
                   >
-                    {timer}
+                    {isPaused ? 'Paused' : 'Live Bidding'}
                   </span>
                 </div>
               </div>
 
-              {/* Bid display */}
-              <div className="text-center py-6 flex-grow flex flex-col justify-center">
-                {currentBid === 0 ? (
-                  <div className="space-y-1">
-                    <span className="section-label block text-white/40">Base Draft Price</span>
-                    <div className="text-5xl font-extrabold tracking-tight text-white">
-                      ₹{currentPlayer.base_price.toFixed(2)}
-                      <span className="text-xl font-semibold ml-1 text-white/60">Cr</span>
-                    </div>
-                    <p className="text-xs text-white/40 font-semibold">Awaiting the opening bid.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-1">
-                    <span className="section-label block text-white/40">Current Highest Bid</span>
-                    <div className="text-5xl font-extrabold tracking-tight text-white">
-                      ₹{currentBid.toFixed(2)}
-                      <span className="text-xl font-semibold ml-1 text-white/60">Cr</span>
-                    </div>
-                    {currentBidder && (
-                      <div className="flex items-center justify-center gap-2 mt-2">
-                        <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: currentBidder.color }} />
-                        {currentBidder.logoUrl && (
-                          <img src={currentBidder.logoUrl} alt={currentBidder.shortName}
-                            className="w-5 h-5 object-contain" referrerPolicy="no-referrer"
-                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                          />
-                        )}
-                        <span className="text-xs font-bold text-white">
-                          {currentBidder.name}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Action buttons */}
-              <div className="space-y-3 pt-4 border-t border-[rgba(255,255,255,0.08)]">
-                <button
-                  id="place-bid-btn"
-                  onClick={placeUserBid}
-                  disabled={!canUserBid}
-                  className={`w-full py-4 text-sm btn-primary ${
-                    userHoldsBid ? 'bg-[#30D158] hover:bg-[#30D158] text-white shadow-none transform-none border-none' : ''
-                  }`}
-                  style={userHoldsBid ? { background: '#30D158', color: '#fff' } : undefined}
+              {/* Countdown ring */}
+              <div className="relative w-16 h-16 flex items-center justify-center">
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 72 72">
+                  <circle cx="36" cy="36" r={radius} stroke="rgba(255,255,255,0.08)" strokeWidth="4" fill="transparent" />
+                  <circle
+                    cx="36" cy="36" r={radius}
+                    stroke={timerUrgent ? '#C8955A' : '#FFFFFF'}
+                    strokeWidth="4" fill="transparent"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeOffset}
+                    className="transition-all duration-1000 ease-linear"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span
+                  className={`absolute text-lg font-black ${timerUrgent ? 'timer-urgent' : ''}`}
+                  style={{ color: timerUrgent ? '#C8955A' : '#FFFFFF' }}
                 >
-                  {bidBtnLabel}
-                </button>
-
-                {isHost ? (
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { id: 'btn-pause-resume', label: isPaused ? '▶ Resume' : '⏸ Pause', action: isPaused ? resumeAuction : pauseAuction },
-                      { id: 'btn-pass',         label: '✕ Pass',                           action: skipPlayer },
-                      { id: 'btn-sell-now',     label: '🔨 Sell',                          action: sellNow },
-                    ].map(ctrl => (
-                      <button
-                        key={ctrl.id}
-                        id={ctrl.id}
-                        onClick={ctrl.action}
-                        className="btn-secondary py-2 text-[10px] font-bold uppercase tracking-wider"
-                      >
-                        {ctrl.label}
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="p-3 rounded-xl text-center text-[10px] font-semibold text-white/60 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)]">
-                    🔒 {clients.find(c => c.isHost)?.name || 'Host'} controls auction flow
-                  </div>
-                )}
+                  {timer}
+                </span>
               </div>
             </div>
 
-            {/* Right side: Bid Activity Log (Col 5) */}
-            <div className="md:col-span-5 flex flex-col pl-6 border-t md:border-t-0 md:border-l border-[rgba(255,255,255,0.08)] pt-6 md:pt-0">
-              <span className="section-label mb-3">Live Log Feed</span>
-              <div
-                className="flex flex-col-reverse gap-2 overflow-y-auto pr-1"
-                style={{ height: '320px' }}
+            {/* Bid display */}
+            <div className="text-center py-6 flex-grow flex flex-col justify-center">
+              {currentBid === 0 ? (
+                <div className="space-y-1">
+                  <span className="section-label block text-white/40">Base Draft Price</span>
+                  <div className="text-5xl font-extrabold tracking-tight text-white">
+                    ₹{currentPlayer.base_price.toFixed(2)}
+                    <span className="text-xl font-semibold ml-1 text-white/60">Cr</span>
+                  </div>
+                  <p className="text-xs text-white/40 font-semibold">Awaiting the opening bid.</p>
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  <span className="section-label block text-white/40">Current Highest Bid</span>
+                  <div className="text-5xl font-extrabold tracking-tight text-white">
+                    ₹{currentBid.toFixed(2)}
+                    <span className="text-xl font-semibold ml-1 text-white/60">Cr</span>
+                  </div>
+                  {currentBidder && (
+                    <div className="flex items-center justify-center gap-2 mt-2">
+                      <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: currentBidder.color }} />
+                      {currentBidder.logoUrl && (
+                        <img src={currentBidder.logoUrl} alt={currentBidder.shortName}
+                          className="w-5 h-5 object-contain" referrerPolicy="no-referrer"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      )}
+                      <span className="text-xs font-bold text-white">
+                        {currentBidder.name}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Action buttons */}
+            <div className="space-y-3 pt-4 border-t border-[rgba(255,255,255,0.08)]">
+              <button
+                id="place-bid-btn"
+                onClick={placeUserBid}
+                disabled={!canUserBid}
+                className={`w-full py-4 text-sm btn-primary ${
+                  userHoldsBid ? 'shadow-none transform-none border-none' : ''
+                }`}
+                style={userHoldsBid ? { background: '#8F6E3C', color: '#FDF6E8' } : undefined}
               >
-                {logs.length === 0 ? (
-                  <p className="text-xs text-center py-12 text-white/40 font-bold">
-                    Activity will appear here.
-                  </p>
-                ) : (
-                  logs.map((log, i) => {
-                    const isSold   = log.startsWith('SOLD!');
-                    const isPassed = log.startsWith('PASSED') || log.startsWith('SKIPPED');
-                    const isUserLog= log.includes(playerName) || (userTeam && log.includes(userTeam.shortName));
-                    const cls = isSold ? 'log-entry log-entry-sold'
-                      : isPassed     ? 'log-entry log-entry-passed'
-                      : isUserLog    ? 'log-entry log-entry-user'
-                      :                'log-entry';
-                    return <div key={i} className={cls}>{log}</div>;
-                  })
-                )}
-              </div>
+                {bidBtnLabel}
+              </button>
+
+              {isHost ? (
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'btn-pause-resume', icon: isPaused ? <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> : <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>, label: isPaused ? 'Resume' : 'Pause', action: isPaused ? resumeAuction : pauseAuction },
+                    { id: 'btn-pass',         icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4v16l11-8-11-8z M19 5v14h-2V5h2z"/></svg>, label: 'Pass', action: skipPlayer },
+                    { id: 'btn-sell-now',     icon: <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>, label: 'Sell', action: sellNow },
+                  ].map(ctrl => (
+                    <button
+                      key={ctrl.id}
+                      id={ctrl.id}
+                      onClick={ctrl.action}
+                      className="btn-secondary py-2.5 text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 rounded-full"
+                      style={{ borderRadius: '9999px' }}
+                    >
+                      {ctrl.icon}
+                      {ctrl.label}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-3 rounded-xl text-center text-[10px] font-semibold text-white/60 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] flex items-center justify-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  {clients.find(c => c.isHost)?.name || 'Host'} controls auction flow
+                </div>
+              )}
             </div>
 
           </div>

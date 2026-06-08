@@ -78,18 +78,19 @@ export default function LobbyPage() {
         {/* Header */}
         <div className="text-center space-y-3">
           <span
-            className="inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full"
-            style={{ background: '#2B2B2B', color: '#fff' }}
+            className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest px-3.5 py-1.5 rounded-full"
+            style={{ background: 'rgba(212,150,58,0.12)', border: '1px solid rgba(212,150,58,0.25)', color: '#D4963A' }}
           >
-            ⚡ Multiplayer
+            <span className="live-dot" style={{ background: '#D4963A' }} />
+            Multiplayer
           </span>
           <h1
             className="text-3xl md:text-4xl font-black tracking-tight"
-            style={{ color: '#2B2B2B', letterSpacing: '-0.025em' }}
+            style={{ color: '#F5F5F7', letterSpacing: '-0.025em' }}
           >
             Auction Lobby
           </h1>
-          <p className="text-sm" style={{ color: '#6B645D' }}>
+          <p className="text-sm" style={{ color: 'rgba(245,245,247,0.55)' }}>
             Host a room and invite friends with a code, or join an active auction room.
           </p>
         </div>
@@ -266,8 +267,7 @@ export default function LobbyPage() {
             >
               Room{' '}
               <span
-                className="font-mono select-all"
-                style={{ color: '#2B2B2B' }}
+                className="font-mono select-all text-[#2B2B2B]"
               >
                 {roomCode}
               </span>
@@ -297,11 +297,11 @@ export default function LobbyPage() {
 
             <div
               style={{
-                background: 'rgba(243,238,230,0.60)',
-                backdropFilter: 'blur(18px)',
-                WebkitBackdropFilter: 'blur(18px)',
-                border: '1px solid rgba(255,255,255,0.26)',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.09)',
+                background: 'rgba(255, 255, 255, 0.40)',
+                backdropFilter: 'blur(30px) saturate(1.7)',
+                WebkitBackdropFilter: 'blur(30px) saturate(1.7)',
+                border: '1px solid rgba(255, 255, 255, 0.35)',
+                boxShadow: '0 8px 32px rgba(92, 74, 60, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.40)',
                 borderRadius: '1.25rem',
                 padding: '0.75rem',
                 flexGrow: 1,
@@ -317,18 +317,18 @@ export default function LobbyPage() {
                 return (
                   <div
                     key={c.id}
-                    className="flex items-center justify-between p-3 rounded-xl"
+                    className="flex items-center justify-between p-3 rounded-xl transition-all duration-300 hover:bg-white/35"
                     style={{
-                      background: 'rgba(255,252,245,0.50)',
-                      backdropFilter: 'blur(8px)',
-                      WebkitBackdropFilter: 'blur(8px)',
-                      border: '1px solid rgba(255,255,255,0.30)',
+                      background: 'rgba(255, 255, 255, 0.28)',
+                      backdropFilter: 'blur(10px)',
+                      WebkitBackdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.40)',
                     }}
                   >
                     <div className="flex items-center space-x-2.5">
                       <div
                         className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
-                        style={{ background: 'rgba(255,252,245,0.60)', border: '1px solid rgba(255,255,255,0.35)', color: '#6B645D' }}
+                        style={{ background: 'rgba(255, 255, 255, 0.50)', border: '1px solid rgba(255, 255, 255, 0.45)', color: '#6B645D' }}
                       >
                         {c.name.slice(0, 2).toUpperCase()}
                       </div>
@@ -336,8 +336,22 @@ export default function LobbyPage() {
                         <span className="text-xs font-bold block" style={{ color: '#2B2B2B' }}>
                           {c.name}{hydrated && c.id === clientId ? ' (You)' : ''}
                         </span>
-                        <span className="text-[10px] block uppercase font-medium" style={{ color: '#9C9389' }}>
-                          {c.isHost ? '👑 Host' : 'Player'}
+                        <span className="text-[10px] block mt-0.5">
+                          {c.isHost ? (
+                            <span 
+                              className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-extrabold tracking-wider uppercase" 
+                              style={{ 
+                                background: 'rgba(159, 132, 105, 0.12)', 
+                                border: '1px solid rgba(159, 132, 105, 0.28)', 
+                                color: '#7E634D',
+                                lineHeight: 1
+                              }}
+                            >
+                              Host
+                            </span>
+                          ) : (
+                            <span className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Player</span>
+                          )}
                         </span>
                       </div>
                     </div>
@@ -405,42 +419,40 @@ export default function LobbyPage() {
                     key={t.id}
                     id={`franchise-card-${t.id}`}
                     onClick={() => !isClaimedByOther && selectUserTeam(isMine ? '' : t.id)}
-                    className="relative overflow-hidden rounded-2xl flex flex-col select-none glass-hover"
+                    className="relative overflow-hidden rounded-2xl flex flex-col select-none transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5"
                     style={{
                       background: isMine
-                        ? 'rgba(255,252,245,0.82)'
-                        : 'rgba(243,238,230,0.62)',
-                      backdropFilter: 'blur(18px)',
-                      WebkitBackdropFilter: 'blur(18px)',
-                      border: isMine ? `2px solid ${t.color}` : '1px solid rgba(255,255,255,0.28)',
+                        ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.40) 100%)'
+                        : isClaimedByOther 
+                        ? 'rgba(255, 255, 255, 0.15)'
+                        : 'rgba(255, 255, 255, 0.35)',
+                      backdropFilter: 'blur(30px) saturate(1.7)',
+                      WebkitBackdropFilter: 'blur(30px) saturate(1.7)',
+                      border: isMine 
+                        ? '2px solid rgba(255, 255, 255, 0.60)'
+                        : isClaimedByOther 
+                        ? '1px solid rgba(255, 255, 255, 0.15)'
+                        : '1.5px solid rgba(255, 255, 255, 0.30)',
                       boxShadow: isMine
-                        ? `0 8px 28px ${t.color}28, 0 2px 10px rgba(0,0,0,0.10)`
-                        : '0 4px 16px rgba(0,0,0,0.08)',
-                      opacity: isClaimedByOther ? 0.40 : 1,
+                        ? '0 16px 36px rgba(138, 106, 58, 0.14), inset 0 1px 0 rgba(255,255,255,0.55), 0 4px 12px rgba(92,74,60,0.06)'
+                        : isClaimedByOther
+                        ? '0 4px 12px rgba(0, 0, 0, 0.05)'
+                        : '0 8px 24px rgba(92,74,60,0.06)',
+                      opacity: isClaimedByOther ? 0.45 : 1,
                       cursor: isClaimedByOther ? 'not-allowed' : 'pointer',
                       transform: isMine ? 'translateY(-3px)' : undefined,
                     }}
                   >
-                    {/* Team color accent bar */}
-                    <div
-                      className="h-1 w-full"
-                      style={{ background: t.color }}
-                    />
-
                     <div className="p-4 flex flex-col flex-grow">
                       <div className="flex items-center space-x-3 mb-3">
                         <div
-                          className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-                          style={{
-                            background: `${t.color}12`,
-                            border: `1px solid ${t.color}28`,
-                          }}
+                          className="w-14 h-14 flex items-center justify-center flex-shrink-0 transition-all duration-300"
                         >
                           {t.logoUrl && (
                             <img
                               src={t.logoUrl}
                               alt={t.shortName}
-                              className="w-9 h-9 object-contain"
+                              className="w-14 h-14 object-contain"
                               referrerPolicy="no-referrer"
                               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                             />
@@ -453,24 +465,34 @@ export default function LobbyPage() {
                           >
                             {t.name}
                           </h3>
-                          <span className="text-[10px] font-medium" style={{ color: '#999999' }}>
+                          <span className="text-[10px] font-medium" style={{ color: '#6B645D' }}>
                             ₹120 Cr Purse
                           </span>
                         </div>
                       </div>
 
                       <div
-                        className="pt-2.5 text-[10px] font-semibold uppercase tracking-wide"
-                        style={{ borderTop: '1px solid rgba(255,255,255,0.25)' }}
+                        className="pt-2.5 text-[10px] font-semibold uppercase tracking-wide flex items-center justify-between"
+                        style={{ borderTop: '1px solid rgba(255,255,255,0.35)' }}
                       >
                         {isMine ? (
-                          <span style={{ color: '#5E9F73' }}>✓ Claimed By You</span>
+                          <span 
+                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-extrabold tracking-wider"
+                            style={{
+                              background: 'rgba(78, 60, 36, 0.08)',
+                              border: '1px solid rgba(78, 60, 36, 0.18)',
+                              color: '#6B5440'
+                            }}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#A89068]" />
+                            Claimed By You
+                          </span>
                         ) : isClaimedByOther ? (
                           <span style={{ color: '#C75C5C' }} className="truncate block">
                             Taken by {claimedBy?.name}
                           </span>
                         ) : (
-                          <span style={{ color: '#C4BDB5' }}>Available</span>
+                          <span style={{ color: '#9E948A' }}>Available</span>
                         )}
                       </div>
                     </div>

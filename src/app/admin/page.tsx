@@ -496,7 +496,14 @@ export default function AdminDashboardPage() {
                           {ROLES.find(r => r.value === player.role)?.label || player.role}
                           {player.is_wicketkeeper && <span className="ml-1 text-[9px] px-1 bg-green-500/20 border border-green-500/30 text-green-400 font-bold rounded">WK</span>}
                         </td>
-                        <td className="p-4">{player.nationality}{player.overseas ? ' ✈' : ''}</td>
+                        <td className="p-4">
+                          <span className="flex items-center gap-1.5">
+                            <span>{player.nationality}</span>
+                            {player.overseas && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" title="Overseas Player" />
+                            )}
+                          </span>
+                        </td>
                         <td className="p-4 text-center font-mono font-bold text-white">{player.rating}</td>
                         <td className="p-4 text-right font-bold text-white">₹{player.base_price?.toFixed(2)} Cr</td>
                         <td className="p-4 text-center">
@@ -649,8 +656,8 @@ export default function AdminDashboardPage() {
                 <button
                   onClick={() => handleAuctionAction('start')}
                   disabled={actionLoading}
-                  className="btn-primary py-3.5 text-xs font-bold text-neutral-900"
-                  style={{ background: '#30D158', borderRadius: '12px' }}
+                  className="btn-primary py-3.5 text-xs font-bold text-white"
+                  style={{ background: 'var(--success)', borderRadius: '12px' }}
                 >
                   Start / Next Player
                 </button>
@@ -658,7 +665,7 @@ export default function AdminDashboardPage() {
                   onClick={() => handleAuctionAction('pause')}
                   disabled={actionLoading}
                   className="btn-secondary py-3.5 text-xs font-bold border-white/20"
-                  style={{ background: 'rgba(255,159,10,0.15)', color: '#FF9F0A', borderRadius: '12px' }}
+                  style={{ background: 'rgba(201,125,0,0.15)', color: '#C97D00', borderRadius: '12px' }}
                 >
                   Pause Timer
                 </button>
@@ -666,7 +673,7 @@ export default function AdminDashboardPage() {
                   onClick={() => handleAuctionAction('resume')}
                   disabled={actionLoading}
                   className="btn-secondary py-3.5 text-xs font-bold border-white/20"
-                  style={{ background: 'rgba(48,209,88,0.15)', color: '#30D158', borderRadius: '12px' }}
+                  style={{ background: 'rgba(36,138,61,0.15)', color: 'var(--success)', borderRadius: '12px' }}
                 >
                   Resume Timer
                 </button>
@@ -674,7 +681,7 @@ export default function AdminDashboardPage() {
                   onClick={() => handleAuctionAction('end')}
                   disabled={actionLoading}
                   className="btn-secondary py-3.5 text-xs font-bold border-red-500/20"
-                  style={{ background: 'rgba(255,69,58,0.15)', color: '#FF453A', borderRadius: '12px' }}
+                  style={{ background: 'rgba(215,0,21,0.15)', color: 'var(--danger)', borderRadius: '12px' }}
                 >
                   End Auction
                 </button>
