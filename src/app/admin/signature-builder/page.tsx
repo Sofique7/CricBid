@@ -112,7 +112,7 @@ export default function SignatureBuilderPage() {
     if (animationStyle === 'single') {
       // 1. Continuous single-path reveal animation
       const combinedD = dPaths.join(' ');
-      svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 482 467" width="100%" height="100%">
+      svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 482 467" width="100%" height="100%" preserveAspectRatio="none">
   <defs>
     <mask id="sig-mask" maskUnits="userSpaceOnUse">
       <rect width="100%" height="100%" fill="black" />
@@ -187,7 +187,7 @@ export default function SignatureBuilderPage() {
     }`;
       }).join('\n');
 
-      svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 482 467" width="100%" height="100%">
+      svgStr = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 482 467" width="100%" height="100%" preserveAspectRatio="none">
   <defs>
     <mask id="sig-mask" maskUnits="userSpaceOnUse">
       <rect width="100%" height="100%" fill="black" />
@@ -373,7 +373,7 @@ export default function SignatureBuilderPage() {
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
-                className="absolute inset-0 w-full h-full z-10 cursor-crosshair"
+                className="absolute inset-0 w-full h-full object-fill z-10 cursor-crosshair"
               />
             </div>
 
