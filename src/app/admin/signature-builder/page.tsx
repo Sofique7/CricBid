@@ -9,7 +9,7 @@ export default function SignatureBuilderPage() {
   const isDrawingRef = useRef(false);
   const [strokes, setStrokes] = useState<{ x: number; y: number }[][]>([]);
   const [brushWidth, setBrushWidth] = useState(38);
-  const [animationDuration, setAnimationDuration] = useState(7);
+  const [animationDuration, setAnimationDuration] = useState(12);
   const [base64PNG, setBase64PNG] = useState<string>('');
   const [svgPreview, setSvgPreview] = useState<string>('');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');

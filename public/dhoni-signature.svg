@@ -26,19 +26,19 @@
     .stroke-loops {
       stroke-dasharray: 5500;
       stroke-dashoffset: 5500;
-      animation: draw-loops 7.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      animation: draw-loops 12.0s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     }
     
     .stroke-underline {
       stroke-dasharray: 1500;
       stroke-dashoffset: 1500;
-      animation: draw-underline 7.5s cubic-bezier(0.1, 0.9, 0.1, 1) infinite;
+      animation: draw-underline 12.0s cubic-bezier(0.1, 0.9, 0.1, 1) infinite;
     }
     
     .stroke-dot {
       stroke-dasharray: 500;
       stroke-dashoffset: 500;
-      animation: draw-dot 7.5s ease-in-out infinite;
+      animation: draw-dot 12.0s ease-in-out infinite;
     }
     
     @keyframes draw-loops {
