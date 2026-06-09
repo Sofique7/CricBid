@@ -358,9 +358,9 @@ export default function SignatureBuilderPage() {
             >
               {/* Dhoni guideline background image */}
               <img 
-                src="/dhoni-raw-signature.png" 
+                src="/dhoni-signature.png" 
                 alt="Guideline"
-                className="absolute inset-0 w-full h-full object-fill pointer-events-none select-none opacity-25 z-0"
+                className="absolute inset-0 w-full h-full object-fill pointer-events-none select-none opacity-35 z-0"
                 referrerPolicy="no-referrer"
               />
 
