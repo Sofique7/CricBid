@@ -254,7 +254,7 @@ export default function LobbyPage() {
         {/* Top status bar */}
         <div
           className="flex flex-col md:flex-row md:items-center justify-between pb-5 gap-4 border-b"
-          style={{ borderColor: '#E7DFD1' }}
+          style={{ borderColor: 'rgba(255, 255, 255, 0.12)' }}
         >
           <div>
             <div className="flex items-center gap-2 mb-1.5">
@@ -263,16 +263,16 @@ export default function LobbyPage() {
             </div>
             <h1
               className="text-2xl md:text-3xl font-black tracking-tight"
-              style={{ color: '#1E1E1E', letterSpacing: '-0.02em' }}
+              style={{ color: 'var(--text-primary)', letterSpacing: '-0.02em' }}
             >
               Room{' '}
               <span
-                className="font-mono select-all text-[#2B2B2B]"
+                className="font-mono select-all text-white/90"
               >
                 {roomCode}
               </span>
             </h1>
-            <p className="text-xs mt-1" style={{ color: '#999999' }}>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
               Share this 6-digit code with friends to let them join.
             </p>
           </div>
@@ -280,7 +280,11 @@ export default function LobbyPage() {
           <button
             onClick={leaveRoom}
             className="btn-secondary px-5 py-2 text-xs self-start md:self-auto"
-            style={{ color: '#B91C1C', borderColor: '#FECACA' }}
+            style={{ 
+              color: '#FF6B6B', 
+              borderColor: 'rgba(255, 107, 107, 0.25)', 
+              background: 'rgba(255, 107, 107, 0.06)' 
+            }}
           >
             Exit Room
           </button>
@@ -296,13 +300,8 @@ export default function LobbyPage() {
             </div>
 
             <div
+              className="glass"
               style={{
-                background: 'rgba(255, 255, 255, 0.40)',
-                backdropFilter: 'blur(30px) saturate(1.7)',
-                WebkitBackdropFilter: 'blur(30px) saturate(1.7)',
-                border: '1px solid rgba(255, 255, 255, 0.35)',
-                boxShadow: '0 8px 32px rgba(92, 74, 60, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.40)',
-                borderRadius: '1.25rem',
                 padding: '0.75rem',
                 flexGrow: 1,
                 overflowY: 'auto',
@@ -317,23 +316,25 @@ export default function LobbyPage() {
                 return (
                   <div
                     key={c.id}
-                    className="flex items-center justify-between p-3 rounded-xl transition-all duration-300 hover:bg-white/35"
+                    className="flex items-center justify-between p-3 rounded-xl transition-all duration-300 hover:bg-white/10"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.28)',
-                      backdropFilter: 'blur(10px)',
-                      WebkitBackdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(255, 255, 255, 0.40)',
+                      background: 'rgba(255, 255, 255, 0.04)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
                     }}
                   >
                     <div className="flex items-center space-x-2.5">
                       <div
                         className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
-                        style={{ background: 'rgba(255, 255, 255, 0.50)', border: '1px solid rgba(255, 255, 255, 0.45)', color: '#6B645D' }}
+                        style={{ 
+                          background: 'rgba(255, 255, 255, 0.06)', 
+                          border: '1px solid rgba(255, 255, 255, 0.10)', 
+                          color: 'var(--text-primary)' 
+                        }}
                       >
                         {c.name.slice(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <span className="text-xs font-bold block" style={{ color: '#2B2B2B' }}>
+                        <span className="text-xs font-bold block" style={{ color: 'var(--text-primary)' }}>
                           {c.name}{hydrated && c.id === clientId ? ' (You)' : ''}
                         </span>
                         <span className="text-[10px] block mt-0.5">
@@ -341,9 +342,9 @@ export default function LobbyPage() {
                             <span 
                               className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8px] font-extrabold tracking-wider uppercase" 
                               style={{ 
-                                background: 'rgba(159, 132, 105, 0.12)', 
-                                border: '1px solid rgba(159, 132, 105, 0.28)', 
-                                color: '#7E634D',
+                                background: 'rgba(212, 150, 58, 0.12)', 
+                                border: '1px solid rgba(212, 150, 58, 0.28)', 
+                                color: '#D4963A',
                                 lineHeight: 1
                               }}
                             >
@@ -379,7 +380,7 @@ export default function LobbyPage() {
                         </span>
                       </div>
                     ) : (
-                      <span className="text-[9px] font-medium uppercase" style={{ color: '#BBBBBB' }}>
+                      <span className="text-[9px] font-medium uppercase" style={{ color: 'var(--text-tertiary)' }}>
                         Spectating
                       </span>
                     )}
@@ -393,7 +394,7 @@ export default function LobbyPage() {
           <div className="lg:col-span-8 flex flex-col space-y-5">
             <div>
               <h2 className="section-label mb-1">Select Your Franchise</h2>
-              <p className="text-xs" style={{ color: '#999999' }}>
+              <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                 Pick a franchise to manage. Unclaimed franchises will remain inactive.
               </p>
             </div>
@@ -422,22 +423,20 @@ export default function LobbyPage() {
                     className="relative overflow-hidden rounded-2xl flex flex-col select-none transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5"
                     style={{
                       background: isMine
-                        ? 'linear-gradient(135deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.40) 100%)'
+                        ? 'rgba(212, 150, 58, 0.12)'
                         : isClaimedByOther 
-                        ? 'rgba(255, 255, 255, 0.15)'
-                        : 'rgba(255, 255, 255, 0.35)',
-                      backdropFilter: 'blur(30px) saturate(1.7)',
-                      WebkitBackdropFilter: 'blur(30px) saturate(1.7)',
+                        ? 'rgba(0, 0, 0, 0.20)'
+                        : 'var(--glass)',
+                      backdropFilter: 'var(--glass-blur)',
+                      WebkitBackdropFilter: 'var(--glass-blur)',
                       border: isMine 
-                        ? '2px solid rgba(255, 255, 255, 0.60)'
+                        ? '2px solid var(--accent)'
                         : isClaimedByOther 
-                        ? '1px solid rgba(255, 255, 255, 0.15)'
-                        : '1.5px solid rgba(255, 255, 255, 0.30)',
+                        ? '1px solid rgba(255, 255, 255, 0.04)'
+                        : '1px solid var(--glass-border)',
                       boxShadow: isMine
-                        ? '0 16px 36px rgba(138, 106, 58, 0.14), inset 0 1px 0 rgba(255,255,255,0.55), 0 4px 12px rgba(92,74,60,0.06)'
-                        : isClaimedByOther
-                        ? '0 4px 12px rgba(0, 0, 0, 0.05)'
-                        : '0 8px 24px rgba(92,74,60,0.06)',
+                        ? '0 12px 32px rgba(212, 150, 58, 0.20), inset 0 1px 0 rgba(255,255,255,0.15)'
+                        : 'var(--glass-shadow)',
                       opacity: isClaimedByOther ? 0.45 : 1,
                       cursor: isClaimedByOther ? 'not-allowed' : 'pointer',
                       transform: isMine ? 'translateY(-3px)' : undefined,
@@ -461,11 +460,11 @@ export default function LobbyPage() {
                         <div className="min-w-0">
                           <h3
                             className="text-xs font-bold uppercase leading-tight line-clamp-2"
-                            style={{ color: '#1E1E1E' }}
+                            style={{ color: 'var(--text-primary)' }}
                           >
                             {t.name}
                           </h3>
-                          <span className="text-[10px] font-medium" style={{ color: '#6B645D' }}>
+                          <span className="text-[10px] font-medium" style={{ color: 'var(--text-secondary)' }}>
                             ₹120 Cr Purse
                           </span>
                         </div>
@@ -473,18 +472,18 @@ export default function LobbyPage() {
 
                       <div
                         className="pt-2.5 text-[10px] font-semibold uppercase tracking-wide flex items-center justify-between"
-                        style={{ borderTop: '1px solid rgba(255,255,255,0.35)' }}
+                        style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
                       >
                         {isMine ? (
                           <span 
                             className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] font-extrabold tracking-wider"
                             style={{
-                              background: 'rgba(78, 60, 36, 0.08)',
-                              border: '1px solid rgba(78, 60, 36, 0.18)',
-                              color: '#6B5440'
+                              background: 'rgba(212, 150, 58, 0.12)',
+                              border: '1px solid rgba(212, 150, 58, 0.28)',
+                              color: '#D4963A'
                             }}
                           >
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#A89068]" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#D4963A]" />
                             Claimed By You
                           </span>
                         ) : isClaimedByOther ? (
@@ -492,7 +491,7 @@ export default function LobbyPage() {
                             Taken by {claimedBy?.name}
                           </span>
                         ) : (
-                          <span style={{ color: '#9E948A' }}>Available</span>
+                          <span style={{ color: 'var(--text-tertiary)' }}>Available</span>
                         )}
                       </div>
                     </div>
@@ -504,7 +503,7 @@ export default function LobbyPage() {
             {/* Start / Waiting area */}
             <div
               className="pt-5"
-              style={{ borderTop: '1px solid rgba(255,255,255,0.25)' }}
+              style={{ borderTop: '1px solid rgba(255,255,255,0.12)' }}
             >
               {isHost ? (
                 <div className="space-y-2 max-w-sm">
@@ -517,20 +516,16 @@ export default function LobbyPage() {
                     Start Multiplayer Auction →
                   </button>
                   {!userTeamId && (
-                    <p className="text-[10px] font-semibold" style={{ color: '#B91C1C' }}>
+                    <p className="text-[10px] font-semibold" style={{ color: '#FF6B6B' }}>
                       Select a franchise before starting.
                     </p>
                   )}
                 </div>
               ) : (
                 <div
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-medium"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-medium glass"
                   style={{
-                    background: 'rgba(243,238,230,0.60)',
-                    backdropFilter: 'blur(10px)',
-                    WebkitBackdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255,255,255,0.28)',
-                    color: '#6B645D',
+                    color: 'var(--text-secondary)',
                   }}
                 >
                   <span className="live-dot" />
